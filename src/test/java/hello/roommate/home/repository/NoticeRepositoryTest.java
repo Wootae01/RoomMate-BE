@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @SpringBootTest
@@ -40,6 +41,22 @@ class NoticeRepositoryTest {
         Notice find = repository.findByTitle(notice.getTitle()).orElseThrow();
         //then
         Assertions.assertThat(find).isEqualTo(notice);
+    }
+
+    @Test
+    void findAllTitles() {
+        Notice notice1 = new Notice("title", "content", "2024/09/28");
+        Notice notice2 = new Notice("title2", "content", "2024/09/28");
+        Notice notice3 = new Notice("title3", "content", "2024/09/28");
+        repository.save(notice1);
+        repository.save(notice2);
+        repository.save(notice3);
+
+        List<String> titles = repository.findAllTitles();
+
+        Assertions.assertThat(titles).contains("title")
+                .contains("title2")
+                .contains("title3");
     }
 
     @Test
