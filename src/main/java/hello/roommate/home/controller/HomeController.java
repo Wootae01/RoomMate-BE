@@ -34,4 +34,5 @@ public class HomeController {
     public Notice notice(@PathVariable String title) {
         return repository.findByTitle(title).orElseThrow();
     }
+
 }

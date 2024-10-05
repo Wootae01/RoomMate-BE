@@ -7,3 +7,15 @@ create table notice
     notice_date varchar(10),
     primary key (id)
 );
+
+drop table if exists weather CASCADE;
+create table WEATHER(
+    fcst_time varchar(4),
+    fcst_date varchar(8),
+    tmp int,
+    sky int,
+    pty int,
+    tmn int,
+    tmx int,
+    primary key (fcst_time)
+);
