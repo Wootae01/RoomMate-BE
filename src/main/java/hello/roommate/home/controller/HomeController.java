@@ -2,7 +2,9 @@ package hello.roommate.home.controller;
 
 import hello.roommate.home.domain.Notice;
 import hello.roommate.home.repository.NoticeRepository;
+import hello.roommate.home.repository.WeatherDto;
 import hello.roommate.home.service.NoticeService;
+import hello.roommate.home.service.WeatherService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,8 +24,7 @@ import java.util.Optional;
 public class HomeController {
 
     private final NoticeService noticeService;
-    private final NoticeRepository repository;
-
+    private final WeatherService weatherService;
     @GetMapping("/notice")
     public ResponseEntity<List<String>> allNotice() {
         List<String> titles = noticeService.findAllTitles();
@@ -32,7 +33,11 @@ public class HomeController {
 
     @GetMapping("/notice/{title}")
     public Notice notice(@PathVariable String title) {
-        return repository.findByTitle(title).orElseThrow();
+        return noticeService.findByTitle(title);
     }
 
+    @GetMapping("/weather")
+    public WeatherDto getCurrentWeather() {
+        return weatherService.getCurrentWeather();
+    }
 }

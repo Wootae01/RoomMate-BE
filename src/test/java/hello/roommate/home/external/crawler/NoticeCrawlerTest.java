@@ -1,5 +1,6 @@
-package hello.roommate.home.crawler;
+package hello.roommate.home.external.crawler;
 
+import hello.roommate.home.external.crawler.NoticeCrawler;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

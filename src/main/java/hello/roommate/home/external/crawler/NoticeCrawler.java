@@ -1,4 +1,4 @@
-package hello.roommate.home.crawler;
+package hello.roommate.home.external.crawler;
 
 import hello.roommate.home.domain.Notice;
 import lombok.extern.slf4j.Slf4j;

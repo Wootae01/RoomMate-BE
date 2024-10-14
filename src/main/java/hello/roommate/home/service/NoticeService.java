@@ -1,6 +1,6 @@
 package hello.roommate.home.service;
 
-import hello.roommate.home.crawler.NoticeCrawler;
+import hello.roommate.home.external.crawler.NoticeCrawler;
 import hello.roommate.home.domain.Notice;
 import hello.roommate.home.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -18,6 +19,10 @@ public class NoticeService {
 
     public List<String> findAllTitles() {
         return repository.findAllTitles();
+    }
+
+    public Notice findByTitle(String title) {
+        return repository.findByTitle(title).orElseThrow(()->new NoSuchElementException("find not notice by title"));
     }
 
     @Scheduled(fixedRate = 24 * 60 * 60 * 1000, initialDelay = 0)
