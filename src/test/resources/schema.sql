@@ -10,12 +10,20 @@ create table notice
 
 drop table if exists weather CASCADE;
 create table WEATHER(
-    fcst_time varchar(4),
     fcst_date varchar(8),
+    fcst_time varchar(4),
     tmp int,
     sky int,
     pty int,
-    tmn int,
-    tmx int,
-    primary key (fcst_time)
+    tmn float,
+    tmx float,
+    primary key (fcst_date, fcst_time)
+);
+
+drop table if exists Weather_EXTREMES CASCADE;
+create table Weather_EXTREMES(
+    fcst_date varchar(8),
+    tmn float,
+    tmx float,
+    primary key (fcst_date)
 );

@@ -6,12 +6,12 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
-import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -24,32 +24,39 @@ public class WeatherRepository {
     }
 
     public Weather save(Weather weather) {
-        String sql = "insert into weather(fcst_time, fcst_date, tmp, sky, pty, tmn, tmx)" +
-                "values(:fcstTime, :fcstDate, :tmp, :sky, :pty, :tmn, :tmx)";
+        String sql = "insert into weather(fcst_time, fcst_date, tmp, sky, pty)" +
+                "values(:fcstTime, :fcstDate, :tmp, :sky, :pty)";
 
         SqlParameterSource param = new BeanPropertySqlParameterSource(weather);
         template.update(sql, param);
         return weather;
     }
 
-    public Optional<Weather> findByFcstTime(String fcstTime) {
-        String sql = "select * from weather where fcst_time=:fcstTime";
-
+    public Optional<Weather> findWeatherByDateAndTime(String fcstDate, String fcstTime) {
+        String sql = "select * from weather " +
+                "where fcst_date = :fcstDate and fcst_time = :fcstTime";
         try {
-            Map param = Map.of("fcstTime", fcstTime);
+            SqlParameterSource param = new MapSqlParameterSource()
+                    .addValue("fcstDate", fcstDate)
+                    .addValue("fcstTime", fcstTime);
             Weather weather = template.queryForObject(sql, param, weatherRowMapper());
             return Optional.of(weather);
         } catch (EmptyResultDataAccessException e) {
-            log.info("inappropriate time");
+            log.info("No weather found for the given date and time: {}, {}", fcstDate, fcstTime);
             return Optional.empty();
         }
     }
 
     public void update(Weather weather) {
+        MapSqlParameterSource param = new MapSqlParameterSource();
         String sql = "update weather" +
-                " set fcst_date=:fcstDate, tmp=:tmp, sky=:sky, pty=:pty, tmn=:tmn, tmx=:tmx" +
-                " where fcst_time=:fcstTime";
-        SqlParameterSource param = new BeanPropertySqlParameterSource(weather);
+                " set tmp = :tmp, sky = :sky, pty = :pty" +
+                " where fcst_date = :fcstDate and fcst_time = :fcstTime";
+        param.addValue("tmp", weather.getTmp())
+                .addValue("sky", weather.getSky())
+                .addValue("pty", weather.getPty())
+                .addValue("fcstDate", weather.getFcstDate())
+                .addValue("fcstTime", weather.getFcstTime());
         template.update(sql, param);
     }
 
