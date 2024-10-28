@@ -15,8 +15,6 @@ create table WEATHER(
     tmp int,
     sky int,
     pty int,
-    tmn float,
-    tmx float,
     primary key (fcst_date, fcst_time)
 );
 

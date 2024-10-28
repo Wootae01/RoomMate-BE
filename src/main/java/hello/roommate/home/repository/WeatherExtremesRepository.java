@@ -12,6 +12,7 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -70,6 +71,12 @@ public class WeatherExtremesRepository {
         sql2 += " where fcst_date=:fcstDate";
         param.addValue("fcstDate", extremes.getFcstDate());
         template.update(sql2, param);
+    }
+
+    public void delete(String fcstDate) {
+        String sql = "delete from weather where fcst_date =:fcstDate";
+        Map map = Map.of("fcstDate", fcstDate);
+        template.update(sql, map);
     }
 
     private RowMapper<WeatherExtremes> weatherExtremesRowMapper() {

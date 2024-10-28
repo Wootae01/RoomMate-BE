@@ -14,5 +14,4 @@ public class RoommateApplication {
 		SpringApplication.run(RoommateApplication.class, args);
 	}
 
-
 }
