@@ -20,5 +20,4 @@ public class Weather {
         this.fcstTime = fcstTime;
     }
 
-
 }
