@@ -1,4 +1,4 @@
-package hello.roommate.recommendation.domain;
+package hello.roommate.recommendation.repository;
 
 import hello.roommate.member.domain.Member;
 import lombok.Getter;
@@ -6,9 +6,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-public class Recommendation {
-    private Long id;
+public class RecommendationUpdateDto {
     private Member member;
     private Member matchedMember;
+
     private int score;
 }

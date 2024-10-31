@@ -1,4 +1,4 @@
-package hello.roommate.member;
+package hello.roommate.member.domain;
 
 public enum Dormitory {
     JINLI, JINUI, GAECHUCK, GYEYANG,    //진리관, 긴의관, 개척관, 계양원

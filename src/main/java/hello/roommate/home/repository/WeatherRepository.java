@@ -53,6 +53,7 @@ public class WeatherRepository {
         String sql = "update weather" +
                 " set tmp = :tmp, sky = :sky, pty = :pty" +
                 " where fcst_date = :fcstDate and fcst_time = :fcstTime";
+
         param.addValue("tmp", weather.getTmp())
                 .addValue("sky", weather.getSky())
                 .addValue("pty", weather.getPty())
