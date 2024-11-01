@@ -1,5 +1,6 @@
 package hello.roommate.profile.domain;
 
+import hello.roommate.recommendation.domain.LifeStyle;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,6 +8,8 @@ import lombok.Setter;
 @Setter
 public class Profile {
     private Long id;
-    private String introduce;
-    private String img;
+    private LifeStyle lifeStyle;
+    private String nickname; //닉네임
+    private String introduce; //자기 소개
+    private String img; //프로필 이미지 url?
 }
