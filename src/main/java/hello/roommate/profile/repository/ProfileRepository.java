@@ -22,10 +22,12 @@ public class ProfileRepository {
     }
 
     public Profile save(Profile profile) {
-        String sql = "insert into profile(profile_id, introduce, img) " +
-                "values(:id, :introduce, :img)";
+        String sql = "insert into profile(profile_id, lifestyle_id, nickname, introduce, img) " +
+                "values(:id, :lifestyle_id, :nickname, :introduce, :img)";
         SqlParameterSource param = new MapSqlParameterSource()
                 .addValue("id", profile.getId())
+                .addValue("lifestyle_id", profile.getLifeStyle().getId())
+                .addValue("nickname", profile.getNickname())
                 .addValue("introduce", profile.getIntroduce())
                 .addValue("img", profile.getImg());
 
@@ -37,28 +39,45 @@ public class ProfileRepository {
         return profile;
     }
 
+
     public Profile findById(Long id) {
-        String sql = "select * from profile where profile_id=:id";
+        String sql = "select p.* from profile p " +
+                "left join lifestyle l on p.lifestyle_id = l.lifestyle_id " +
+                "where p.profile_id=:id";
         Map<String, Long> param = Map.of("id", id);
 
         Profile profile = template.queryForObject(sql, param, profileRowMapper());
         return profile;
     }
+    public Profile findByNickname(String nickname) {
+        String sql = "select p.* from profile p " +
+                "left join lifestyle l on p.lifestyle_id = l.lifestyle_id " +
+                "where p.nickname=:nickname";
+        Map<String, String> param = Map.of("nickname", nickname);
 
-    public void update(Long profileId, ProfileUpdateDto updateDto) {
+        Profile profile = template.queryForObject(sql, param, profileRowMapper());
+        return profile;
+    }
+
+    public void update(String nickname, ProfileUpdateDto updateDto) {
         String sql = "update profile set " +
                 "introduce=:introduce, img=:img " +
                 "where profile_id=:id";
         SqlParameterSource param = new MapSqlParameterSource()
                 .addValue("introduce", updateDto.getIntroduce())
                 .addValue("img", updateDto.getImg())
-                .addValue("id", profileId);
+                .addValue("nickname", nickname);
         template.update(sql, param);
     }
 
-    public void delete(Long id) {
-        String sql = "delete from profile where id=:id";
+    public void deleteById(Long id) {
+        String sql = "delete from profile where profile_id=:id";
         Map<String, Long> param = Map.of("id", id);
+        template.update(sql, param);
+    }
+    public void deleteByNickname(String nickname) {
+        String sql = "delete from profile where nickname=:nickname";
+        Map<String, String> param = Map.of("nickname", nickname);
         template.update(sql, param);
     }
 

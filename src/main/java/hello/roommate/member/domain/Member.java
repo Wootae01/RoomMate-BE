@@ -14,6 +14,6 @@ public class Member {
     private LifeStyle lifeStyle;
     private String password;
     private String email;
-    private String nickname;
+
     Dormitory dorm;
 }

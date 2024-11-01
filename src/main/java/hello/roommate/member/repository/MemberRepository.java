@@ -23,8 +23,8 @@ public class MemberRepository {
         this.template = new NamedParameterJdbcTemplate(dataSource);
     }
     public Member save(Member member) {
-        String sql = "insert into Member (id, profile_id, lifestyle_id, password, email, dorm, nickname)" +
-                " values (:id, :profileId, :lifestyleId, :password, :email, :dorm, :nickname)";
+        String sql = "insert into Member (id, profile_id, lifestyle_id, password, email, dorm)" +
+                " values (:id, :profileId, :lifestyleId, :password, :email, :dorm)";
 
 
         SqlParameterSource param = new MapSqlParameterSource()
@@ -33,8 +33,7 @@ public class MemberRepository {
                 .addValue("lifestyle_id", member.getLifeStyle().getId())
                 .addValue("password", member.getPassword())
                 .addValue("email", member.getEmail())
-                .addValue("dorm", member.getDorm())
-                .addValue("nickname", member.getNickname());
+                .addValue("dorm", member.getDorm());
         template.update(sql, param);
 
         return member;
@@ -51,21 +50,6 @@ public class MemberRepository {
                 "where m.id = :id";
 
         Map<String, String> param = Map.of("id", id);
-        Member member = template.queryForObject(sql, param, memberRowMapper());
-        return member;
-    }
-
-    public Member findByNickname(String nickname) {
-        String sql = "select m.*, p.id as profile_id, p.introduce, p.img, " +
-                "l.id as lifestyle_id, l.bed_time, l.wakeup_time, l.sleep_habit, " +
-                "l.cleaning, l.aircon, l.heater, l.noise, l.smoking, l.scent, " +
-                "l.eating, l.relationship, l.home, l.drinking, l.age, l.dorm_hour " +
-                "from Member m " +
-                "Left Join Profile ON m.profile_id = p.id " +
-                "Left Join LifeStyle ON m.lifestyle_id = l.id " +
-                "where m.nickname = :nickname";
-
-        Map<String, String> param = Map.of("nickname", nickname);
         Member member = template.queryForObject(sql, param, memberRowMapper());
         return member;
     }
@@ -90,7 +74,6 @@ public class MemberRepository {
         member.setId(rs.getString("id"));
         member.setDorm(Dormitory.valueOf(rs.getString("dorm")));
         member.setEmail(rs.getString("email"));
-        member.setNickname(rs.getString("nickname"));
         member.setPassword(rs.getString("password"));
         return member;
     }
