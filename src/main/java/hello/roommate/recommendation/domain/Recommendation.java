@@ -10,5 +10,5 @@ public class Recommendation {
     private Long id;
     private Member member;
     private Member matchedMember;
-    private int score;
+    private double score;
 }

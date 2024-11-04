@@ -41,7 +41,8 @@ public class RecommendationRepository {
     }
 
     public List<Recommendation> findByMemberId(String memberId) {
-        String sql = "select * from recommendation where member_id = :memberId";
+        String sql = "select * from recommendation where member_id = :memberId " +
+                "ORDER BY score DESC ";
         Map<String, String> param = Map.of("id", memberId);
 
         return template.query(sql, param, recommendationRowMapper());

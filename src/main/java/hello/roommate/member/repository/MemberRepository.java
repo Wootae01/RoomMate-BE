@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 
 @Repository
@@ -41,17 +42,28 @@ public class MemberRepository {
 
     public Member findById(String id) {
         String sql = "select m.*, p.id as profile_id, p.introduce, p.img, " +
-                "l.id as lifestyle_id, l.bed_time, l.wakeup_time, l.sleep_habit, " +
-                "l.cleaning, l.aircon, l.heater, l.noise, l.smoking, l.scent, " +
-                "l.eating, l.relationship, l.home, l.drinking, l.age, l.dorm_hour " +
+                "l.* " +
                 "from Member m " +
                 "Left Join Profile ON m.profile_id = p.id " +
                 "Left Join LifeStyle ON m.lifestyle_id = l.id " +
-                "where m.id = :id";
+                "where m.id =:id";
 
         Map<String, String> param = Map.of("id", id);
         Member member = template.queryForObject(sql, param, memberRowMapper());
         return member;
+    }
+
+    public List<Member> findByDorm(String dorm) {
+        String sql = "select m.*, p.id as profile_id, p.introduce, p.img, " +
+                "l.* " +
+                "from Member m " +
+                "Left Join Profile ON m.profile_id = p.id " +
+                "Left Join LifeStyle ON m.lifestyle_id = l.id " +
+                "where m.dorm =:dorm";
+
+        Map<String, String> param = Map.of("dorm", dorm);
+
+        return template.query(sql, param, memberRowMapper());
     }
 
     public void delete(String id) {
