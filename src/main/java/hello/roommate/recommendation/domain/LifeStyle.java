@@ -1,10 +1,10 @@
 package hello.roommate.recommendation.domain;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@EqualsAndHashCode
 public class LifeStyle {
     private Long id;
 

@@ -6,8 +6,10 @@ import lombok.Setter;
 
 @Getter
 @Setter
+
 public class Profile {
     private Long id;
+
     private LifeStyle lifeStyle;
     private String nickname; //닉네임
     private String introduce; //자기 소개
