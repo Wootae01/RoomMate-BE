@@ -24,29 +24,28 @@ public class MemberRepository {
         this.template = new NamedParameterJdbcTemplate(dataSource);
     }
     public Member save(Member member) {
-        String sql = "insert into Member (id, profile_id, lifestyle_id, password, email, dorm)" +
+        String sql = "insert into Member (member_id, profile_id, lifestyle_id, password, email, dorm)" +
                 " values (:id, :profileId, :lifestyleId, :password, :email, :dorm)";
 
 
         SqlParameterSource param = new MapSqlParameterSource()
                 .addValue("id", member.getId())
-                .addValue("profile_id", member.getProfile().getId())
-                .addValue("lifestyle_id", member.getLifeStyle().getId())
+                .addValue("profileId", member.getProfile().getId())
+                .addValue("lifestyleId", member.getLifeStyle().getId())
                 .addValue("password", member.getPassword())
                 .addValue("email", member.getEmail())
-                .addValue("dorm", member.getDorm());
+                .addValue("dorm", member.getDorm().name());
         template.update(sql, param);
 
         return member;
     }
 
     public Member findById(String id) {
-        String sql = "select m.*, p.id as profile_id, p.introduce, p.img, " +
-                "l.* " +
+        String sql = "select m.*, p.*, l.* " +
                 "from Member m " +
-                "Left Join Profile ON m.profile_id = p.id " +
-                "Left Join LifeStyle ON m.lifestyle_id = l.id " +
-                "where m.id =:id";
+                "Left Join Profile p ON m.profile_id = p.profile_id " +
+                "Left Join LifeStyle l ON m.lifestyle_id = l.lifestyle_id " +
+                "where m.member_id =:id";
 
         Map<String, String> param = Map.of("id", id);
         Member member = template.queryForObject(sql, param, memberRowMapper());
@@ -54,11 +53,10 @@ public class MemberRepository {
     }
 
     public List<Member> findByDorm(String dorm) {
-        String sql = "select m.*, p.id as profile_id, p.introduce, p.img, " +
-                "l.* " +
+        String sql = "select m.*, p.*, l.* " +
                 "from Member m " +
-                "Left Join Profile ON m.profile_id = p.id " +
-                "Left Join LifeStyle ON m.lifestyle_id = l.id " +
+                "Left Join Profile p ON m.profile_id = p.profile_id " +
+                "Left Join LifeStyle l ON m.lifestyle_id = l.lifestyle_id " +
                 "where m.dorm =:dorm";
 
         Map<String, String> param = Map.of("dorm", dorm);
@@ -67,7 +65,7 @@ public class MemberRepository {
     }
 
     public void delete(String id) {
-        String sql = "delete from member where id=:id";
+        String sql = "delete from member where member_id=:id";
         Map<String, String> param = Map.of("id", id);
         template.update(sql, param);
     }
@@ -83,7 +81,7 @@ public class MemberRepository {
 
     private Member mapMember(ResultSet rs) throws SQLException {
         Member member = new Member();
-        member.setId(rs.getString("id"));
+        member.setId(rs.getString("member_id"));
         member.setDorm(Dormitory.valueOf(rs.getString("dorm")));
         member.setEmail(rs.getString("email"));
         member.setPassword(rs.getString("password"));
@@ -95,6 +93,8 @@ public class MemberRepository {
         profile.setId(rs.getLong("profile_id"));
         profile.setImg(rs.getString("img"));
         profile.setIntroduce(rs.getString("introduce"));
+        profile.setNickname(rs.getString("nickname"));
+        profile.setLifeStyle(mapLifeStyle(rs));
         return profile;
     }
     private LifeStyle mapLifeStyle(ResultSet rs) throws SQLException {

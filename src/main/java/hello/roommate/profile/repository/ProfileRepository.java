@@ -1,6 +1,7 @@
 package hello.roommate.profile.repository;
 
 import hello.roommate.profile.domain.Profile;
+import hello.roommate.recommendation.domain.LifeStyle;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -11,6 +12,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Map;
 
 @Repository
@@ -22,10 +25,9 @@ public class ProfileRepository {
     }
 
     public Profile save(Profile profile) {
-        String sql = "insert into profile(profile_id, lifestyle_id, nickname, introduce, img) " +
-                "values(:id, :lifestyle_id, :nickname, :introduce, :img)";
+        String sql = "insert into profile(lifestyle_id, nickname, introduce, img) " +
+                "values(:lifestyle_id, :nickname, :introduce, :img)";
         SqlParameterSource param = new MapSqlParameterSource()
-                .addValue("id", profile.getId())
                 .addValue("lifestyle_id", profile.getLifeStyle().getId())
                 .addValue("nickname", profile.getNickname())
                 .addValue("introduce", profile.getIntroduce())
@@ -41,7 +43,7 @@ public class ProfileRepository {
 
 
     public Profile findById(Long id) {
-        String sql = "select p.* from profile p " +
+        String sql = "select p.*, l.* from profile p " +
                 "left join lifestyle l on p.lifestyle_id = l.lifestyle_id " +
                 "where p.profile_id=:id";
         Map<String, Long> param = Map.of("id", id);
@@ -50,7 +52,7 @@ public class ProfileRepository {
         return profile;
     }
     public Profile findByNickname(String nickname) {
-        String sql = "select p.* from profile p " +
+        String sql = "select p.*, l.* from profile p " +
                 "left join lifestyle l on p.lifestyle_id = l.lifestyle_id " +
                 "where p.nickname=:nickname";
         Map<String, String> param = Map.of("nickname", nickname);
@@ -62,7 +64,7 @@ public class ProfileRepository {
     public void update(String nickname, ProfileUpdateDto updateDto) {
         String sql = "update profile set " +
                 "introduce=:introduce, img=:img " +
-                "where profile_id=:id";
+                "where nickname=:nickname";
         SqlParameterSource param = new MapSqlParameterSource()
                 .addValue("introduce", updateDto.getIntroduce())
                 .addValue("img", updateDto.getImg())
@@ -82,6 +84,34 @@ public class ProfileRepository {
     }
 
     private RowMapper<Profile> profileRowMapper() {
-        return BeanPropertyRowMapper.newInstance(Profile.class);
+        return ((rs, rowNum) -> {
+            Profile profile = new Profile();
+            profile.setId(rs.getLong("profile_id"));
+            profile.setImg(rs.getString("img"));
+            profile.setNickname(rs.getString("nickname"));
+            profile.setIntroduce(rs.getString("introduce"));
+            profile.setLifeStyle(mapLifeStyle(rs));
+            return profile;
+        });
+    }
+    private LifeStyle mapLifeStyle(ResultSet rs) throws SQLException {
+        LifeStyle lifeStyle = new LifeStyle();
+        lifeStyle.setId(rs.getLong("lifestyle_id"));
+        lifeStyle.setBedTime(rs.getInt("bed_time"));
+        lifeStyle.setWakeupTime(rs.getInt("wakeup_time"));
+        lifeStyle.setSleepHabit(rs.getInt("sleep_habit"));
+        lifeStyle.setCleaning(rs.getInt("cleaning"));
+        lifeStyle.setAircon(rs.getInt("aircon"));
+        lifeStyle.setHeater(rs.getInt("heater"));
+        lifeStyle.setNoise(rs.getInt("noise"));
+        lifeStyle.setSmoking(rs.getInt("smoking"));
+        lifeStyle.setScent(rs.getInt("scent"));
+        lifeStyle.setEating(rs.getInt("eating"));
+        lifeStyle.setRelationship(rs.getInt("relationship"));
+        lifeStyle.setHome(rs.getInt("home"));
+        lifeStyle.setDrinking(rs.getInt("drinking"));
+        lifeStyle.setAge(rs.getInt("age"));
+        lifeStyle.setDormHour(rs.getInt("dorm_hour"));
+        return lifeStyle;
     }
 }
