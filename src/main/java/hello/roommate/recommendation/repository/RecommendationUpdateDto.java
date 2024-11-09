@@ -4,11 +4,13 @@ import hello.roommate.member.domain.Member;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.lang.invoke.StringConcatException;
+
 @Getter
 @Setter
 public class RecommendationUpdateDto {
-    private Member member;
-    private Member matchedMember;
+    private String memberId;
+    private String matchedMemberId;
 
-    private int score;
+    private double score;
 }

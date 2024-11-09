@@ -22,7 +22,7 @@ public class LifeStyleRepository {
     }
 
     public LifeStyle save(LifeStyle lifeStyle) {
-        String sql = "insert into LifeStyle " +
+        String sql = "insert into LifeStyle" +
                 "(bed_time, wakeup_time, sleep_habit, cleaning, aircon, heater, noise, " +
                 "smoking, scent, eating, relationship, home, drinking, age, dorm_hour) " +
                 "values (:bedTime, :wakeupTime, :sleepHabit, :cleaning, :aircon, :heater, :noise, " +
@@ -96,7 +96,27 @@ public class LifeStyleRepository {
         template.update(sql, param);
     }
     private RowMapper<LifeStyle> lifeStyleRowMapper() {
-        return BeanPropertyRowMapper.newInstance(LifeStyle.class);
+        return (rs, rowNum) -> {
+            LifeStyle lifeStyle = new LifeStyle();
+            lifeStyle.setId(rs.getLong("lifestyle_id"));
+            lifeStyle.setBedTime(rs.getInt("bed_time"));
+            lifeStyle.setWakeupTime(rs.getInt("wakeup_time"));
+            lifeStyle.setSleepHabit(rs.getInt("sleep_habit"));
+            lifeStyle.setCleaning(rs.getInt("cleaning"));
+            lifeStyle.setAircon(rs.getInt("aircon"));
+            lifeStyle.setHeater(rs.getInt("heater"));
+            lifeStyle.setNoise(rs.getInt("noise"));
+            lifeStyle.setSmoking(rs.getInt("smoking"));
+            lifeStyle.setScent(rs.getInt("scent"));
+            lifeStyle.setEating(rs.getInt("eating"));
+            lifeStyle.setRelationship(rs.getInt("relationship"));
+            lifeStyle.setHome(rs.getInt("home"));
+            lifeStyle.setDrinking(rs.getInt("drinking"));
+            lifeStyle.setAge(rs.getInt("age"));
+            lifeStyle.setDormHour(rs.getInt("dorm_hour"));
+            return lifeStyle;
+        };
     }
+
 
 }
