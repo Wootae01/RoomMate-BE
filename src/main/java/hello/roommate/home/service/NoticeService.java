@@ -25,7 +25,7 @@ public class NoticeService {
         return repository.findByTitle(title).orElseThrow(()->new NoSuchElementException("find not notice by title"));
     }
 
-    @Scheduled(fixedRate = 24 * 60 * 60 * 1000, initialDelay = 0)
+    //@Scheduled(fixedRate = 24 * 60 * 60 * 1000, initialDelay = 0)
     public void updateNotice() {
         List<Notice> notices = crawler.getNotices();
         List<String> existingTitles = repository.findAllTitles();

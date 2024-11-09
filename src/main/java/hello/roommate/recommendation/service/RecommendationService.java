@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -33,7 +35,9 @@ public class RecommendationService {
 
         List<Member> sameDormMembers = memberRepository.findByDorm(dorm);
         for (Member member : sameDormMembers) {
-
+            if (member.getId().equals(currentMember.getId())) {
+                continue;
+            }
             LifeStyle b = member.getLifeStyle();
             double score = calCosineSimilarity(a, b);
 
@@ -43,6 +47,7 @@ public class RecommendationService {
             recommendation.setScore(score);
             list.add(recommendation);
         }
+        list.sort(Comparator.comparingDouble(Recommendation::getScore).reversed());
         return list;
     }
 
