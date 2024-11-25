@@ -9,8 +9,8 @@ import java.lang.invoke.StringConcatException;
 @Getter
 @Setter
 public class RecommendationUpdateDto {
-    private String memberId;
-    private String matchedMemberId;
+    private String member1Id;
+    private String member2Id;
 
     private double score;
 }

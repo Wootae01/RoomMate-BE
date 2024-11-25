@@ -1,3 +1,4 @@
+/*
 package hello.roommate;
 
 import hello.roommate.member.domain.Dormitory;
@@ -93,3 +94,4 @@ public class TestDataInit {
         return lifeStyle;
     }
 }
+*/

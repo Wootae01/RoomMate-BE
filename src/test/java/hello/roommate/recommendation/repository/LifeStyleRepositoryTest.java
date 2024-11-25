@@ -1,6 +1,8 @@
 package hello.roommate.recommendation.repository;
 
 import hello.roommate.recommendation.domain.LifeStyle;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.NoSuchElementException;
 
+import static org.hibernate.query.sqm.tree.SqmNode.log;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Transactional
@@ -95,9 +98,10 @@ class LifeStyleRepositoryTest {
 
         //when
         repository.delete(lifeStyle.getId());
-        Assertions.assertThatThrownBy(() -> {
-            repository.findById(lifeStyle.getId());
-        }).isInstanceOf(EmptyResultDataAccessException.class);
+
+        // then
+        LifeStyle find = repository.findById(lifeStyle.getId());
+        Assertions.assertThat(find).isNull();
     }
 
     private LifeStyle createLifeStyle() {
