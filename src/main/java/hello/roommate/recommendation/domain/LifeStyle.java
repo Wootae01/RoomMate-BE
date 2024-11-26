@@ -1,11 +1,19 @@
 package hello.roommate.recommendation.domain;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
 import lombok.*;
 
 @Getter
 @Setter
 @EqualsAndHashCode
+@Entity
 public class LifeStyle {
+    @Id @GeneratedValue
+    @Column(name = "LIFESTYLE_ID")
+    @Setter(value = AccessLevel.NONE)
     private Long id;
 
     private int bedTime;        //취침 시간

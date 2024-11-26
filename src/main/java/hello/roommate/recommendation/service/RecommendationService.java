@@ -31,7 +31,7 @@ public class RecommendationService {
         List<Recommendation> list = new ArrayList<>();
         Member currentMember = memberRepository.findById(memberId);
         LifeStyle a = currentMember.getLifeStyle();
-        String dorm = currentMember.getDorm().name();
+        Dormitory dorm = currentMember.getDorm();
 
         List<Member> sameDormMembers = memberRepository.findByDorm(dorm);
         for (Member member : sameDormMembers) {
@@ -42,8 +42,8 @@ public class RecommendationService {
             double score = calCosineSimilarity(a, b);
 
             Recommendation recommendation = new Recommendation();
-            recommendation.setMember(currentMember);
-            recommendation.setMatchedMember(member);
+            recommendation.setMember1(currentMember);
+            recommendation.setMember2(member);
             recommendation.setScore(score);
             list.add(recommendation);
         }
@@ -55,7 +55,7 @@ public class RecommendationService {
     public void saveAllRecommendations(String memberId) {
         Member currentMember = memberRepository.findById(memberId);
         LifeStyle a = currentMember.getLifeStyle();
-        String dorm = currentMember.getDorm().name();
+        Dormitory dorm = currentMember.getDorm();
 
         List<Member> sameDormMembers = memberRepository.findByDorm(dorm);
         for (Member member : sameDormMembers) {
@@ -64,8 +64,6 @@ public class RecommendationService {
             double score = calCosineSimilarity(a, b);
 
             Recommendation recommendation = new Recommendation();
-            recommendation.setMember(currentMember);
-            recommendation.setMatchedMember(member);
             recommendation.setScore(score);
             recommendRepository.save(recommendation);
         }

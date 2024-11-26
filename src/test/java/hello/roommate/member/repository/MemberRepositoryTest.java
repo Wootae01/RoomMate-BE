@@ -2,8 +2,6 @@ package hello.roommate.member.repository;
 
 import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Member;
-import hello.roommate.profile.domain.Profile;
-import hello.roommate.profile.repository.ProfileRepository;
 import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.repository.LifeStyleRepository;
 import org.assertj.core.api.Assertions;
@@ -13,6 +11,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -23,17 +22,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class MemberRepositoryTest {
     @Autowired private MemberRepository memberRepository;
     @Autowired private LifeStyleRepository lifeStyleRepository;
-    @Autowired private ProfileRepository profileRepository;
     @Test
     void save() {
         //given
         LifeStyle lifeStyle = createLifeStyle();
         lifeStyleRepository.save(lifeStyle);
-
-        Profile profile = createProfile(lifeStyle);
-        profileRepository.save(profile);
-
-        Member member = createMember(profile, lifeStyle);
+        Member member = createMember(lifeStyle);
 
         //when
         Member save = memberRepository.save(member);
@@ -48,104 +42,66 @@ class MemberRepositoryTest {
         //given
         LifeStyle lifeStyle = createLifeStyle();
         lifeStyleRepository.save(lifeStyle);
-
-        Profile profile = createProfile(lifeStyle);
-        profileRepository.save(profile);
-
-        Member member = createMember(profile, lifeStyle);
+        Member member = createMember(lifeStyle);
         memberRepository.save(member);
 
         //when
         Member find = memberRepository.findById(member.getId());
-
-        //then
         assertThat(find).isEqualTo(member);
-
     }
 
     @Test
     void findByDorm() {
-        //given
-        LifeStyle lifeStyle = createLifeStyle();
-        lifeStyleRepository.save(lifeStyle);
-
-        Profile profile = createProfile(lifeStyle);
-        profileRepository.save(profile);
-
-        Member memberA = createMember("A", "1234", "1234@naver.com", Dormitory.INUI, profile, lifeStyle);
-        Member memberB = createMember("B", "5678", "5678@naver.com", Dormitory.YEJI, profile, lifeStyle);
-        Member memberC = createMember("C", "5678", "C@naver.com", Dormitory.INUI, profile, lifeStyle);
-
-        memberRepository.save(memberA);
-        memberRepository.save(memberB);
-        memberRepository.save(memberC);
+        Member member1 = createMember("1245", Dormitory.INUI, "abc", new Date(), null);
+        Member member2 = createMember("1345", Dormitory.INUI, "abcd", new Date(), null);
+        Member member3 = createMember("1347", Dormitory.YEJI, "abce", new Date(), null);
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
 
         //when
-        List<Member> inui = memberRepository.findByDorm(Dormitory.INUI.name());
-        List<Member> yeji = memberRepository.findByDorm(Dormitory.YEJI.name());
+        List<Member> inui = memberRepository.findByDorm(Dormitory.INUI);
+        List<Member> yeji = memberRepository.findByDorm(Dormitory.YEJI);
 
         //then
         assertThat(inui.size()).isEqualTo(2);
         assertThat(yeji.size()).isEqualTo(1);
-
-        assertThat(inui).contains(memberA, memberC);
-        assertThat(yeji).contains(memberB);
+        assertThat(inui).contains(member1, member2);
+        assertThat(yeji).contains(member3);
     }
 
     @Test
     void delete() {
         //given
-        LifeStyle lifeStyle = createLifeStyle();
-        lifeStyleRepository.save(lifeStyle);
-
-        Profile profile = createProfile(lifeStyle);
-        profileRepository.save(profile);
-
-        Member member = createMember(profile, lifeStyle);
+        Member member = createMember(null);
+        memberRepository.save(member);
 
         //when
         memberRepository.delete(member.getId());
+        Member find = memberRepository.findById(member.getId());
 
         //then
-        assertThatThrownBy(() -> {
-            memberRepository.findById(member.getId());
-        }).isInstanceOf(EmptyResultDataAccessException.class);
+        assertThat(find).isNull();
     }
 
-    private Member createMember(String id, String password, String email, Dormitory dorm, Profile profile, LifeStyle lifeStyle) {
-        Member member =  new Member();
+    private Member createMember(String id, Dormitory dorm, String nickname, Date time, LifeStyle lifeStyle) {
+        Member member = new Member();
         member.setId(id);
-        member.setPassword(password);
-        member.setEmail(email);
-
         member.setDorm(dorm);
-
-        member.setProfile(profile);
         member.setLifeStyle(lifeStyle);
+        member.setNickname(nickname);
+        member.setTimestamp(time);
         return member;
     }
-
-    private Member createMember(Profile profile, LifeStyle lifeStyle) {
-       Member member =  new Member();
-        member.setPassword("1234");
-        member.setEmail("1234@naver.com");
-        member.setId("A");
+    private Member createMember(LifeStyle lifeStyle) {
+        Member member = new Member();
+        member.setId("1234");
         member.setDorm(Dormitory.INUI);
-
-        member.setProfile(profile);
         member.setLifeStyle(lifeStyle);
+        member.setNickname("nickname");
+        member.setTimestamp(new Date());
         return member;
     }
-
-    private Profile createProfile(LifeStyle lifeStyle) {
-        Profile profile = new Profile();
-        profile.setLifeStyle(lifeStyle);
-        profile.setImg("www.img.com");
-        profile.setIntroduce("Hello 안녕 ㅎㅇ ");
-        profile.setNickname("Kim");
-        return profile;
-    }
-
     private LifeStyle createLifeStyle() {
         LifeStyle lifeStyle = new LifeStyle();
         lifeStyle.setBedTime(5);

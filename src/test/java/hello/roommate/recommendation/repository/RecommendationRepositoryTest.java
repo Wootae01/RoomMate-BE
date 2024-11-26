@@ -3,8 +3,6 @@ package hello.roommate.recommendation.repository;
 import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.repository.MemberRepository;
-import hello.roommate.profile.domain.Profile;
-import hello.roommate.profile.repository.ProfileRepository;
 import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.domain.Recommendation;
 import lombok.extern.slf4j.Slf4j;
@@ -24,157 +22,108 @@ import static org.assertj.core.api.Assertions.*;
 class RecommendationRepositoryTest {
     @Autowired private MemberRepository memberRepository;
     @Autowired private LifeStyleRepository lifeStyleRepository;
-    @Autowired private ProfileRepository profileRepository;
     @Autowired private RecommendationRepository recommendationRepository;
 
     @Test
     void save() {
         //given
-        LifeStyle lifeStyle = createLifeStyle();
-        lifeStyleRepository.save(lifeStyle);
-
-        Profile profile = createProfile(lifeStyle);
-        profileRepository.save(profile);
-
-        Member memberA = createMember("A", "1234", "email@A", Dormitory.INUI, profile, lifeStyle);
-        Member memberB = createMember("B", "1234", "email@A", Dormitory.INUI, profile, lifeStyle);
-
-        memberRepository.save(memberA);
-        memberRepository.save(memberB);
-
-        Recommendation recommendation = createRecommendation(memberA, memberB, 0.96);
-
+        Recommendation recommendation = new Recommendation();
+        Member member = new Member();
+        recommendation.setScore(0.986);
         //when
         Recommendation save = recommendationRepository.save(recommendation);
 
         //then
-        assertThat(recommendation).isEqualTo(save);
+        Assertions.assertThat(save).isEqualTo(recommendation);
     }
 
     @Test
     void findByMemberId() {
         //given
-        LifeStyle lifeStyle = createLifeStyle();
-        lifeStyleRepository.save(lifeStyle);
-
-        Profile profile = createProfile(lifeStyle);
-        profileRepository.save(profile);
-
-        Member memberA = createMember("A", "1234", "email@A", Dormitory.INUI, profile, lifeStyle);
-        Member memberB = createMember("B", "1234", "email@A", Dormitory.INUI, profile, lifeStyle);
-        Member memberC = createMember("C", "1234", "email@C", Dormitory.INUI, profile, lifeStyle);
-
-        memberRepository.save(memberA);
-        memberRepository.save(memberB);
-        memberRepository.save(memberC);
-
-        Recommendation recommendation = createRecommendation(memberA, memberB, 0.96);
-        Recommendation recommendation1 = createRecommendation(memberA, memberC, 0.97);
+        Member member1 = new Member();
+        Member member2 = new Member();
+        Member member3 = new Member();
+        member1.setId("1");
+        member2.setId("2");
+        member3.setId("3");
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
+        Recommendation recommendation = new Recommendation();
+        recommendation.setScore(0.88);
+        recommendation.setMember1(member1);
+        recommendation.setMember2(member2);
+        Recommendation recommendation2 = new Recommendation();
+        recommendation2.setMember1(member3);
+        recommendation2.setMember2(member1);
         recommendationRepository.save(recommendation);
-        recommendationRepository.save(recommendation1);
+        recommendationRepository.save(recommendation2);
         //when
-        List<Recommendation> find = recommendationRepository.findByMemberId(memberA.getId());
+        List<Recommendation> find = recommendationRepository.findByMemberId("1");
 
+        //then
         assertThat(find.size()).isEqualTo(2);
-        assertThat(find).contains(recommendation, recommendation1);
-        assertThat(find.getFirst()).isEqualTo(recommendation1);
+        assertThat(find).contains(recommendation, recommendation2);
     }
 
     @Test
     void update() {
         //given
-        LifeStyle lifeStyle = createLifeStyle();
-        lifeStyleRepository.save(lifeStyle);
-
-        Profile profile = createProfile(lifeStyle);
-        profileRepository.save(profile);
-
-        Member memberA = createMember("A", "1234", "email@A", Dormitory.INUI, profile, lifeStyle);
-        Member memberB = createMember("B", "1234", "email@A", Dormitory.INUI, profile, lifeStyle);
-        memberRepository.save(memberA);
-        memberRepository.save(memberB);
-
-        Recommendation recommendation = createRecommendation(memberA, memberB, 0.96);
+        Member member1 = new Member();
+        Member member2 = new Member();
+        member1.setId("1");
+        member2.setId("2");
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        Recommendation recommendation = new Recommendation();
+        recommendation.setScore(0.88);
+        recommendation.setMember1(member1);
+        recommendation.setMember2(member2);
         recommendationRepository.save(recommendation);
 
         //when
         RecommendationUpdateDto dto = new RecommendationUpdateDto();
-        dto.setMemberId(memberA.getId());
-        dto.setMatchedMemberId(memberB.getId());
-        dto.setScore(0.55);
+        dto.setMember2Id(member1.getId());
+        dto.setMember1Id(member2.getId());
+        dto.setScore(0.99);
         recommendationRepository.update(dto);
 
         //then
-        List<Recommendation> find = recommendationRepository.findByMemberId(memberA.getId());
-        Recommendation first = find.getFirst();
-        assertThat(first.getScore()).isEqualTo(0.55);
-
+        List<Recommendation> find = recommendationRepository.findByMemberId("1");
+        assertThat(find.get(0).getScore()).isEqualTo(0.99);
 
     }
 
     @Test
     void delete() {
         //given
-        LifeStyle lifeStyle = createLifeStyle();
-        lifeStyleRepository.save(lifeStyle);
-
-        Profile profile = createProfile(lifeStyle);
-        profileRepository.save(profile);
-
-        Member memberA = createMember("A", "1234", "email@A", Dormitory.INUI, profile, lifeStyle);
-        Member memberB = createMember("B", "1234", "email@A", Dormitory.INUI, profile, lifeStyle);
-        Member memberC = createMember("C", "1234", "email@C", Dormitory.INUI, profile, lifeStyle);
-        memberRepository.save(memberA);
-        memberRepository.save(memberB);
-        memberRepository.save(memberC);
-
-        Recommendation recommendation = createRecommendation(memberA, memberB, 0.96);
-        Recommendation recommendation1 = createRecommendation(memberA, memberC, 0.97);
-        recommendationRepository.save(recommendation);
-        recommendationRepository.save(recommendation1);
-
-
-    }
-
-    private Recommendation createRecommendation(Member memberA, Member memberB, double score) {
+        Member member1 = new Member();
+        Member member2 = new Member();
+        Member member3 = new Member();
+        member1.setId("1");
+        member2.setId("2");
+        member3.setId("3");
+        memberRepository.save(member1);
+        memberRepository.save(member2);
+        memberRepository.save(member3);
         Recommendation recommendation = new Recommendation();
-        recommendation.setMember(memberA);
-        recommendation.setMatchedMember(memberB);
-        recommendation.setScore(score);
-        return recommendation;
-    }
-    private Member createMember(String id, String password, String email, Dormitory dorm, Profile profile, LifeStyle lifeStyle) {
-        Member member =  new Member();
-        member.setId(id);
-        member.setPassword(password);
-        member.setEmail(email);
+        recommendation.setScore(0.88);
+        recommendation.setMember1(member1);
+        recommendation.setMember2(member2);
+        Recommendation recommendation2 = new Recommendation();
+        recommendation2.setMember1(member3);
+        recommendation2.setMember2(member1);
+        recommendation2.setScore(0.99);
+        recommendationRepository.save(recommendation);
+        recommendationRepository.save(recommendation2);
 
-        member.setDorm(dorm);
+        //when
+        recommendationRepository.delete("1");
 
-        member.setProfile(profile);
-        member.setLifeStyle(lifeStyle);
-        return member;
-    }
+        //then
+        List<Recommendation> find = recommendationRepository.findByMemberId("1");
+        assertThat(find.size()).isEqualTo(0);
 
-    private Member createMember(Profile profile, LifeStyle lifeStyle) {
-        Member member =  new Member();
-        member.setPassword("1234");
-        member.setEmail("1234@naver.com");
-        member.setId("A");
-        member.setDorm(Dormitory.INUI);
-
-        member.setProfile(profile);
-        member.setLifeStyle(lifeStyle);
-        return member;
-    }
-
-    private Profile createProfile(LifeStyle lifeStyle) {
-        Profile profile = new Profile();
-        profile.setLifeStyle(lifeStyle);
-        profile.setImg("www.img.com");
-        profile.setIntroduce("Hello 안녕 ㅎㅇ ");
-        profile.setNickname("Kim");
-        return profile;
     }
 
     private LifeStyle createLifeStyle(int bedTime, int wakeupTime, int sleepHabit, int cleaning,
