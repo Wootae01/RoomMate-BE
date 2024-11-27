@@ -67,7 +67,7 @@ public class WeatherService {
     /*
     * 처음 시작할 때 db에 업데이트
     * */
-    //@EventListener(ApplicationReadyEvent.class)
+    @EventListener(ApplicationReadyEvent.class)
     public void init() {
         String json = apiClient.fetchTodayWeather();
         Map<String, WeatherDto> weatherMap = new HashMap<>();

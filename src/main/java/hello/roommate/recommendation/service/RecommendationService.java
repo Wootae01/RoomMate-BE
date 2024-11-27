@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
@@ -26,9 +25,21 @@ public class RecommendationService {
         return recommendRepository.findByMemberId(memberId);
     }
 
+    //모든 멤버들의 유사도 계산해서 반환
+    public List<RecommendationDto> findLiveRecommendations(String memberId) {
+        List<RecommendationDto> list = getRecommendationDto(memberId);
+        return list;
+    }
+
+    //상위 3명의 멤버만 반환
+    public List<RecommendationDto> findLiveRecommendationsTop3(String memberId) {
+        List<RecommendationDto> list = getRecommendationDto(memberId);
+        return list.subList(0, 3);
+    }
+
     //나와 같은 기숙사인 모든 멤버들의 유사도를 실시간으로 계산하여 리스트로 반환
-    public List<Recommendation> findLiveRecommendations(String memberId) {
-        List<Recommendation> list = new ArrayList<>();
+    private List<RecommendationDto> getRecommendationDto(String memberId) {
+        List<RecommendationDto> list = new ArrayList<>();
         Member currentMember = memberRepository.findById(memberId);
         LifeStyle a = currentMember.getLifeStyle();
         Dormitory dorm = currentMember.getDorm();
@@ -41,13 +52,13 @@ public class RecommendationService {
             LifeStyle b = member.getLifeStyle();
             double score = calCosineSimilarity(a, b);
 
-            Recommendation recommendation = new Recommendation();
-            recommendation.setMember1(currentMember);
-            recommendation.setMember2(member);
-            recommendation.setScore(score);
-            list.add(recommendation);
+            RecommendationDto dto = new RecommendationDto();
+            dto.setNickname(member.getNickname());
+            dto.setScore(Math.round(score*1000)/10.0);
+            dto.setAge(member.getLifeStyle().getAge());
+            list.add(dto);
         }
-        list.sort(Comparator.comparingDouble(Recommendation::getScore).reversed());
+        list.sort(Comparator.comparingDouble(RecommendationDto::getScore).reversed());
         return list;
     }
 

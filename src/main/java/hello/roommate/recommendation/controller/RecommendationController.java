@@ -1,6 +1,7 @@
 package hello.roommate.recommendation.controller;
 
 import hello.roommate.recommendation.domain.Recommendation;
+import hello.roommate.recommendation.service.RecommendationDto;
 import hello.roommate.recommendation.service.RecommendationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
@@ -19,7 +20,7 @@ public class RecommendationController {
     private final RecommendationService service;
 
     @GetMapping("/list/{id}")
-    public List<Recommendation> findLiveRecommendation(@PathVariable String id) {
+    public List<RecommendationDto> findLiveRecommendation(@PathVariable String id) {
         return service.findLiveRecommendations(id);
     }
 }

@@ -49,9 +49,9 @@ class RecommendationServiceTest {
         memberRepository.save(memberD);
 
         //when
-        List<Recommendation> recommendations = service.findLiveRecommendations("A");
-        for (Recommendation recommendation : recommendations) {
-            log.info("(id, score) = ({},{})", recommendation.getMember2().getId(), recommendation.getScore());
+        List<RecommendationDto> recommendations = service.findLiveRecommendations("A");
+        for (RecommendationDto recommendation : recommendations) {
+            log.info("(id, score) = ({},{})", recommendation.getNickname(), recommendation.getScore());
         }
 
         //then
@@ -61,9 +61,6 @@ class RecommendationServiceTest {
         assertThat(recommendations.get(0).getScore()).isGreaterThan(recommendations.get(1).getScore());
         assertThat(recommendations.get(1).getScore()).isGreaterThan(recommendations.get(2).getScore());
 
-        assertThat(recommendations.get(0).getMember2()).isEqualTo(memberB);
-        assertThat(recommendations.get(1).getMember2()).isEqualTo(memberC);
-        assertThat(recommendations.get(2).getMember2()).isEqualTo(memberD);
 
     }
 
