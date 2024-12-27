@@ -77,7 +77,7 @@ public class WeatherApiClient {
         LocalDateTime now = LocalDateTime.now();
         LocalTime time = now.toLocalTime();
         if (time.isBefore(LocalTime.of(2, 11))) {
-            now.minusDays(1);
+            now = now.minusDays(1);
         }
         String baseDate = now.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
         return baseDate;
