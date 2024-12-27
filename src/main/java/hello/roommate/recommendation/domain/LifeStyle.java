@@ -1,15 +1,13 @@
 package hello.roommate.recommendation.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Getter
 @Setter
 @EqualsAndHashCode
 @Entity
+@Table(name = "LIFESTYLE")
 public class LifeStyle {
     @Id @GeneratedValue
     @Column(name = "LIFESTYLE_ID")

@@ -1,13 +1,11 @@
 package hello.roommate;
 
-import hello.roommate.member.repository.MemberRepository;
-import hello.roommate.recommendation.repository.LifeStyleRepository;
+import hello.roommate.member.service.MemberService;
+import hello.roommate.recommendation.service.LifestyleService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @EnableScheduling
@@ -18,4 +16,9 @@ public class RoommateApplication {
 		SpringApplication.run(RoommateApplication.class, args);
 	}
 
+	@Bean
+	@Profile("local")
+	public TestDataInit testDataInit(MemberService memberService, LifestyleService lifestyleService) {
+		return new TestDataInit(lifestyleService, memberService);
+	}
 }
