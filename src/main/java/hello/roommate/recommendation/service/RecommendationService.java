@@ -8,6 +8,7 @@ import hello.roommate.recommendation.domain.Recommendation;
 import hello.roommate.recommendation.repository.RecommendationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -15,6 +16,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RecommendationService {
 
     private final RecommendationRepository recommendRepository;

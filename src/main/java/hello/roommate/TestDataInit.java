@@ -1,22 +1,20 @@
-/*
 package hello.roommate;
 
 import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Member;
-import hello.roommate.member.repository.MemberRepository;
-import hello.roommate.profile.domain.Profile;
-import hello.roommate.profile.repository.ProfileRepository;
+import hello.roommate.member.service.MemberService;
 import hello.roommate.recommendation.domain.LifeStyle;
-import hello.roommate.recommendation.repository.LifeStyleRepository;
+import hello.roommate.recommendation.service.LifestyleService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 
+import java.util.Date;
+
 @RequiredArgsConstructor
 public class TestDataInit {
-    private final LifeStyleRepository lifeStyleRepository;
-    private final ProfileRepository profileRepository;
-    private final MemberRepository memberRepository;
+    private final LifestyleService lifestyleService;
+    private final MemberService memberService;
 
     @EventListener(ApplicationReadyEvent.class)
     public void initData() {
@@ -24,49 +22,31 @@ public class TestDataInit {
         LifeStyle lifeStyleB = createLifeStyle(5, 6, 5, 6, 7, 4, 3, 1, 2, 4, 6, 8, 5, 21, 7);
         LifeStyle lifeStyleC = createLifeStyle(8, 7, 6, 5, 4, 3, 5, 7, 6, 5, 4, 2, 1, 19, 5);
         LifeStyle lifeStyleD = createLifeStyle(4, 5, 4, 3, 2, 1, 6, 7, 8, 5, 3, 6, 7, 22, 8);
-        lifeStyleRepository.save(lifeStyleA);
-        lifeStyleRepository.save(lifeStyleB);
-        lifeStyleRepository.save(lifeStyleC);
-        lifeStyleRepository.save(lifeStyleD);
+        lifestyleService.save(lifeStyleA);
+        lifestyleService.save(lifeStyleB);
+        lifestyleService.save(lifeStyleC);
+        lifestyleService.save(lifeStyleD);
 
-        Profile profileA = createProfile(lifeStyleA);
-        Profile profileB = createProfile(lifeStyleB);
-        Profile profileC = createProfile(lifeStyleC);
-        Profile profileD = createProfile(lifeStyleD);
-        profileRepository.save(profileA);
-        profileRepository.save(profileB);
-        profileRepository.save(profileC);
-        profileRepository.save(profileD);
 
-        Member memberA = createMember("A", "aaaa", "a@naver.com", Dormitory.INUI, profileA, lifeStyleA);
-        Member memberB = createMember("B", "bbbb", "b@naver.com", Dormitory.INUI, profileB, lifeStyleB);
-        Member memberC = createMember("C", "cccc", "c@naver.com", Dormitory.INUI, profileC, lifeStyleC);
-        Member memberD = createMember("D", "dddd", "d@naver.com", Dormitory.INUI, profileD, lifeStyleD);
-        memberRepository.save(memberA);
-        memberRepository.save(memberB);
-        memberRepository.save(memberC);
-        memberRepository.save(memberD);
+        Member memberA = createMember("A", Dormitory.INUI, lifeStyleA, "A", new Date(), "img1","hello");
+        Member memberB = createMember("B", Dormitory.INUI, lifeStyleB, "B", new Date(), "img2", "hello");
+        Member memberC = createMember("C", Dormitory.INUI,  lifeStyleC,"C", new Date(), "img3", "hello");
+        Member memberD = createMember("D", Dormitory.INUI, lifeStyleD, "D", new Date(), "img4", "hello");
+        memberService.save(memberA);
+        memberService.save(memberB);
+        memberService.save(memberC);
+        memberService.save(memberD);
     }
-    private Member createMember(String id, String password, String email, Dormitory dorm, Profile profile, LifeStyle lifeStyle) {
+    private Member createMember(String id, Dormitory dorm, LifeStyle lifeStyle, String nickname, Date timeStamp, String img, String intro) {
         Member member =  new Member();
         member.setId(id);
-        member.setPassword(password);
-        member.setEmail(email);
-
         member.setDorm(dorm);
-
-        member.setProfile(profile);
         member.setLifeStyle(lifeStyle);
+        member.setTimestamp(timeStamp);
+        member.setNickname(nickname);
+        member.setImg(img);
+        member.setIntroduce(intro);
         return member;
-    }
-
-    private Profile createProfile(LifeStyle lifeStyle) {
-        Profile profile = new Profile();
-        profile.setLifeStyle(lifeStyle);
-        profile.setImg("www.img.com");
-        profile.setIntroduce("Hello 안녕 ㅎㅇ ");
-        profile.setNickname("Kim");
-        return profile;
     }
 
     private LifeStyle createLifeStyle(int bedTime, int wakeupTime, int sleepHabit, int cleaning,
@@ -94,4 +74,3 @@ public class TestDataInit {
         return lifeStyle;
     }
 }
-*/
