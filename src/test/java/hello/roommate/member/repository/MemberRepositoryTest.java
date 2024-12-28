@@ -4,34 +4,39 @@ import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Member;
 import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.repository.LifeStyleRepository;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 
-@SpringBootTest
+@DataJpaTest
 @Transactional
 class MemberRepositoryTest {
     @Autowired private MemberRepository memberRepository;
     @Autowired private LifeStyleRepository lifeStyleRepository;
+    @Autowired private EntityManager em;
     @Test
     void save() {
         //given
         LifeStyle lifeStyle = createLifeStyle();
-        lifeStyleRepository.save(lifeStyle);
         Member member = createMember(lifeStyle);
 
         //when
         Member save = memberRepository.save(member);
+        Member find = memberRepository.findById(member.getId()).orElseThrow();
 
         //then
-        assertThat(save).isEqualTo(member);
-        assertThat(save.getLifeStyle()).isEqualTo(member.getLifeStyle());
+        assertThat(save).isEqualTo(find);
+        assertThat(save.getLifeStyle()).isEqualTo(find.getLifeStyle());
     }
 
     @Test
@@ -43,18 +48,18 @@ class MemberRepositoryTest {
         memberRepository.save(member);
 
         //when
-        Member find = memberRepository.findById(member.getId());
+        Member find = memberRepository.findById(member.getId()).orElseThrow();
         assertThat(find).isEqualTo(member);
     }
 
     @Test
     void findByDorm() {
-        Member member1 = createMember("1245", Dormitory.INUI, "abc", new Date(), null);
-        Member member2 = createMember("1345", Dormitory.INUI, "abcd", new Date(), null);
-        Member member3 = createMember("1347", Dormitory.YEJI, "abce", new Date(), null);
-        memberRepository.save(member1);
-        memberRepository.save(member2);
-        memberRepository.save(member3);
+        Member member1 = createMember("1245", Dormitory.INUI, "abc",null);
+        Member member2 = createMember("1345", Dormitory.INUI, "abcd", null);
+        Member member3 = createMember("1347", Dormitory.YEJI, "abce", null);
+        Member save1 = memberRepository.save(member1);
+        Member save2 = memberRepository.save(member2);
+        Member save3 = memberRepository.save(member3);
 
         //when
         List<Member> inui = memberRepository.findByDorm(Dormitory.INUI);
@@ -63,8 +68,8 @@ class MemberRepositoryTest {
         //then
         assertThat(inui.size()).isEqualTo(2);
         assertThat(yeji.size()).isEqualTo(1);
-        assertThat(inui).contains(member1, member2);
-        assertThat(yeji).contains(member3);
+        assertThat(inui).contains(save1, save2);
+        assertThat(yeji).contains(save3);
     }
 
     @Test
@@ -74,20 +79,20 @@ class MemberRepositoryTest {
         memberRepository.save(member);
 
         //when
-        memberRepository.delete(member.getId());
-        Member find = memberRepository.findById(member.getId());
+        memberRepository.deleteById(member.getId());
+        Optional<Member> find = memberRepository.findById(member.getId());
 
         //then
-        assertThat(find).isNull();
+        assertThatThrownBy(() -> find.orElseThrow())
+                .isInstanceOf(NoSuchElementException.class);
     }
 
-    private Member createMember(String id, Dormitory dorm, String nickname, Date time, LifeStyle lifeStyle) {
+    private Member createMember(String id, Dormitory dorm, String nickname, LifeStyle lifeStyle) {
         Member member = new Member();
         member.setId(id);
         member.setDorm(dorm);
         member.setLifeStyle(lifeStyle);
         member.setNickname(nickname);
-        member.setTimestamp(time);
         return member;
     }
     private Member createMember(LifeStyle lifeStyle) {
@@ -96,7 +101,6 @@ class MemberRepositoryTest {
         member.setDorm(Dormitory.INUI);
         member.setLifeStyle(lifeStyle);
         member.setNickname("nickname");
-        member.setTimestamp(new Date());
         return member;
     }
     private LifeStyle createLifeStyle() {

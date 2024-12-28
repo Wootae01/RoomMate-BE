@@ -2,7 +2,7 @@ package hello.roommate.recommendation.service;
 
 import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.repository.LifeStyleRepository;
-import hello.roommate.recommendation.repository.LifeStyleUpdateDto;
+import hello.roommate.recommendation.dto.LifeStyleUpdateDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

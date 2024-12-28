@@ -1,4 +1,4 @@
-package hello.roommate.recommendation.repository;
+package hello.roommate.recommendation.dto;
 
 import lombok.Getter;
 import lombok.Setter;

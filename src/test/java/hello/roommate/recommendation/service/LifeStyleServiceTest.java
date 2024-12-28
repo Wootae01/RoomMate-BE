@@ -1,7 +1,7 @@
 package hello.roommate.recommendation.service;
 
 import hello.roommate.recommendation.domain.LifeStyle;
-import hello.roommate.recommendation.repository.LifeStyleUpdateDto;
+import hello.roommate.recommendation.dto.LifeStyleUpdateDto;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

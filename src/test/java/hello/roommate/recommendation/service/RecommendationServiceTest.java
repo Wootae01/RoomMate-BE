@@ -4,6 +4,7 @@ import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.repository.MemberRepository;
 import hello.roommate.recommendation.domain.LifeStyle;
+import hello.roommate.recommendation.dto.RecommendationDto;
 import hello.roommate.recommendation.repository.LifeStyleRepository;
 import hello.roommate.recommendation.repository.RecommendationRepository;
 import lombok.extern.slf4j.Slf4j;

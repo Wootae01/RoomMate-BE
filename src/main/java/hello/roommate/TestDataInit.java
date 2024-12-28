@@ -28,21 +28,20 @@ public class TestDataInit {
         lifestyleService.save(lifeStyleD);
 
 
-        Member memberA = createMember("A", Dormitory.INUI, lifeStyleA, "A", new Date(), "img1","hello");
-        Member memberB = createMember("B", Dormitory.INUI, lifeStyleB, "B", new Date(), "img2", "hello");
-        Member memberC = createMember("C", Dormitory.INUI,  lifeStyleC,"C", new Date(), "img3", "hello");
-        Member memberD = createMember("D", Dormitory.INUI, lifeStyleD, "D", new Date(), "img4", "hello");
+        Member memberA = createMember("A", Dormitory.INUI, lifeStyleA, "A", "img1","hello");
+        Member memberB = createMember("B", Dormitory.INUI, lifeStyleB, "B", "img2", "hello");
+        Member memberC = createMember("C", Dormitory.INUI,  lifeStyleC,"C", "img3", "hello");
+        Member memberD = createMember("D", Dormitory.INUI, lifeStyleD, "D", "img4", "hello");
         memberService.save(memberA);
         memberService.save(memberB);
         memberService.save(memberC);
         memberService.save(memberD);
     }
-    private Member createMember(String id, Dormitory dorm, LifeStyle lifeStyle, String nickname, Date timeStamp, String img, String intro) {
+    private Member createMember(String id, Dormitory dorm, LifeStyle lifeStyle, String nickname, String img, String intro) {
         Member member =  new Member();
         member.setId(id);
         member.setDorm(dorm);
         member.setLifeStyle(lifeStyle);
-        member.setTimestamp(timeStamp);
         member.setNickname(nickname);
         member.setImg(img);
         member.setIntroduce(intro);

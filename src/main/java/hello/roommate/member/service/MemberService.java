@@ -20,7 +20,7 @@ public class MemberService {
     }
 
     public Member findById(String id) {
-        return repository.findById(id);
+        return repository.findById(id).orElseThrow();
     }
 
     public List<Member> findByDorm(Dormitory dorm) {
@@ -28,6 +28,6 @@ public class MemberService {
     }
 
     public void delete(String id) {
-        repository.delete(id);
+        repository.deleteById(id);
     }
 }

@@ -5,6 +5,7 @@ import hello.roommate.member.domain.Member;
 import hello.roommate.member.repository.MemberRepository;
 import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.domain.Recommendation;
+import hello.roommate.recommendation.dto.RecommendationDto;
 import hello.roommate.recommendation.repository.RecommendationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,7 +43,7 @@ public class RecommendationService {
     //나와 같은 기숙사인 모든 멤버들의 유사도를 실시간으로 계산하여 리스트로 반환
     private List<RecommendationDto> getRecommendationDto(String memberId) {
         List<RecommendationDto> list = new ArrayList<>();
-        Member currentMember = memberRepository.findById(memberId);
+        Member currentMember = memberRepository.findById(memberId).orElseThrow();
         LifeStyle a = currentMember.getLifeStyle();
         Dormitory dorm = currentMember.getDorm();
 
@@ -66,7 +67,7 @@ public class RecommendationService {
 
     //나와 같은 기숙사인 모든 멤버들의 유사도를 계산하여 db에 저장
     public void saveAllRecommendations(String memberId) {
-        Member currentMember = memberRepository.findById(memberId);
+        Member currentMember = memberRepository.findById(memberId).orElseThrow();
         LifeStyle a = currentMember.getLifeStyle();
         Dormitory dorm = currentMember.getDorm();
 

@@ -1,22 +1,17 @@
 package hello.roommate.home.controller;
 
 import hello.roommate.home.domain.Notice;
-import hello.roommate.home.repository.NoticeRepository;
 import hello.roommate.home.repository.WeatherDto;
 import hello.roommate.home.service.NoticeService;
 import hello.roommate.home.service.WeatherService;
-import hello.roommate.recommendation.service.RecommendationDto;
+import hello.roommate.recommendation.dto.RecommendationDto;
 import hello.roommate.recommendation.service.RecommendationService;
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
