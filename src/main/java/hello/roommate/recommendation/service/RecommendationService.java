@@ -85,11 +85,11 @@ public class RecommendationService {
     private double calCosineSimilarity(LifeStyle a, LifeStyle b) {
         int[] vectorA = {a.getBedTime(), a.getWakeupTime(), a.getSleepHabit(), a.getCleaning(), a.getAircon(),
                 a.getHeater(), a.getNoise(), a.getSmoking(), a.getScent(), a.getEating(),
-                a.getRelationship(), a.getHome(), a.getDrinking(), a.getAge(), a.getDormHour()};
+                a.getRelationship(), a.getDrinking(), a.getAge()};
 
         int[] vectorB = {b.getBedTime(), b.getWakeupTime(), b.getSleepHabit(), b.getCleaning(), b.getAircon(),
                 b.getHeater(), b.getNoise(), b.getSmoking(), b.getScent(), b.getEating(),
-                b.getRelationship(), b.getHome(), b.getDrinking(), b.getAge(), b.getDormHour()};
+                b.getRelationship(), b.getDrinking(), b.getAge()};
 
         double dotProduct = 0.0;
 

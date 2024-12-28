@@ -18,10 +18,10 @@ public class TestDataInit {
 
     @EventListener(ApplicationReadyEvent.class)
     public void initData() {
-        LifeStyle lifeStyleA = createLifeStyle(10, 8, 7, 5, 6, 4, 3, 2, 1, 5, 3, 7, 4, 20, 6);
-        LifeStyle lifeStyleB = createLifeStyle(5, 6, 5, 6, 7, 4, 3, 1, 2, 4, 6, 8, 5, 21, 7);
-        LifeStyle lifeStyleC = createLifeStyle(8, 7, 6, 5, 4, 3, 5, 7, 6, 5, 4, 2, 1, 19, 5);
-        LifeStyle lifeStyleD = createLifeStyle(4, 5, 4, 3, 2, 1, 6, 7, 8, 5, 3, 6, 7, 22, 8);
+        LifeStyle lifeStyleA = createLifeStyle(10, 8, 7, 5, 6, 4, 3, 2, 1, 5, 3,4, 20 );
+        LifeStyle lifeStyleB = createLifeStyle(5, 6, 5, 6, 7, 4, 3, 1, 2, 4, 6, 5, 21 );
+        LifeStyle lifeStyleC = createLifeStyle(8, 7, 6, 5, 4, 3, 5, 7, 6, 5, 4, 1, 19 );
+        LifeStyle lifeStyleD = createLifeStyle(4, 5, 4, 3, 2, 1, 6, 7, 8, 5, 3, 7, 22);
         lifestyleService.save(lifeStyleA);
         lifestyleService.save(lifeStyleB);
         lifestyleService.save(lifeStyleC);
@@ -52,7 +52,7 @@ public class TestDataInit {
     private LifeStyle createLifeStyle(int bedTime, int wakeupTime, int sleepHabit, int cleaning,
                                       int aircon, int heater, int noise, int smoking,
                                       int scent, int eating, int relationship,
-                                      int home, int drinking, int age, int dormHour) {
+                                      int drinking, int age) {
 
         LifeStyle lifeStyle = new LifeStyle();
         lifeStyle.setBedTime(bedTime);
@@ -66,10 +66,8 @@ public class TestDataInit {
         lifeStyle.setScent(scent);
         lifeStyle.setEating(eating);
         lifeStyle.setRelationship(relationship);
-        lifeStyle.setHome(home);
         lifeStyle.setDrinking(drinking);
         lifeStyle.setAge(age);
-        lifeStyle.setDormHour(dormHour);
 
         return lifeStyle;
     }

@@ -4,18 +4,15 @@ import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Member;
 import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.repository.LifeStyleRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 @Transactional
@@ -115,10 +112,8 @@ class MemberRepositoryTest {
         lifeStyle.setScent(5);
         lifeStyle.setEating(4);
         lifeStyle.setRelationship(2);
-        lifeStyle.setHome(5);
         lifeStyle.setDrinking(5);
         lifeStyle.setAge(4);
-        lifeStyle.setDormHour(3);
         return lifeStyle;
     }
 }

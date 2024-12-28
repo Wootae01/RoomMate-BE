@@ -25,9 +25,7 @@ public class LifeStyle {
     private int scent;          //향 민감도
     private int eating;         //실내 취식 여부
     private int relationship;   // 관계 발전도
-    private int home;           // 집 가는 주기
     private int drinking;       //음주 빈도
     private int age;            //나이
-    private int dormHour;       //기숙사 거주 시간
 
 }

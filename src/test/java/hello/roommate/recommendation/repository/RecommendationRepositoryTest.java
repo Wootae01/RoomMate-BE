@@ -1,6 +1,5 @@
 package hello.roommate.recommendation.repository;
 
-import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.repository.MemberRepository;
 import hello.roommate.recommendation.domain.LifeStyle;
@@ -21,7 +20,6 @@ import static org.assertj.core.api.Assertions.*;
 @Slf4j
 class RecommendationRepositoryTest {
     @Autowired private MemberRepository memberRepository;
-    @Autowired private LifeStyleRepository lifeStyleRepository;
     @Autowired private RecommendationRepository recommendationRepository;
 
     @Test
@@ -143,10 +141,8 @@ class RecommendationRepositoryTest {
         lifeStyle.setScent(scent);
         lifeStyle.setEating(eating);
         lifeStyle.setRelationship(relationship);
-        lifeStyle.setHome(home);
         lifeStyle.setDrinking(drinking);
         lifeStyle.setAge(age);
-        lifeStyle.setDormHour(dormHour);
 
         return lifeStyle;
     }
@@ -164,10 +160,8 @@ class RecommendationRepositoryTest {
         lifeStyle.setScent(5);
         lifeStyle.setEating(4);
         lifeStyle.setRelationship(2);
-        lifeStyle.setHome(5);
         lifeStyle.setDrinking(5);
         lifeStyle.setAge(4);
-        lifeStyle.setDormHour(3);
         return lifeStyle;
     }
 }
