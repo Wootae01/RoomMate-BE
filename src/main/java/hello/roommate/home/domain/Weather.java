@@ -1,14 +1,23 @@
 package hello.roommate.home.domain;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"fcst_date", "fcst_time" }))
 public class Weather {
+    @Id @GeneratedValue
+    private Long id;
+
+    @Column(name = "fcst_time")
     private String fcstTime; //예측 시간
+
+    @Column(name = "fcst_date")
     private String fcstDate; //예측 날짜
 
     private int tmp; //1시간 기온
@@ -20,4 +29,11 @@ public class Weather {
         this.fcstTime = fcstTime;
     }
 
+    public Weather(String fcstTime, String fcstDate, int tmp, int sky, int pty) {
+        this.fcstTime = fcstTime;
+        this.fcstDate = fcstDate;
+        this.tmp = tmp;
+        this.sky = sky;
+        this.pty = pty;
+    }
 }
