@@ -8,7 +8,10 @@ import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -17,12 +20,13 @@ import java.util.List;
 @Setter
 @EqualsAndHashCode
 @Entity
+@EntityListeners(AuditingEntityListener.class)
 public class Member {
     @Id
     @Column(name = "MEMBER_ID")
     private String id;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "LIFESTYLE_ID")
     private LifeStyle lifeStyle;
 
@@ -34,7 +38,8 @@ public class Member {
     private String img;
 
     @Temporal(TemporalType.TIMESTAMP)
-    private Date timestamp;
+    @CreatedDate
+    private LocalDateTime timestamp;
 
     @Enumerated(EnumType.STRING)
     private Dormitory dorm;

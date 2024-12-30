@@ -1,4 +1,4 @@
-package hello.roommate.recommendation.service;
+package hello.roommate.recommendation.dto;
 
 import lombok.Getter;
 import lombok.Setter;

@@ -1,50 +1,24 @@
 package hello.roommate.recommendation.repository;
 
 import hello.roommate.recommendation.domain.Recommendation;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.TypedQuery;
-import lombok.RequiredArgsConstructor;
-
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.List;
-import java.util.Map;
 
-@Repository
-@RequiredArgsConstructor
-public class RecommendationRepository {
+public interface RecommendationRepository extends JpaRepository<Recommendation, Long> {
 
-    private final EntityManager em;
+    @Query("select r from Recommendation r where r.member1.id =:memberId or r.member2.id =:memberId")
+    List<Recommendation> findByMemberId(@Param("memberId") String memberId);
 
-    public Recommendation save(Recommendation recommendation) {
-        em.persist(recommendation);
-        return recommendation;
-    }
+    @Query("select r from Recommendation r where " +
+            "(r.member1.id = :member1Id and r.member2.id =:member2Id) " +
+            "or (r.member1.id = :member2Id and r.member2.id = :member1Id)")
+    Recommendation findByMember1AnAndMember2(@Param("member1Id")String memeber1Id, @Param("member2Id")String member2Id);
 
-    public List<Recommendation> findByMemberId(String memberId) {
-        return em.createQuery("SELECT r from Recommendation r " +
-                        "WHERE r.member1.id =:memberId OR r.member2.id =:memberId", Recommendation.class)
-                .setParameter("memberId", memberId)
-                .getResultList();
-    }
-
-    public void update(RecommendationUpdateDto updateDto) {
-        Recommendation recommendation = em.createQuery("SELECT r from Recommendation r " +
-                        "WHERE (r.member1.id =:member1Id AND r.member2.id =:member2Id) " +
-                        "OR (r.member2.id =:member1Id AND r.member1.id =:member2Id)", Recommendation.class)
-                .setParameter("member1Id", updateDto.getMember1Id())
-                .setParameter("member2Id", updateDto.getMember2Id())
-                .getSingleResult();
-
-        recommendation.setScore(updateDto.getScore());
-    }
-
-    public void delete(String memberId) {
-        em.createQuery("DELETE FROM Recommendation r WHERE r.member1.id =: memberId OR r.member2.id =:memberId")
-                        .setParameter("memberId", memberId)
-                        .executeUpdate();
-
-    }
+    @Modifying
+    @Query("delete from Recommendation r where r.member1.id =:memberId or r.member2.id =:memberId")
+    void delete(@Param("memberId")String memberId);
 }

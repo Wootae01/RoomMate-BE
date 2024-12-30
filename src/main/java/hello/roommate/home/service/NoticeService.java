@@ -4,12 +4,10 @@ import hello.roommate.home.external.crawler.NoticeCrawler;
 import hello.roommate.home.domain.Notice;
 import hello.roommate.home.repository.NoticeRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor

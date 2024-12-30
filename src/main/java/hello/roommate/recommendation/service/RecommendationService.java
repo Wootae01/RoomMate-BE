@@ -5,6 +5,7 @@ import hello.roommate.member.domain.Member;
 import hello.roommate.member.repository.MemberRepository;
 import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.domain.Recommendation;
+import hello.roommate.recommendation.dto.RecommendationDto;
 import hello.roommate.recommendation.repository.RecommendationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,12 @@ public class RecommendationService {
 
     private final RecommendationRepository recommendRepository;
     private final MemberRepository memberRepository;
+
+    public void update(String member1Id, String member2Id) {
+        Recommendation recommendation = recommendRepository.findByMember1AnAndMember2(member1Id, member2Id);
+        double cal = calCosineSimilarity(recommendation.getMember1().getLifeStyle(), recommendation.getMember2().getLifeStyle());
+        recommendation.setScore(cal);
+    }
 
     //db에 저장되어있는 유사도 계산 결과 반환
     public List<Recommendation> findRecommendationByMemberId(String memberId) {
@@ -42,7 +49,7 @@ public class RecommendationService {
     //나와 같은 기숙사인 모든 멤버들의 유사도를 실시간으로 계산하여 리스트로 반환
     private List<RecommendationDto> getRecommendationDto(String memberId) {
         List<RecommendationDto> list = new ArrayList<>();
-        Member currentMember = memberRepository.findById(memberId);
+        Member currentMember = memberRepository.findById(memberId).orElseThrow();
         LifeStyle a = currentMember.getLifeStyle();
         Dormitory dorm = currentMember.getDorm();
 
@@ -66,7 +73,7 @@ public class RecommendationService {
 
     //나와 같은 기숙사인 모든 멤버들의 유사도를 계산하여 db에 저장
     public void saveAllRecommendations(String memberId) {
-        Member currentMember = memberRepository.findById(memberId);
+        Member currentMember = memberRepository.findById(memberId).orElseThrow();
         LifeStyle a = currentMember.getLifeStyle();
         Dormitory dorm = currentMember.getDorm();
 
@@ -85,11 +92,11 @@ public class RecommendationService {
     private double calCosineSimilarity(LifeStyle a, LifeStyle b) {
         int[] vectorA = {a.getBedTime(), a.getWakeupTime(), a.getSleepHabit(), a.getCleaning(), a.getAircon(),
                 a.getHeater(), a.getNoise(), a.getSmoking(), a.getScent(), a.getEating(),
-                a.getRelationship(), a.getHome(), a.getDrinking(), a.getAge(), a.getDormHour()};
+                a.getRelationship(), a.getDrinking(), a.getAge()};
 
         int[] vectorB = {b.getBedTime(), b.getWakeupTime(), b.getSleepHabit(), b.getCleaning(), b.getAircon(),
                 b.getHeater(), b.getNoise(), b.getSmoking(), b.getScent(), b.getEating(),
-                b.getRelationship(), b.getHome(), b.getDrinking(), b.getAge(), b.getDormHour()};
+                b.getRelationship(), b.getDrinking(), b.getAge()};
 
         double dotProduct = 0.0;
 

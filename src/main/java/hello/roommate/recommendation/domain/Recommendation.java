@@ -16,11 +16,11 @@ public class Recommendation {
     @Column(name = "RECOMMENDATION_ID")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "MEMBER_ID_1")
     private Member member1;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "MEMBER_ID_2")
     private Member member2;
 

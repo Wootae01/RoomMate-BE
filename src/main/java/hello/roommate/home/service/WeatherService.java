@@ -42,7 +42,7 @@ public class WeatherService {
         String baseTime = time.format(DateTimeFormatter.ofPattern("HHmm"));
         String baseDate = date.format(DateTimeFormatter.ofPattern("yyyyMMdd"));
 
-        Weather weather = weatherRepository.findWeatherByDateAndTime(baseDate, baseTime)
+        Weather weather = weatherRepository.findByFcstDateAndFcstTime(baseDate, baseTime)
                 .orElseThrow(() -> new NoSuchElementException("Unable to get weather information"));
         WeatherExtremes extremes = extremesRepository.findByDate(baseDate)
                 .orElseThrow(() -> new NoSuchElementException("Unable to get weatherExtremes information"));
@@ -108,9 +108,9 @@ public class WeatherService {
             WeatherExtremes extremes = new WeatherExtremes(dto.getFcstDate(), dto.getTmn(), dto.getTmx());
 
             Optional<Weather> find = weatherRepository
-                    .findWeatherByDateAndTime(dto.getFcstDate(), dto.getFcstTime());
+                    .findByFcstDateAndFcstTime(dto.getFcstDate(), dto.getFcstTime());
             if (find.isPresent()) {
-                weatherRepository.update(weather);
+                update(weather);
             } else{
                 weatherRepository.save(weather);
             }
@@ -123,6 +123,13 @@ public class WeatherService {
                 extremesRepository.save(extremes);
             }
         }
+    }
+
+    public void update(Weather dto) {
+        Weather weather = weatherRepository.findByFcstDateAndFcstTime(dto.getFcstDate(), dto.getFcstTime()).orElseThrow();
+        weather.setTmp(dto.getTmp());
+        weather.setSky(dto.getSky());
+        weather.setPty(dto.getPty());
     }
 
     private static void setWeatherCategory(String category, WeatherDto weather, Item item) {

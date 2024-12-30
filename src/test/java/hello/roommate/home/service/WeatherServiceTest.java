@@ -1,20 +1,14 @@
 package hello.roommate.home.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import hello.roommate.home.domain.Weather;
 import hello.roommate.home.external.weather.WeatherApiClient;
-import hello.roommate.home.external.weather.WeatherResponse;
 import hello.roommate.home.repository.WeatherDto;
-import hello.roommate.home.repository.WeatherRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static hello.roommate.home.external.weather.WeatherResponse.*;

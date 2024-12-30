@@ -1,4 +1,3 @@
-/*
 package hello.roommate.home.repository;
 
 import hello.roommate.home.domain.Weather;
@@ -14,34 +13,22 @@ import java.util.Optional;
 @SpringBootTest
 class WeatherRepositoryTest {
     @Autowired WeatherRepository repository;
+
     @Test
     void save() {
-        Weather weather = new Weather("20241005", "1700", 20, 0, 0, 24, 15);
+        Weather weather = new Weather("20241005", "1700", 20, 0, 0);
         Weather save = repository.save(weather);
         Assertions.assertThat(save).isEqualTo(weather);
     }
 
     @Test
-    void findByFcstTime() {
-        Weather weather = new Weather("20241005", "1700", 20, 0, 0, 24, 15);
+    void findByFcstDateAndFcstTime() {
+        Weather weather = new Weather("1700", "20241005", 20, 0, 0);
         Weather save = repository.save(weather);
+        Optional<Weather> optional = repository.findByFcstDateAndFcstTime("20241005", "1700");
 
-        Optional<Weather> optional = repository.findWeatherWithExtremesByDateAndTime("20241005", "1700");
         Weather find = optional.orElseThrow();
-
         Assertions.assertThat(find).isEqualTo(save);
     }
 
-    @Test
-    void update() {
-        Weather weather = new Weather("20241005", "1700", 20, 0, 0, 24, 15);
-        Weather save = repository.save(weather);
-        Weather weather2 = new Weather("20241005", "1700", 18, 0, 0, 10, 21);
-        repository.update(weather2);
-
-        Optional<Weather> optional = repository.findWeatherWithExtremesByDateAndTime("20241005","1700");
-        Weather find = optional.orElseThrow();
-        Assertions.assertThat(find).isEqualTo(weather2);
-    }
 }
-*/
