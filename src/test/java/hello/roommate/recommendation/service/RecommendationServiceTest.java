@@ -6,7 +6,6 @@ import hello.roommate.member.repository.MemberRepository;
 import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.dto.RecommendationDto;
 import hello.roommate.recommendation.repository.LifeStyleRepository;
-import hello.roommate.recommendation.repository.RecommendationRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,6 @@ import static org.assertj.core.api.Assertions.*;
 class RecommendationServiceTest {
 
     @Autowired private RecommendationService service;
-    @Autowired private RecommendationRepository recommendationRepository;
     @Autowired private MemberRepository memberRepository;
     @Autowired private LifeStyleRepository lifeStyleRepository;
     @Test

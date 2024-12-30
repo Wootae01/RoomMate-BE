@@ -23,6 +23,12 @@ public class RecommendationService {
     private final RecommendationRepository recommendRepository;
     private final MemberRepository memberRepository;
 
+    public void update(String member1Id, String member2Id) {
+        Recommendation recommendation = recommendRepository.findByMember1AnAndMember2(member1Id, member2Id);
+        double cal = calCosineSimilarity(recommendation.getMember1().getLifeStyle(), recommendation.getMember2().getLifeStyle());
+        recommendation.setScore(cal);
+    }
+
     //db에 저장되어있는 유사도 계산 결과 반환
     public List<Recommendation> findRecommendationByMemberId(String memberId) {
         return recommendRepository.findByMemberId(memberId);
