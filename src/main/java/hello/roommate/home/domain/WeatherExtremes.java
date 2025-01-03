@@ -14,9 +14,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 public class WeatherExtremes {
-    @Id
-    @Column(name = "fcst_date")
-    private String fcstDate;
-    private Float tmn;
-    private Float tmx;
+	@Id
+	@Column(name = "fcst_date")
+	private String fcstDate;
+	private Float tmn;
+	private Float tmx;
 }
