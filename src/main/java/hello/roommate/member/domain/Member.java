@@ -1,20 +1,30 @@
 package hello.roommate.member.domain;
 
-import hello.roommate.member.domain.Dormitory;
-import hello.roommate.recommendation.domain.LifeStyle;
-import hello.roommate.recommendation.domain.Recommendation;
-import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import hello.roommate.recommendation.domain.LifeStyle;
+import hello.roommate.recommendation.domain.Recommendation;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -22,25 +32,28 @@ import java.util.List;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 public class Member {
-    @Id
-    @Column(name = "MEMBER_ID")
-    private String id;
+	@Id
+	@Column(name = "MEMBER_ID")
+	private String id;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "LIFESTYLE_ID")
-    private LifeStyle lifeStyle;
+	@OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinColumn(name = "LIFESTYLE_ID")
+	private LifeStyle lifeStyle;
 
-    @OneToMany(mappedBy = "id")
-    List<Recommendation> recommendations = new ArrayList<>();
+	@OneToMany(mappedBy = "id")
+	private List<Recommendation> recommendations = new ArrayList<>();
 
-    private String nickname;
-    private String introduce;
-    private String img;
+	@OneToMany(mappedBy = "member")
+	private List<MemberChatRoom> memberChatRooms = new ArrayList<>();
 
-    @Temporal(TemporalType.TIMESTAMP)
-    @CreatedDate
-    private LocalDateTime timestamp;
+	private String nickname;
+	private String introduce;
+	private String img;
 
-    @Enumerated(EnumType.STRING)
-    private Dormitory dorm;
+	@Temporal(TemporalType.TIMESTAMP)
+	@CreatedDate
+	private LocalDateTime timestamp;
+
+	@Enumerated(EnumType.STRING)
+	private Dormitory dorm;
 }
