@@ -8,34 +8,40 @@ import org.springframework.stereotype.Controller;
 
 import hello.roommate.chat.domain.ChatRoom;
 import hello.roommate.chat.domain.Message;
+import hello.roommate.chat.dto.MessageDto;
 import hello.roommate.chat.service.ChatService;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class WebSocketController {
 
 	private final ChatService chatService;
 	private final MemberService memberService;
 
 	//메시지 전송
-	@MessageMapping("/room/{roomId}")
-	@SendTo("/topic/{roomId}")
-	public Message sendMessage(String senderId, Long roomId, String content) {
-		ChatRoom room = chatService.findRoomById(roomId);
-		Member sender = memberService.findById(senderId);
-		LocalDateTime now = LocalDateTime.now();
-		Message message = new Message();
-		message.setContent(content);
-		message.setChatRoom(room);
-		message.setSender(sender);
-		message.setSendTime(now);
+	@MessageMapping("/{roomId}")
+	@SendTo("/topic/chatroom/{roomId}")
+	public MessageDto sendMessage(MessageDto messageDto) {
+		Message message = toMessage(messageDto);
+		chatService.save(message);
 
-		Message save = chatService.save(message);
-		room.setUpdatedTime(now);
-		return save;
+		return messageDto;
 	}
 
+	private Message toMessage(MessageDto messageDto) {
+		ChatRoom room = chatService.findRoomById(messageDto.getChatRoomId());
+		Member member = memberService.findById(messageDto.getSenderId());
+
+		Message message = new Message();
+		message.setSendTime(LocalDateTime.now());
+		message.setContent(messageDto.getContent());
+		message.setChatRoom(room);
+		message.setSender(member);
+		return message;
+	}
 }
