@@ -16,6 +16,15 @@ public class NoticeService {
 	private final NoticeRepository repository;
 	private final NoticeCrawler crawler;
 
+	private static boolean isTitlePresent(List<Notice> notices, String title) {
+		for (Notice notice : notices) {
+			if (notice.getTitle().equals(title)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public List<String> findAllTitles() {
 		return repository.findAllTitles();
 	}
@@ -42,14 +51,5 @@ public class NoticeService {
 				repository.deleteByTitle(title);
 			}
 		}
-	}
-
-	private static boolean isTitlePresent(List<Notice> notices, String title) {
-		for (Notice notice : notices) {
-			if (notice.getTitle().equals(title)) {
-				return true;
-			}
-		}
-		return false;
 	}
 }

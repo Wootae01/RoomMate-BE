@@ -26,7 +26,7 @@ public class LifestyleService {
 	public void update(Long id, LifeStyleUpdateDto dto) {
 		LifeStyle lifeStyle = repository.findById(id).orElseThrow();
 		lifeStyle.setAge(dto.getAge());
-		lifeStyle.setAircon(dto.getAircon());
+		lifeStyle.setCooling(dto.getCooling());
 		lifeStyle.setBedTime(dto.getBedTime());
 		lifeStyle.setCleaning(dto.getCleaning());
 		lifeStyle.setDrinking(dto.getDrinking());
@@ -38,7 +38,6 @@ public class LifestyleService {
 		lifeStyle.setSleepHabit(dto.getSleepHabit());
 		lifeStyle.setSmoking(dto.getSmoking());
 		lifeStyle.setWakeupTime(dto.getWakeupTime());
-
 	}
 
 	public void delete(Long id) {

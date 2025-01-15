@@ -7,6 +7,18 @@ import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.service.MemberService;
 import hello.roommate.recommendation.domain.LifeStyle;
+import hello.roommate.recommendation.domain.enums.BedTime;
+import hello.roommate.recommendation.domain.enums.Cleaning;
+import hello.roommate.recommendation.domain.enums.Cooling;
+import hello.roommate.recommendation.domain.enums.Drinking;
+import hello.roommate.recommendation.domain.enums.Eating;
+import hello.roommate.recommendation.domain.enums.Heating;
+import hello.roommate.recommendation.domain.enums.Noise;
+import hello.roommate.recommendation.domain.enums.Relationship;
+import hello.roommate.recommendation.domain.enums.Scent;
+import hello.roommate.recommendation.domain.enums.SleepHabit;
+import hello.roommate.recommendation.domain.enums.Smoking;
+import hello.roommate.recommendation.domain.enums.WakeUpTime;
 import hello.roommate.recommendation.service.LifestyleService;
 import lombok.RequiredArgsConstructor;
 
@@ -17,10 +29,22 @@ public class TestDataInit {
 
 	@EventListener(ApplicationReadyEvent.class)
 	public void initData() {
-		LifeStyle lifeStyleA = createLifeStyle(10, 8, 7, 5, 6, 4, 3, 2, 1, 5, 3, 4, 20);
-		LifeStyle lifeStyleB = createLifeStyle(5, 6, 5, 6, 7, 4, 3, 1, 2, 4, 6, 5, 21);
-		LifeStyle lifeStyleC = createLifeStyle(8, 7, 6, 5, 4, 3, 5, 7, 6, 5, 4, 1, 19);
-		LifeStyle lifeStyleD = createLifeStyle(4, 5, 4, 3, 2, 1, 6, 7, 8, 5, 3, 7, 22);
+		LifeStyle lifeStyleA = createLifeStyle(BedTime.AT_22, WakeUpTime.AT_08,
+			SleepHabit.YES, Cleaning.TOGETHER, Cooling.FROM_21_TO_23,
+			Heating.FROM_21_TO_23, Noise.SPEAKERS, Smoking.NON_SMOKER,
+			Scent.NORMAL, Eating.SNACK, Relationship.NORMAL, Drinking.FREQUENT, 20);
+		LifeStyle lifeStyleB = createLifeStyle(BedTime.AT_22, WakeUpTime.AT_07,
+			SleepHabit.YES, Cleaning.TOGETHER, Cooling.FROM_21_TO_23,
+			Heating.FROM_21_TO_23, Noise.FLEXIBLE, Smoking.NON_SMOKER,
+			Scent.NORMAL, Eating.SNACK, Relationship.NORMAL, Drinking.FREQUENT, 27);
+		LifeStyle lifeStyleC = createLifeStyle(BedTime.AT_22, WakeUpTime.AT_08,
+			SleepHabit.YES, Cleaning.TOGETHER, Cooling.ABOVE_27,
+			Heating.FROM_21_TO_23, Noise.SPEAKERS, Smoking.NON_SMOKER,
+			Scent.SENSITIVE, Eating.SNACK, Relationship.NORMAL, Drinking.FREQUENT, 23);
+		LifeStyle lifeStyleD = createLifeStyle(BedTime.AT_23, WakeUpTime.AT_08,
+			SleepHabit.YES, Cleaning.INDIVIDUAL, Cooling.FROM_24_TO_26,
+			Heating.FROM_21_TO_23, Noise.EARPHONES, Smoking.SMOKER,
+			Scent.NOT_SENSITIVE, Eating.SNACK, Relationship.INVISIBLE, Drinking.FREQUENT, 22);
 		lifestyleService.save(lifeStyleA);
 		lifestyleService.save(lifeStyleB);
 		lifestyleService.save(lifeStyleC);
@@ -48,18 +72,18 @@ public class TestDataInit {
 		return member;
 	}
 
-	private LifeStyle createLifeStyle(int bedTime, int wakeupTime, int sleepHabit, int cleaning,
-		int aircon, int heater, int noise, int smoking,
-		int scent, int eating, int relationship,
-		int drinking, int age) {
+	private LifeStyle createLifeStyle(BedTime bedTime, WakeUpTime wakeupTime, SleepHabit sleepHabit, Cleaning cleaning,
+		Cooling cooling, Heating heating, Noise noise, Smoking smoking,
+		Scent scent, Eating eating, Relationship relationship,
+		Drinking drinking, int age) {
 
 		LifeStyle lifeStyle = new LifeStyle();
 		lifeStyle.setBedTime(bedTime);
 		lifeStyle.setWakeupTime(wakeupTime);
 		lifeStyle.setSleepHabit(sleepHabit);
 		lifeStyle.setCleaning(cleaning);
-		lifeStyle.setAircon(aircon);
-		lifeStyle.setHeater(heater);
+		lifeStyle.setCooling(cooling);
+		lifeStyle.setHeater(heating);
 		lifeStyle.setNoise(noise);
 		lifeStyle.setSmoking(smoking);
 		lifeStyle.setScent(scent);

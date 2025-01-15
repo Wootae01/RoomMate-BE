@@ -20,6 +20,16 @@ public class WeatherApiClient {
 	@Value("${weather.serviceKey}")
 	private String serviceKey;
 
+	//날씨 api 요청 후 json 응답 반환
+	private static String getResponse(URI uri) {
+		RestClient restClient = RestClient.create();
+		String response = restClient.get()
+			.uri(uri)
+			.retrieve()
+			.body(String.class);
+		return response;
+	}
+
 	//하루 날씨를 가져옴
 	public String fetchTodayWeather() {
 		WeatherRequestParam param
@@ -38,16 +48,6 @@ public class WeatherApiClient {
 
 		URI uri = getUri(param);
 		String response = getResponse(uri);
-		return response;
-	}
-
-	//날씨 api 요청 후 json 응답 반환
-	private static String getResponse(URI uri) {
-		RestClient restClient = RestClient.create();
-		String response = restClient.get()
-			.uri(uri)
-			.retrieve()
-			.body(String.class);
 		return response;
 	}
 

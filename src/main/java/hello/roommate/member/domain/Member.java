@@ -8,7 +8,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import hello.roommate.recommendation.domain.LifeStyle;
-import hello.roommate.recommendation.domain.Recommendation;
+import hello.roommate.recommendation.domain.Preference;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,11 +40,11 @@ public class Member {
 	@JoinColumn(name = "LIFESTYLE_ID")
 	private LifeStyle lifeStyle;
 
-	@OneToMany(mappedBy = "id")
-	private List<Recommendation> recommendations = new ArrayList<>();
-
 	@OneToMany(mappedBy = "member")
 	private List<MemberChatRoom> memberChatRooms = new ArrayList<>();
+
+	@OneToMany(mappedBy = "member")
+	private List<Preference> preference = new ArrayList<>();
 
 	private String nickname;
 	private String introduce;

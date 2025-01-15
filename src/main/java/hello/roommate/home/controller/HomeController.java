@@ -14,8 +14,6 @@ import hello.roommate.home.domain.Notice;
 import hello.roommate.home.repository.WeatherDto;
 import hello.roommate.home.service.NoticeService;
 import hello.roommate.home.service.WeatherService;
-import hello.roommate.recommendation.dto.RecommendationDto;
-import hello.roommate.recommendation.service.RecommendationService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -26,7 +24,6 @@ public class HomeController {
 
 	private final NoticeService noticeService;
 	private final WeatherService weatherService;
-	private final RecommendationService recommendationService;
 
 	@GetMapping("/notice")
 	public ResponseEntity<List<String>> allNotice() {
@@ -44,8 +41,4 @@ public class HomeController {
 		return weatherService.getCurrentWeather();
 	}
 
-	@GetMapping("/rank/{id}")
-	public List<RecommendationDto> getRank(@PathVariable String id) {
-		return recommendationService.findLiveRecommendationsTop3(id);
-	}
 }
