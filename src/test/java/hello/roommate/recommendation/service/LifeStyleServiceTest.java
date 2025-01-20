@@ -1,116 +1,165 @@
 package hello.roommate.recommendation.service;
 
-import hello.roommate.recommendation.domain.LifeStyle;
-import hello.roommate.recommendation.dto.LifeStyleUpdateDto;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.NoSuchElementException;
+import hello.roommate.member.domain.Dormitory;
+import hello.roommate.member.domain.Member;
+import hello.roommate.member.service.MemberService;
+import hello.roommate.recommendation.domain.LifeStyle;
+import hello.roommate.recommendation.domain.Option;
+import hello.roommate.recommendation.domain.enums.BedTime;
+import hello.roommate.recommendation.domain.enums.Category;
+import hello.roommate.recommendation.dto.LifeStyleDto;
+import lombok.extern.slf4j.Slf4j;
 
 @Transactional
 @SpringBootTest
+@Slf4j
 class LifeStyleServiceTest {
+	@Autowired
+	LifestyleService lifeStyleService;
+	@Autowired
+	OptionService optionService;
 
-    @Autowired
-    LifestyleService service;
-    @Test
-    void save() {
-        //given
-        LifeStyle lifeStyle = createLifeStyle();
+	@Autowired
+	MemberService memberService;
 
-        //when
-        LifeStyle save = service.save(lifeStyle);
+	@Test
+	void save() {
+		Member member = new Member("1234", "abc", "in", "img34", 21, Dormitory.INUI);
+		memberService.save(member);
+		Option option = optionService.findByCategoryAndValue(Category.BED_TIME, BedTime.AT_02.name());
+		LifeStyle lifeStyle = new LifeStyle(option, member);
 
-        //then
-        Assertions.assertThat(save).isEqualTo(lifeStyle);
-    }
+		LifeStyle save = lifeStyleService.save(lifeStyle);
 
-    @Test
-    void findById() {
-        //given
-        LifeStyle lifeStyle = createLifeStyle();
+		Assertions.assertThat(save).isEqualTo(lifeStyle);
+	}
 
-        LifeStyle save = service.save(lifeStyle);
-        LifeStyle find = service.findById(save.getId());
-        //then
-        Assertions.assertThat(find).isEqualTo(save);
+	@Test
+	void findById() {
+		//given
+		LifeStyle lifeStyle = createLifeStyle();
 
-    }
+		LifeStyle save = lifeStyleService.save(lifeStyle);
+		LifeStyle find = lifeStyleService.findById(save.getId());
+		//then
+		Assertions.assertThat(find).isEqualTo(save);
 
-    @Test
-    void update() {
-        //given
-        LifeStyle lifeStyle = createLifeStyle();
+	}
 
-        service.save(lifeStyle);
-        LifeStyleUpdateDto dto = new LifeStyleUpdateDto();
-        dto.setBedTime(5);
-        dto.setWakeupTime(3);
-        dto.setSleepHabit(4);
-        dto.setCleaning(2);
-        dto.setAircon(1);
-        dto.setHeater(3);
-        dto.setNoise(2);
-        dto.setSmoking(4);
-        dto.setScent(2);
-        dto.setEating(4);
-        dto.setRelationship(2);
-        dto.setDrinking(5);
-        dto.setAge(4);
+	@Test
+	void update() {
+		Member member = memberService.findById("id1");
+		LifeStyleDto dto = new LifeStyleDto(
+			"AT_22, AT_23",
+			"AT_06, AT_07",
+			"FROM_24_TO_26, BELOW_20",
+			"FROM_21_TO_23, ABOVE_27",
+			"INDIVIDUAL",
+			"EARPHONES",
+			"NORMAL",
+			"OCCASIONAL",
+			"NORMAL",
+			"FOOD",
+			"SIMPLE",
+			"YES",
+			"NON_SMOKER"
+		);
 
-        //when
-        service.update(lifeStyle.getId(), dto);
-        LifeStyle update = service.findById(lifeStyle.getId());
+		lifeStyleService.update("id1", dto);
+		List<LifeStyle> lifeStyles = lifeStyleService.findByMemberId("id1");
+		Map<Category, List<LifeStyle>> collect = lifeStyles.stream()
+			.collect(Collectors.groupingBy(lifeStyle -> lifeStyle.getOption().getCategory()));
 
-        //then
-        Assertions.assertThat(update.getBedTime()).isEqualTo(dto.getBedTime());
-        Assertions.assertThat(update.getWakeupTime()).isEqualTo(dto.getWakeupTime());
-        Assertions.assertThat(update.getSleepHabit()).isEqualTo(dto.getSleepHabit());
-        Assertions.assertThat(update.getCleaning()).isEqualTo(dto.getCleaning());
-        Assertions.assertThat(update.getAircon()).isEqualTo(dto.getAircon());
-        Assertions.assertThat(update.getHeater()).isEqualTo(dto.getHeater());
-        Assertions.assertThat(update.getNoise()).isEqualTo(dto.getNoise());
-        Assertions.assertThat(update.getSmoking()).isEqualTo(dto.getSmoking());
-        Assertions.assertThat(update.getScent()).isEqualTo(dto.getScent());
-        Assertions.assertThat(update.getEating()).isEqualTo(dto.getEating());
-        Assertions.assertThat(update.getRelationship()).isEqualTo(dto.getRelationship());
-        Assertions.assertThat(update.getDrinking()).isEqualTo(dto.getDrinking());
-        Assertions.assertThat(update.getAge()).isEqualTo(dto.getAge());
+		// Assert that BED_TIME category contains expected options
+		Assertions.assertThat(collect.get(Category.BED_TIME))
+			.extracting(lifeStyle -> lifeStyle.getOption().getOptionValue())
+			.containsExactlyInAnyOrder("AT_22", "AT_23");
 
-    }
+		// Assert that WAKEUP_TIME category contains expected options
+		Assertions.assertThat(collect.get(Category.WAKEUP_TIME))
+			.extracting(lifeStyle -> lifeStyle.getOption().getOptionValue())
+			.containsExactlyInAnyOrder("AT_06", "AT_07");
 
-    @Test
-    void delete() {
-        //given
-        LifeStyle lifeStyle = createLifeStyle();
-        service.save(lifeStyle);
+		// Assert that COOLING category contains expected options
+		Assertions.assertThat(collect.get(Category.COOLING))
+			.extracting(lifeStyle -> lifeStyle.getOption().getOptionValue())
+			.containsExactlyInAnyOrder("FROM_24_TO_26", "BELOW_20");
 
-        //when
-        service.delete(lifeStyle.getId());
+		// Assert that HEATING category contains expected options
+		Assertions.assertThat(collect.get(Category.HEATING))
+			.extracting(lifeStyle -> lifeStyle.getOption().getOptionValue())
+			.containsExactlyInAnyOrder("FROM_21_TO_23", "ABOVE_27");
 
-        // then
-        Assertions.assertThatThrownBy(() -> service.findById(lifeStyle.getId()))
-                .isInstanceOf(NoSuchElementException.class);
-    }
+		// Assert that CLEANING category matches the expected single option
+		Assertions.assertThat(collect.get(Category.CLEANING))
+			.extracting(lifeStyle -> lifeStyle.getOption().getOptionValue())
+			.containsExactly("INDIVIDUAL");
 
-    private LifeStyle createLifeStyle() {
-        LifeStyle lifeStyle = new LifeStyle();
-        lifeStyle.setBedTime(5);
-        lifeStyle.setWakeupTime(5);
-        lifeStyle.setSleepHabit(4);
-        lifeStyle.setCleaning(4);
-        lifeStyle.setAircon(4);
-        lifeStyle.setHeater(3);
-        lifeStyle.setNoise(2);
-        lifeStyle.setSmoking(4);
-        lifeStyle.setScent(5);
-        lifeStyle.setEating(4);
-        lifeStyle.setRelationship(2);
-        lifeStyle.setDrinking(5);
-        lifeStyle.setAge(4);
-        return lifeStyle;
-    }
+		// Assert other single-option categories
+		Assertions.assertThat(collect.get(Category.NOISE))
+			.extracting(lifeStyle -> lifeStyle.getOption().getOptionValue())
+			.containsExactly("EARPHONES");
+
+		Assertions.assertThat(collect.get(Category.SCENT))
+			.extracting(lifeStyle -> lifeStyle.getOption().getOptionValue())
+			.containsExactly("NORMAL");
+
+		Assertions.assertThat(collect.get(Category.DRINKING))
+			.extracting(lifeStyle -> lifeStyle.getOption().getOptionValue())
+			.containsExactly("OCCASIONAL");
+
+		Assertions.assertThat(collect.get(Category.RELATIONSHIP))
+			.extracting(lifeStyle -> lifeStyle.getOption().getOptionValue())
+			.containsExactly("NORMAL");
+
+		Assertions.assertThat(collect.get(Category.EATING))
+			.extracting(lifeStyle -> lifeStyle.getOption().getOptionValue())
+			.containsExactly("FOOD");
+
+		Assertions.assertThat(collect.get(Category.INDOOR_CALL))
+			.extracting(lifeStyle -> lifeStyle.getOption().getOptionValue())
+			.containsExactly("SIMPLE");
+
+		Assertions.assertThat(collect.get(Category.SLEEP_HABIT))
+			.extracting(lifeStyle -> lifeStyle.getOption().getOptionValue())
+			.containsExactly("YES");
+
+		Assertions.assertThat(collect.get(Category.SMOKING))
+			.extracting(lifeStyle -> lifeStyle.getOption().getOptionValue())
+			.containsExactly("NON_SMOKER");
+
+	}
+
+	@Test
+	void delete() {
+		//given
+		LifeStyle lifeStyle = createLifeStyle();
+		lifeStyleService.save(lifeStyle);
+
+		//when
+		lifeStyleService.delete(lifeStyle.getId());
+
+		// then
+		Assertions.assertThatThrownBy(() -> lifeStyleService.findById(lifeStyle.getId()))
+			.isInstanceOf(NoSuchElementException.class);
+	}
+
+	private LifeStyle createLifeStyle() {
+		Member member = new Member("1234", "abc", "in", "img34", 21, Dormitory.INUI);
+		memberService.save(member);
+		Option option = optionService.findByCategoryAndValue(Category.BED_TIME, BedTime.AT_02.name());
+		return new LifeStyle(option, member);
+	}
+
 }
