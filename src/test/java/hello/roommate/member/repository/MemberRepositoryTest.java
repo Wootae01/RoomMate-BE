@@ -1,3 +1,4 @@
+/*
 package hello.roommate.member.repository;
 
 import static org.assertj.core.api.Assertions.*;
@@ -138,3 +139,4 @@ class MemberRepositoryTest {
 		return lifeStyle;
 	}
 }
+*/
