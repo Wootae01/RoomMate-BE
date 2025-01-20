@@ -13,6 +13,6 @@ public enum Category {
 	RELATIONSHIP,
 	DRINKING,
 	AGE,
-	IndoorCall,
+	INDOOR_CALL,
 	SLEEP_HABIT
 }
