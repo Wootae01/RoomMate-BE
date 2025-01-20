@@ -49,4 +49,38 @@ public class MemberService {
 	public void delete(String id) {
 		repository.deleteById(id);
 	}
+
+	/*public List<Member> searchMember(String id) {
+		Member member = memberRepository.findById(id).orElseThrow();
+		LifeStyle lifeStyle = member.getLifeStyle();
+		List<Preference> preference = member.getPreference();
+		PreferenceSearchCond cond = preferenceToCond(preference);
+
+		return memberRepository.search(member, cond);
+	}
+
+	private PreferenceSearchCond preferenceToCond(List<Preference> preferences) {
+		PreferenceSearchCond cond = new PreferenceSearchCond();
+
+		for (Preference preference : preferences) {
+			switch (preference.getCategory()) {
+				case BED_TIME -> cond.addBedTime(BedTime.valueOf(preference.getOptionValue()));
+				case WAKEUP_TIME -> cond.addWakeUpTime(WakeUpTime.valueOf(preference.getOptionValue()));
+				case CLEANING -> cond.addCleaning(Cleaning.valueOf(preference.getOptionValue()));
+				case COOLING -> cond.addCooling(Cooling.valueOf(preference.getOptionValue()));
+				case HEATING -> cond.addHeating(Heating.valueOf(preference.getOptionValue()));
+				case NOISE -> cond.addNoise(Noise.valueOf(preference.getOptionValue()));
+				case SMOKING -> cond.setSmoking(Smoking.valueOf(preference.getOptionValue()));
+				case SCENT -> cond.addScent(Scent.valueOf(preference.getOptionValue()));
+				case EATING -> cond.addEating(Eating.valueOf(preference.getOptionValue()));
+				case RELATIONSHIP -> cond.addRelationship(Relationship.valueOf(preference.getOptionValue()));
+				case DRINKING -> cond.addDrinking(Drinking.valueOf(preference.getOptionValue()));
+				case AGE -> cond.addAge(Integer.valueOf(preference.getOptionValue()));
+				case IndoorCall -> cond.addIndoorCall(IndoorCall.valueOf(preference.getOptionValue()));
+				case SLEEP_HABIT -> cond.setSleepHabit(SleepHabit.valueOf(preference.getOptionValue()));
+				default -> throw new IllegalArgumentException("Unknown category: " + preference.getCategory());
+			}
+		}
+		return cond;
+	}*/
 }
