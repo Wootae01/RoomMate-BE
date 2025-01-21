@@ -1,11 +1,7 @@
 package hello.roommate.recommendation.domain;
 
 import hello.roommate.recommendation.domain.enums.Category;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +15,7 @@ public class Option {
 	@Id
 	@GeneratedValue
 	@Setter(AccessLevel.NONE)
+	@Column(name = "OPTION_ID")
 	private Long id;
 
 	@Enumerated(EnumType.STRING)
