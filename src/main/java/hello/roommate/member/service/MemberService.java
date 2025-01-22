@@ -12,6 +12,10 @@ import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.domain.MemberChatRoom;
 import hello.roommate.member.repository.MemberRepository;
+import hello.roommate.recommendation.domain.Option;
+import hello.roommate.recommendation.domain.enums.Category;
+import hello.roommate.recommendation.dto.OptionDto;
+import hello.roommate.recommendation.repository.OptionRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -20,10 +24,10 @@ import lombok.RequiredArgsConstructor;
 public class MemberService {
 	private final MemberRepository repository;
 	private final MemberRepository memberRepository;
+	private final OptionRepository optionRepository;
 
 	public Member save(Member member) {
-		repository.save(member);
-		return member;
+		return repository.save(member);
 	}
 
 	public Member findById(String id) {
@@ -50,37 +54,22 @@ public class MemberService {
 		repository.deleteById(id);
 	}
 
-	/*public List<Member> searchMember(String id) {
-		Member member = memberRepository.findById(id).orElseThrow();
-		LifeStyle lifeStyle = member.getLifeStyle();
-		List<Preference> preference = member.getPreference();
-		PreferenceSearchCond cond = preferenceToCond(preference);
-
-		return memberRepository.search(member, cond);
+	public List<Member> recommendMembers(String myId) {
+		return repository.recommendMembers(myId);
 	}
 
-	private PreferenceSearchCond preferenceToCond(List<Preference> preferences) {
-		PreferenceSearchCond cond = new PreferenceSearchCond();
-
-		for (Preference preference : preferences) {
-			switch (preference.getCategory()) {
-				case BED_TIME -> cond.addBedTime(BedTime.valueOf(preference.getOptionValue()));
-				case WAKEUP_TIME -> cond.addWakeUpTime(WakeUpTime.valueOf(preference.getOptionValue()));
-				case CLEANING -> cond.addCleaning(Cleaning.valueOf(preference.getOptionValue()));
-				case COOLING -> cond.addCooling(Cooling.valueOf(preference.getOptionValue()));
-				case HEATING -> cond.addHeating(Heating.valueOf(preference.getOptionValue()));
-				case NOISE -> cond.addNoise(Noise.valueOf(preference.getOptionValue()));
-				case SMOKING -> cond.setSmoking(Smoking.valueOf(preference.getOptionValue()));
-				case SCENT -> cond.addScent(Scent.valueOf(preference.getOptionValue()));
-				case EATING -> cond.addEating(Eating.valueOf(preference.getOptionValue()));
-				case RELATIONSHIP -> cond.addRelationship(Relationship.valueOf(preference.getOptionValue()));
-				case DRINKING -> cond.addDrinking(Drinking.valueOf(preference.getOptionValue()));
-				case AGE -> cond.addAge(Integer.valueOf(preference.getOptionValue()));
-				case IndoorCall -> cond.addIndoorCall(IndoorCall.valueOf(preference.getOptionValue()));
-				case SLEEP_HABIT -> cond.setSleepHabit(SleepHabit.valueOf(preference.getOptionValue()));
-				default -> throw new IllegalArgumentException("Unknown category: " + preference.getCategory());
-			}
+	public List<Member> searchMembers(String myId, List<OptionDto> dto) {
+		if (dto.isEmpty() || dto == null) {
+			return repository.recommendMembers(myId);
 		}
-		return cond;
-	}*/
+
+		List<Long> cond = new ArrayList<>();
+		for (OptionDto optionDto : dto) {
+			Category category = Category.valueOf(optionDto.getCategory());
+			String optionValue = optionDto.getOption_value();
+			Option option = optionRepository.findByCategoryAndValue(category, optionValue);
+			cond.add(option.getId());
+		}
+		return memberRepository.searchMembers(myId, cond);
+	}
 }

@@ -6,11 +6,13 @@ import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
+import hello.roommate.init.OptionInit;
 import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.service.MemberService;
@@ -33,12 +35,21 @@ class LifeStyleServiceTest {
 	@Autowired
 	MemberService memberService;
 
+	@Autowired
+	OptionInit optionInit;
+
+	@BeforeEach()
+	void init() {
+		optionInit.createOption();
+	}
+
 	@Test
 	void save() {
+
 		Member member = new Member("1234", "abc", "in", "img34", 21, Dormitory.INUI);
 		memberService.save(member);
 		Option option = optionService.findByCategoryAndValue(Category.BED_TIME, BedTime.AT_02.name());
-		LifeStyle lifeStyle = new LifeStyle(option, member);
+		LifeStyle lifeStyle = new LifeStyle(member, option);
 
 		LifeStyle save = lifeStyleService.save(lifeStyle);
 
@@ -59,7 +70,9 @@ class LifeStyleServiceTest {
 
 	@Test
 	void update() {
-		Member member = memberService.findById("id1");
+
+		LifeStyle lifeStyle1 = createLifeStyle();
+		lifeStyleService.save(lifeStyle1);
 		LifeStyleDto dto = new LifeStyleDto(
 			"AT_22, AT_23",
 			"AT_06, AT_07",
@@ -76,8 +89,8 @@ class LifeStyleServiceTest {
 			"NON_SMOKER"
 		);
 
-		lifeStyleService.update("id1", dto);
-		List<LifeStyle> lifeStyles = lifeStyleService.findByMemberId("id1");
+		lifeStyleService.update("1234", dto);
+		List<LifeStyle> lifeStyles = lifeStyleService.findByMemberId("1234");
 		Map<Category, List<LifeStyle>> collect = lifeStyles.stream()
 			.collect(Collectors.groupingBy(lifeStyle -> lifeStyle.getOption().getCategory()));
 
@@ -159,7 +172,7 @@ class LifeStyleServiceTest {
 		Member member = new Member("1234", "abc", "in", "img34", 21, Dormitory.INUI);
 		memberService.save(member);
 		Option option = optionService.findByCategoryAndValue(Category.BED_TIME, BedTime.AT_02.name());
-		return new LifeStyle(option, member);
+		return new LifeStyle(member, option);
 	}
 
 }

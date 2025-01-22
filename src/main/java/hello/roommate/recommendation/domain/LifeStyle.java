@@ -38,8 +38,12 @@ public class LifeStyle {
 	@JoinColumn(name = "MEMBER_ID")
 	private Member member;
 
-	public LifeStyle(Option option, Member member) {
+	public LifeStyle(Member member, Option option) {
 		this.option = option;
+		this.member = member;
+	}
+
+	public LifeStyle(Member member) {
 		this.member = member;
 	}
 }

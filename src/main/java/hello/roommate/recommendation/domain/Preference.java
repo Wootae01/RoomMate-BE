@@ -34,7 +34,7 @@ public class Preference {
 	@JoinColumn(name = "MEMBER_ID")
 	private Member member;
 
-	public Preference(Option option, Member member) {
+	public Preference(Member member, Option option) {
 		this.option = option;
 		this.member = member;
 	}

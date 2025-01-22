@@ -34,7 +34,7 @@ public class LifeStyleInit {
 		for (Member member : members) {
 			List<Option> selected = selectOption(options);
 			for (Option option : selected) {
-				LifeStyle lifeStyle = new LifeStyle(option, member);
+				LifeStyle lifeStyle = new LifeStyle(member, option);
 				lifeStyles.add(lifeStyle);
 
 			}

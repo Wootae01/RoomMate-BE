@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -40,6 +41,10 @@ public class LifestyleService {
 		return lifeStyleRepository.findByMemberId(memberId);
 	}
 
+	public void saveAll(List<LifeStyle> lifeStyles) {
+		lifeStyleRepository.saveAll(lifeStyles);
+	}
+
 	public void update(String memberId, LifeStyleDto dto) {
 
 		List<LifeStyle> lifeStyles = lifeStyleRepository.findByMemberId(memberId);
@@ -64,31 +69,31 @@ public class LifestyleService {
 		}
 
 		if (dto.getNoise() != null) {
-			updateLifeStyle(Category.NOISE, lifeStyles, dto.getNoise());
+			updateLifeStyle(member, Category.NOISE, lifeStyles, dto.getNoise());
 		}
 		if (dto.getIndoorCall() != null) {
-			updateLifeStyle(Category.INDOOR_CALL, lifeStyles, dto.getIndoorCall());
+			updateLifeStyle(member, Category.INDOOR_CALL, lifeStyles, dto.getIndoorCall());
 		}
 		if (dto.getScent() != null) {
-			updateLifeStyle(Category.SCENT, lifeStyles, dto.getScent());
+			updateLifeStyle(member, Category.SCENT, lifeStyles, dto.getScent());
 		}
 		if (dto.getDrinking() != null) {
-			updateLifeStyle(Category.DRINKING, lifeStyles, dto.getDrinking());
+			updateLifeStyle(member, Category.DRINKING, lifeStyles, dto.getDrinking());
 		}
 		if (dto.getEating() != null) {
-			updateLifeStyle(Category.EATING, lifeStyles, dto.getEating());
+			updateLifeStyle(member, Category.EATING, lifeStyles, dto.getEating());
 		}
 		if (dto.getCleaning() != null) {
-			updateLifeStyle(Category.CLEANING, lifeStyles, dto.getCleaning());
+			updateLifeStyle(member, Category.CLEANING, lifeStyles, dto.getCleaning());
 		}
 		if (dto.getRelationship() != null) {
-			updateLifeStyle(Category.RELATIONSHIP, lifeStyles, dto.getRelationship());
+			updateLifeStyle(member, Category.RELATIONSHIP, lifeStyles, dto.getRelationship());
 		}
 		if (dto.getSleepHabit() != null) {
-			updateLifeStyle(Category.SLEEP_HABIT, lifeStyles, dto.getSleepHabit());
+			updateLifeStyle(member, Category.SLEEP_HABIT, lifeStyles, dto.getSleepHabit());
 		}
 		if (dto.getSmoking() != null) {
-			updateLifeStyle(Category.SMOKING, lifeStyles, dto.getSmoking());
+			updateLifeStyle(member, Category.SMOKING, lifeStyles, dto.getSmoking());
 		}
 
 		if (!update.isEmpty()) {
@@ -96,18 +101,24 @@ public class LifestyleService {
 		}
 	}
 
-	private void updateLifeStyle(Category category, List<LifeStyle> lifeStyles, String dto) {
+	private void updateLifeStyle(Member member, Category category, List<LifeStyle> lifeStyles, String dto) {
 		Option option = optionRepository.findByCategoryAndValue(category, dto);
-		LifeStyle lifeStyle = lifeStyles.stream().filter(l -> l.getOption().getCategory().equals(category))
-			.findFirst().orElseThrow();
-		lifeStyle.setOption(option);
+		Optional<LifeStyle> optional = lifeStyles.stream().filter(l -> l.getOption().getCategory().equals(category))
+			.findFirst();
+		if (optional.isEmpty()) {
+			LifeStyle lifeStyle = new LifeStyle(member, option);
+			lifeStyleRepository.save(lifeStyle);
+		} else {
+			optional.get().setOption(option);
+		}
+
 	}
 
 	private void addUpdateLifeStyle(Member member, Category category, List<String> dto, List<LifeStyle> update) {
 		lifeStyleRepository.deleteByMemberAndOption(member.getId(), category);
 		for (String optionValue : dto) {
 			Option option = optionRepository.findByCategoryAndValue(category, optionValue);
-			update.add(new LifeStyle(option, member));
+			update.add(new LifeStyle(member, option));
 		}
 	}
 

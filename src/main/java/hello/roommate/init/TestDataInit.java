@@ -11,6 +11,7 @@ public class TestDataInit {
 	private final MemberInit memberInit;
 	private final LifeStyleInit lifeStyleInit;
 	private final PreferenceInit preferenceInit;
+
 	@EventListener(ApplicationReadyEvent.class)
 	public void initData() {
 		optionInit.createOption();

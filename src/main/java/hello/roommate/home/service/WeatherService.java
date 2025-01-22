@@ -53,6 +53,7 @@ public class WeatherService {
 			}
 		} catch (JsonProcessingException e) {
 			log.info("json parsing not possible");
+			log.info("json={}", json);
 			throw new RuntimeException(e);
 		}
 	}
