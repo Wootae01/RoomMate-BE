@@ -35,6 +35,10 @@ public class PreferenceService {
 		return preferenceRepository.findByMemberId(memberId);
 	}
 
+	public void saveAll(List<Preference> preferences) {
+		preferenceRepository.saveAll(preferences);
+	}
+
 	public void update(String memberId, PreferenceDto dto) {
 		List<Preference> preferences = preferenceRepository.findByMemberId(memberId);
 		Member member = memberRepository.findById(memberId)
@@ -101,7 +105,7 @@ public class PreferenceService {
 		preferenceRepository.deleteByMemberAndOption(member.getId(), category);
 		for (String optionValue : dto) {
 			Option option = optionRepository.findByCategoryAndValue(category, optionValue);
-			update.add(new Preference(option, member));
+			update.add(new Preference(member, option));
 		}
 	}
 }
