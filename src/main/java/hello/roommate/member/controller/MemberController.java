@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import hello.roommate.chat.domain.ChatRoom;
 import hello.roommate.member.domain.Member;
@@ -15,7 +16,7 @@ import hello.roommate.member.service.MemberService;
 import hello.roommate.recommendation.dto.OptionDto;
 import lombok.RequiredArgsConstructor;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/members")
 public class MemberController {
