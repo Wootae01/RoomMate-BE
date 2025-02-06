@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import hello.roommate.init.OptionInit;
 import hello.roommate.member.domain.Dormitory;
+import hello.roommate.member.domain.Gender;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.service.MemberService;
 import hello.roommate.recommendation.domain.LifeStyle;
@@ -46,7 +47,7 @@ class LifeStyleServiceTest {
 	@Test
 	void save() {
 
-		Member member = new Member("1234", "abc", "in", "img34", 21, Dormitory.INUI);
+		Member member = new Member("1234", "abc", "in", "img34", 21, Dormitory.INUI, Gender.MALE);
 		memberService.save(member);
 		Option option = optionService.findByCategoryAndValue(Category.BED_TIME, BedTime.AT_02.name());
 		LifeStyle lifeStyle = new LifeStyle(member, option);
@@ -169,7 +170,7 @@ class LifeStyleServiceTest {
 	}
 
 	private LifeStyle createLifeStyle() {
-		Member member = new Member("1234", "abc", "in", "img34", 21, Dormitory.INUI);
+		Member member = new Member("1234", "abc", "in", "img34", 21, Dormitory.INUI, Gender.MALE);
 		memberService.save(member);
 		Option option = optionService.findByCategoryAndValue(Category.BED_TIME, BedTime.AT_02.name());
 		return new LifeStyle(member, option);

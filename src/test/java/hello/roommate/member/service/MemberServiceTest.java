@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import hello.roommate.init.OptionInit;
 import hello.roommate.member.domain.Dormitory;
+import hello.roommate.member.domain.Gender;
 import hello.roommate.member.domain.Member;
 import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.domain.Option;
@@ -46,8 +47,8 @@ class MemberServiceTest {
 	@Test
 	void recommendMembers() {
 		//given
-		Member member1 = new Member("id1", "A", "hi", "img1", 21, Dormitory.INUI);
-		Member member2 = new Member("id2", "B", "hi", "img2", 23, Dormitory.INUI);
+		Member member1 = new Member("id1", "A", "hi", "img1", 21, Dormitory.INUI, Gender.MALE);
+		Member member2 = new Member("id2", "B", "hi", "img2", 23, Dormitory.INUI, Gender.MALE);
 
 		Option bedTime_22 = optionService.findByCategoryAndValue(Category.BED_TIME, BedTime.AT_22.name());
 		Option bedTime_23 = optionService.findByCategoryAndValue(Category.BED_TIME, BedTime.AT_23.name());
@@ -71,8 +72,8 @@ class MemberServiceTest {
 	@Test
 	void searchMembers() {
 		//given
-		Member member1 = new Member("id1", "A", "hi", "img1", 21, Dormitory.INUI);
-		Member member2 = new Member("id2", "B", "hi", "img2", 23, Dormitory.INUI);
+		Member member1 = new Member("id1", "A", "hi", "img1", 21, Dormitory.INUI, Gender.MALE);
+		Member member2 = new Member("id2", "B", "hi", "img2", 23, Dormitory.INUI, Gender.MALE);
 
 		Option bedTime_22 = optionService.findByCategoryAndValue(Category.BED_TIME, BedTime.AT_22.name());
 		Option bedTime_23 = optionService.findByCategoryAndValue(Category.BED_TIME, BedTime.AT_23.name());
