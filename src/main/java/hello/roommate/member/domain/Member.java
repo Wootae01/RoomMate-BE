@@ -42,6 +42,9 @@ public class Member {
 	@Enumerated(EnumType.STRING)
 	private Dormitory dorm;
 
+	@Enumerated(EnumType.STRING)
+	private Gender gender;
+
 	@OneToMany(mappedBy = "member")
 	private List<LifeStyle> lifeStyle;
 
@@ -55,12 +58,13 @@ public class Member {
 	@CreatedDate
 	private LocalDateTime timestamp;
 
-	public Member(String id, String nickname, String introduce, String img, int age, Dormitory dorm) {
+	public Member(String id, String nickname, String introduce, String img, int age, Dormitory dorm, Gender gender) {
 		this.id = id;
 		this.nickname = nickname;
 		this.introduce = introduce;
 		this.img = img;
 		this.age = age;
 		this.dorm = dorm;
+		this.gender = gender;
 	}
 }
