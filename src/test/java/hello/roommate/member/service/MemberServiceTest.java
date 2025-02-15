@@ -47,8 +47,8 @@ class MemberServiceTest {
 	@Test
 	void recommendMembers() {
 		//given
-		Member member1 = new Member("id1", "A", "hi", "img1", 21, Dormitory.INUI, Gender.MALE);
-		Member member2 = new Member("id2", "B", "hi", "img2", 23, Dormitory.INUI, Gender.MALE);
+		Member member1 = new Member(1L, "A", "hi", "img1", 21, Dormitory.INUI, Gender.MALE);
+		Member member2 = new Member(2L, "B", "hi", "img2", 23, Dormitory.INUI, Gender.MALE);
 
 		Option bedTime_22 = optionService.findByCategoryAndValue(Category.BED_TIME, BedTime.AT_22.name());
 		Option bedTime_23 = optionService.findByCategoryAndValue(Category.BED_TIME, BedTime.AT_23.name());
@@ -65,15 +65,15 @@ class MemberServiceTest {
 		Preference preference = new Preference(save1, bedTime_23);
 		preferenceService.save(preference);
 
-		List<Member> recommended1 = memberService.recommendMembers("id1");
+		List<Member> recommended1 = memberService.recommendMembers(1L);
 		Assertions.assertThat(recommended1).contains(save2);
 	}
 
 	@Test
 	void searchMembers() {
 		//given
-		Member member1 = new Member("id1", "A", "hi", "img1", 21, Dormitory.INUI, Gender.MALE);
-		Member member2 = new Member("id2", "B", "hi", "img2", 23, Dormitory.INUI, Gender.MALE);
+		Member member1 = new Member(1L, "A", "hi", "img1", 21, Dormitory.INUI, Gender.MALE);
+		Member member2 = new Member(2L, "B", "hi", "img2", 23, Dormitory.INUI, Gender.MALE);
 
 		Option bedTime_22 = optionService.findByCategoryAndValue(Category.BED_TIME, BedTime.AT_22.name());
 		Option bedTime_23 = optionService.findByCategoryAndValue(Category.BED_TIME, BedTime.AT_23.name());
@@ -92,7 +92,7 @@ class MemberServiceTest {
 
 		OptionDto optionDto = new OptionDto(Category.BED_TIME.name(), BedTime.AT_23.name());
 		List<OptionDto> list = List.of(optionDto);
-		List<Member> recommended1 = memberService.searchMembers("id1", list);
+		List<Member> recommended1 = memberService.searchMembers(1L, list);
 
 		Assertions.assertThat(recommended1).contains(save2);
 	}

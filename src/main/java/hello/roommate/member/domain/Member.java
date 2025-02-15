@@ -32,7 +32,7 @@ import lombok.Setter;
 public class Member {
 	@Id
 	@Column(name = "MEMBER_ID")
-	private String id;
+	private Long id;
 
 	private String nickname;
 	private String introduce;
@@ -58,7 +58,7 @@ public class Member {
 	@CreatedDate
 	private LocalDateTime timestamp;
 
-	public Member(String id, String nickname, String introduce, String img, int age, Dormitory dorm, Gender gender) {
+	public Member(Long id, String nickname, String introduce, String img, int age, Dormitory dorm, Gender gender) {
 		this.id = id;
 		this.nickname = nickname;
 		this.introduce = introduce;

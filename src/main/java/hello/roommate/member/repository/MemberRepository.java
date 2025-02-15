@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Member;
 
-public interface MemberRepository extends JpaRepository<Member, String> {
+public interface MemberRepository extends JpaRepository<Member, Long> {
 
 	List<Member> findByDorm(Dormitory dormitory);
 
@@ -43,7 +43,7 @@ public interface MemberRepository extends JpaRepository<Member, String> {
 		    )
 		    and m.id <> :myId
 		""")
-	List<Member> recommendMembers(@Param("myId") String myId);
+	List<Member> recommendMembers(@Param("myId") Long myId);
 
 	@Query(value = """
 		    select m
@@ -54,7 +54,7 @@ public interface MemberRepository extends JpaRepository<Member, String> {
 		        select m2.dorm from Member m2 where m2.id = :myId
 		    )
 		    and (
-		        ls.option.id in :cond  
+		        ls.option.id in :cond
 		    )
 		    and (
 		        p.option.id in (
@@ -64,6 +64,6 @@ public interface MemberRepository extends JpaRepository<Member, String> {
 		    )
 		    and m.id <> :myId
 		""")
-	List<Member> searchMembers(@Param("myId") String myId, @Param("cond") List<Long> cond);
+	List<Member> searchMembers(@Param("myId") Long myId, @Param("cond") List<Long> cond);
 
 }

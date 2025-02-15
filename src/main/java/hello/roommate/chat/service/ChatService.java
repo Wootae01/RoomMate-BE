@@ -30,7 +30,7 @@ public class ChatService {
 	}
 
 	//새로운 채팅방 만듬
-	public ChatRoom createChatRoom(String member1Id, String member2Id) {
+	public ChatRoom createChatRoom(Long member1Id, Long member2Id) {
 		Member member1 = memberRepository.findById(member1Id)
 			.orElseThrow(() -> new NoSuchElementException("id dose not exist"));
 		Member member2 = memberRepository.findById(member2Id)

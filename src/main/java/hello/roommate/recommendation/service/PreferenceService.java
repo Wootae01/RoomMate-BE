@@ -31,7 +31,7 @@ public class PreferenceService {
 		return preferenceRepository.save(preference);
 	}
 
-	public List<Preference> findByMemberId(String memberId) {
+	public List<Preference> findByMemberId(Long memberId) {
 		return preferenceRepository.findByMemberId(memberId);
 	}
 
@@ -39,7 +39,7 @@ public class PreferenceService {
 		preferenceRepository.saveAll(preferences);
 	}
 
-	public void update(String memberId, PreferenceDto dto) {
+	public void update(Long memberId, PreferenceDto dto) {
 		List<Preference> preferences = preferenceRepository.findByMemberId(memberId);
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new NoSuchElementException("Invalid Id"));

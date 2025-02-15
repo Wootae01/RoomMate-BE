@@ -23,17 +23,17 @@ public class MemberController {
 	private final MemberService memberSevice;
 
 	@GetMapping("/{memberId}/chatrooms")
-	public List<ChatRoom> findAllChatRooms(@PathVariable String memberId) {
+	public List<ChatRoom> findAllChatRooms(@PathVariable Long memberId) {
 		return memberSevice.findAllChatRooms(memberId);
 	}
 
 	@GetMapping("/{memberId}/recommendation")
-	public List<Member> recommendMembers(@PathVariable String memberId) {
+	public List<Member> recommendMembers(@PathVariable Long memberId) {
 		return memberSevice.recommendMembers(memberId);
 	}
 
 	@PostMapping("/{memberId}/recommendation")
-	public List<Member> searchMembers(@PathVariable String memberId, @RequestBody List<OptionDto> optionDto) {
+	public List<Member> searchMembers(@PathVariable Long memberId, @RequestBody List<OptionDto> optionDto) {
 		return memberSevice.searchMembers(memberId, optionDto);
 	}
 }

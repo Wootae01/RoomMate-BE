@@ -37,7 +37,7 @@ public class LifestyleService {
 		return lifeStyleRepository.findById(id).orElseThrow();
 	}
 
-	public List<LifeStyle> findByMemberId(String memberId) {
+	public List<LifeStyle> findByMemberId(Long memberId) {
 		return lifeStyleRepository.findByMemberId(memberId);
 	}
 
@@ -45,7 +45,7 @@ public class LifestyleService {
 		lifeStyleRepository.saveAll(lifeStyles);
 	}
 
-	public void update(String memberId, LifeStyleDto dto) {
+	public void update(Long memberId, LifeStyleDto dto) {
 
 		List<LifeStyle> lifeStyles = lifeStyleRepository.findByMemberId(memberId);
 		Member member = memberRepository.findById(memberId)

@@ -30,11 +30,11 @@ public class MemberService {
 		return repository.save(member);
 	}
 
-	public Member findById(String id) {
+	public Member findById(Long id) {
 		return repository.findById(id).orElseThrow();
 	}
 
-	public List<ChatRoom> findAllChatRooms(String memberId) {
+	public List<ChatRoom> findAllChatRooms(Long memberId) {
 		Member member = memberRepository.findById(memberId).orElseThrow();
 		List<MemberChatRoom> memberChatRooms = member.getMemberChatRooms();
 		List<ChatRoom> chatRooms = new ArrayList<>();
@@ -50,15 +50,15 @@ public class MemberService {
 		return repository.findByDorm(dorm);
 	}
 
-	public void delete(String id) {
+	public void delete(Long id) {
 		repository.deleteById(id);
 	}
 
-	public List<Member> recommendMembers(String myId) {
+	public List<Member> recommendMembers(Long myId) {
 		return repository.recommendMembers(myId);
 	}
 
-	public List<Member> searchMembers(String myId, List<OptionDto> dto) {
+	public List<Member> searchMembers(Long myId, List<OptionDto> dto) {
 		if (dto.isEmpty() || dto == null) {
 			return repository.recommendMembers(myId);
 		}
