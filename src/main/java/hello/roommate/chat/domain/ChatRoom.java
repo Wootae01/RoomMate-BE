@@ -30,9 +30,6 @@ public class ChatRoom {
 	@OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
 	private List<MemberChatRoom> memberChatRooms = new ArrayList<>();
 
-	@Temporal(TemporalType.TIMESTAMP)
-	@Column(name = "updated_time")
-	private LocalDateTime updatedTime;
 
 	public void addMemberChatRooms(MemberChatRoom memberChatRoom) {
 		memberChatRooms.add(memberChatRoom);
