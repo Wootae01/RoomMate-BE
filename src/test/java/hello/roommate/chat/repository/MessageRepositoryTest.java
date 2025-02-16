@@ -26,8 +26,8 @@ class MessageRepositoryTest {
     void findFirstByChatRoomIdOrderBySendTimeDesc() throws InterruptedException {
         Member memberA = new Member();
         Member memberB = new Member();
-        memberA.setId("A");
-        memberB.setId("B");
+        memberA.setId(1L);
+        memberB.setId(2L);
         Member saveA = memberRepository.save(memberA);
         Member saveB = memberRepository.save(memberB);
         ChatRoom chatRoom = new ChatRoom();
