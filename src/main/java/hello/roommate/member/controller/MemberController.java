@@ -36,7 +36,7 @@ public class MemberController {
 	* 4. dto로 변환
 	* */
 	@GetMapping("/{memberId}/chatrooms")
-	public List<ChatRoomDTO> findAllChatRooms(@PathVariable String memberId) {
+	public List<ChatRoomDTO> findAllChatRooms(@PathVariable Long memberId) {
 		List<ChatRoomDTO> result =  new ArrayList<>();
 		List<ChatRoom> chatRooms = memberSevice.findAllChatRooms(memberId);
 
@@ -63,12 +63,12 @@ public class MemberController {
 	}
 
 	@GetMapping("/{memberId}/recommendation")
-	public List<Member> recommendMembers(@PathVariable String memberId) {
+	public List<Member> recommendMembers(@PathVariable Long memberId) {
 		return memberSevice.recommendMembers(memberId);
 	}
 
 	@PostMapping("/{memberId}/recommendation")
-	public List<Member> searchMembers(@PathVariable String memberId, @RequestBody List<OptionDto> optionDto) {
+	public List<Member> searchMembers(@PathVariable Long memberId, @RequestBody List<OptionDto> optionDto) {
 		return memberSevice.searchMembers(memberId, optionDto);
 	}
 }

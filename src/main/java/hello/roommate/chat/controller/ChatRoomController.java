@@ -27,7 +27,7 @@ public class ChatRoomController {
 
 	//채팅방 생성 후 id 반환
 	@PostMapping("/chatroom")
-	public ResponseEntity<Map<String, Object>> createChatRoom(String member1Id, String member2Id) {
+	public ResponseEntity<Map<String, Object>> createChatRoom(Long member1Id, Long member2Id) {
 		ChatRoom chatRoom = chatService.createChatRoom(member1Id, member2Id);
 		Map<String, Object> response = Map.of("chat_room_id", chatRoom.getId());
 		return new ResponseEntity<>(response, HttpStatus.OK);

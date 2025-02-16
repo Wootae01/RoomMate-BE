@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MessageDTO {
-	private String senderId;
+	private Long senderId;
 	private Long chatRoomId;
 	private String content;
 	private LocalDateTime sendTime;

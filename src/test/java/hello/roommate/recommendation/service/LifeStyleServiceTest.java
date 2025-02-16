@@ -47,7 +47,7 @@ class LifeStyleServiceTest {
 	@Test
 	void save() {
 
-		Member member = new Member("1234", "abc", "in", "img34", 21, Dormitory.INUI, Gender.MALE);
+		Member member = new Member(1L, "abc", "in", "img34", 21, Dormitory.INUI, Gender.MALE);
 		memberService.save(member);
 		Option option = optionService.findByCategoryAndValue(Category.BED_TIME, BedTime.AT_02.name());
 		LifeStyle lifeStyle = new LifeStyle(member, option);
@@ -90,8 +90,8 @@ class LifeStyleServiceTest {
 			"NON_SMOKER"
 		);
 
-		lifeStyleService.update("1234", dto);
-		List<LifeStyle> lifeStyles = lifeStyleService.findByMemberId("1234");
+		lifeStyleService.update(1L, dto);
+		List<LifeStyle> lifeStyles = lifeStyleService.findByMemberId(1L);
 		Map<Category, List<LifeStyle>> collect = lifeStyles.stream()
 			.collect(Collectors.groupingBy(lifeStyle -> lifeStyle.getOption().getCategory()));
 
@@ -170,7 +170,7 @@ class LifeStyleServiceTest {
 	}
 
 	private LifeStyle createLifeStyle() {
-		Member member = new Member("1234", "abc", "in", "img34", 21, Dormitory.INUI, Gender.MALE);
+		Member member = new Member(1L, "abc", "in", "img34", 21, Dormitory.INUI, Gender.MALE);
 		memberService.save(member);
 		Option option = optionService.findByCategoryAndValue(Category.BED_TIME, BedTime.AT_02.name());
 		return new LifeStyle(member, option);

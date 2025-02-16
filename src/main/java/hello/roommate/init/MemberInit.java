@@ -19,11 +19,11 @@ public class MemberInit {
 	public void createMember() {
 		if (memberRepository.count() == 0) {
 			List<Member> list = Arrays.asList(
-				new Member("id1", "A", "hi", "img1", 21, Dormitory.INUI, Gender.MALE),
-				new Member("id2", "B", "hi", "img2", 23, Dormitory.INUI, Gender.MALE),
-				new Member("id3", "C", "hi", "img3", 24, Dormitory.INUI, Gender.MALE),
-				new Member("id4", "D", "hi", "img4", 25, Dormitory.INUI, Gender.MALE),
-				new Member("id5", "E", "hi", "img5", 21, Dormitory.YEJI, Gender.FEMALE)
+				new Member(1L, "A", "hi", "img1", 21, Dormitory.INUI, Gender.MALE),
+				new Member(2L, "B", "hi2", "img2", 23, Dormitory.INUI, Gender.MALE),
+				new Member(3L, "C", "hi3", "img3", 24, Dormitory.INUI, Gender.MALE),
+				new Member(4L, "D", "hi4", "img4", 25, Dormitory.INUI, Gender.MALE),
+				new Member(5L, "E", "hi5", "img5", 21, Dormitory.YEJI, Gender.FEMALE)
 			);
 
 			memberRepository.saveAll(list);

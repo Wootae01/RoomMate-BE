@@ -57,6 +57,7 @@ public class LifeStyleInit {
 			})
 			.filter(Objects::nonNull)
 			.toList();
+
 		return selectOption;
 	}
 }
