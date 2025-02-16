@@ -1,6 +1,5 @@
 package hello.roommate.chat.service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -19,9 +18,8 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class ChatService {
+public class ChatRoomService {
 	private final ChatRoomRepository chatRoomRepository;
-	private final MessageRepository messageRepository;
 	private final MemberRepository memberRepository;
 
 	//특정 채팅방 찾기
@@ -42,22 +40,9 @@ public class ChatService {
 		memberChatRoom2.setMember(member2);
 
 		ChatRoom chatRoom = new ChatRoom();
-		chatRoom.setUpdatedTime(LocalDateTime.now());
 		chatRoom.addMemberChatRooms(memberChatRoom1);
 		chatRoom.addMemberChatRooms(memberChatRoom2);
 		return chatRoomRepository.save(chatRoom);
 	}
 
-	//해당 채팅 방의 모든 메시지 내용 반환
-	public List<Message> findAllByChatRoomId(Long chatRoomId) {
-		return messageRepository.findAllByChatRoomId(chatRoomId);
-	}
-
-	//해당 채팅방의 가장 최근 메시지 반환
-
-	//메시지 저장
-	public Message save(Message message) {
-		messageRepository.save(message);
-		return message;
-	}
 }

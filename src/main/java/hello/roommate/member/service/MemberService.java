@@ -42,7 +42,6 @@ public class MemberService {
 			chatRooms.add(memberChatRoom.getChatRoom());
 		}
 
-		Collections.sort(chatRooms, (c1, c2) -> c2.getUpdatedTime().compareTo(c1.getUpdatedTime()));
 		return chatRooms;
 	}
 
