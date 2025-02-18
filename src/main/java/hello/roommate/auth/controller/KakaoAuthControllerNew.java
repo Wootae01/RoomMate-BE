@@ -13,15 +13,18 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import ch.qos.logback.core.boolex.EvaluationException;
 import hello.roommate.auth.service.KakaoAuthService;
 import hello.roommate.member.domain.Member;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 // 엑세스 토큰을 이용해 회원번호를 가져오고, Member_ID에 회원번호를 Set하여 DB에 저장.
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*") //임시로 설정
+@Slf4j
 public class KakaoAuthControllerNew {
 
 	private final KakaoAuthService kakaoAuthService;
@@ -29,13 +32,9 @@ public class KakaoAuthControllerNew {
 
 	@PostMapping("/kakao/callback")
 	public ResponseEntity<Map<String, Object>> kakaoCallback(@RequestBody Map<String, String> request) {
-		String code = request.get("code");
-		System.out.println("받은 인가 코드: " + code);
-
-		// 프론트에서 넘겨받은 인가코드로 액세스 토큰 요청
-		String accessToken = getAccessTokenFromKakao(code);	    // 아래에 있음
-
-		System.out.println("카카오 액세스 토큰: " + accessToken);
+		log.info("카카오 액세스토큰{}", request);
+		String accessToken = request.get("accessToken");
+		log.info("카카오 액세스 토큰: {}", accessToken);
 
 		// 액세스 토큰을 이용해 카카오 사용자 정보 : 회원번호 가져오기
 		Long kakaoId = kakaoAuthService.getKakaoUserId(accessToken);

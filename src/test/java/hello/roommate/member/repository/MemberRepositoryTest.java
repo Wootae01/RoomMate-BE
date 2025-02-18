@@ -23,7 +23,7 @@ class MemberRepositoryTest {
 	private MemberRepository memberRepository;
 	@Test
 	void save() {
-        Member member = createMember("1245", Dormitory.INUI, "abc");
+        Member member = createMember(1L, Dormitory.INUI, "abc");
 
 		//when
 		Member save = memberRepository.save(member);
@@ -36,7 +36,7 @@ class MemberRepositoryTest {
 	@Test
 	void findById() {
 		//given
-        Member member = createMember("1245", Dormitory.INUI, "abc");
+        Member member = createMember(1L, Dormitory.INUI, "abc");
         Member save = memberRepository.save(member);
 
         //when
@@ -46,9 +46,9 @@ class MemberRepositoryTest {
 
 	@Test
 	void findByDorm() {
-		Member member1 = createMember("1245", Dormitory.INUI, "abc");
-		Member member2 = createMember("1345", Dormitory.INUI, "abcd");
-		Member member3 = createMember("1347", Dormitory.YEJI, "abce");
+		Member member1 = createMember(1L, Dormitory.INUI, "abc");
+		Member member2 = createMember(2L, Dormitory.INUI, "abcd");
+		Member member3 = createMember(3L, Dormitory.YEJI, "abce");
 		Member save1 = memberRepository.save(member1);
 		Member save2 = memberRepository.save(member2);
 		Member save3 = memberRepository.save(member3);
@@ -67,7 +67,7 @@ class MemberRepositoryTest {
 	@Test
 	void delete() {
 		//given
-        Member member = createMember("1245", Dormitory.INUI, "abc");
+        Member member = createMember(1L, Dormitory.INUI, "abc");
 		memberRepository.save(member);
 
 		//when
@@ -84,7 +84,7 @@ class MemberRepositoryTest {
 
     }
 
-	private Member createMember(String id, Dormitory dorm, String nickname) {
+	private Member createMember(Long id, Dormitory dorm, String nickname) {
 		Member member = new Member();
 		member.setId(id);
 		member.setDorm(dorm);
