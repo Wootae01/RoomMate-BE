@@ -1,12 +1,6 @@
 package hello.roommate.auth.service;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-import org.springframework.stereotype.Service;
-
 import hello.roommate.auth.dto.SignUpDTO;
-import hello.roommate.member.domain.Gender;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.repository.MemberRepository;
 import hello.roommate.recommendation.domain.LifeStyle;
@@ -16,56 +10,60 @@ import hello.roommate.recommendation.repository.LifeStyleRepository;
 import hello.roommate.recommendation.repository.OptionRepository;
 import hello.roommate.recommendation.repository.PreferenceRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class SignUpService {
 
-	private final MemberRepository memberRepository;
-	private final OptionRepository optionRepository;
-	private final LifeStyleRepository lifeStyleRepository;
-	private final PreferenceRepository preferenceRepository;
+    private final MemberRepository memberRepository;
+    private final OptionRepository optionRepository;
+    private final LifeStyleRepository lifeStyleRepository;
+    private final PreferenceRepository preferenceRepository;
 
-	public void registerMember(SignUpDTO request) {
-		// 가입되어있는 회원인지 조회
-		Member member = memberRepository.findById(request.getUserId())
-			.orElseThrow(() -> new RuntimeException("회원 정보를 찾을 수 없습니다."));
+    public void registerMember(SignUpDTO request) {
+        // 가입되어있는 회원인지 조회
+        Member member = memberRepository.findById(request.getUserId())
+                .orElseThrow(() -> new RuntimeException("회원 정보를 찾을 수 없습니다."));
 
-		// 회원 정보 저장
-		member.setNickname(request.getNickname());
-		member.setGender(request.getGender());
-		member.setAge(request.getAge());
-		member.setDorm(request.getDormitory());
+        // 회원 정보 저장
+        member.setNickname(request.getNickname());
+        member.setGender(request.getGender());
+        member.setAge(request.getAge());
+        member.setDorm(request.getDormitory());
 
-		// 4. 업데이트된 Member 저장
-		member = memberRepository.save(member);
+        // 4. 업데이트된 Member 저장
+        member = memberRepository.save(member);
 
-		// 3. LifeStyle 및 Preference 저장
-		saveLifeStyle(member, request.getLifeStyle());
-		savePreference(member, request.getPreference());
+        // 3. LifeStyle 및 Preference 저장
+        saveLifeStyle(member, request.getLifeStyle());
+        savePreference(member, request.getPreference());
 
-	}
+    }
 
-	private void saveLifeStyle(Member member, List<Long> optionIds) {
-		List<Option> options = optionRepository.findAllById(optionIds);
+    private void saveLifeStyle(Member member, List<Long> optionIds) {
+        List<Option> options = optionRepository.findAllById(optionIds);
 
-		List<LifeStyle> lifeStyles = options.stream()
-			.map(option -> new LifeStyle(member, option))
-			.collect(Collectors.toList());
+        List<LifeStyle> lifeStyles = options.stream()
+                .map(option -> new LifeStyle(member, option))
+                .collect(Collectors.toList());
 
-		lifeStyleRepository.saveAll(lifeStyles);
-	}
+        lifeStyleRepository.saveAll(lifeStyles);
+    }
 
-	private void savePreference(Member member, List<Long> optionIds) {
-		List<Option> options = optionRepository.findAllById(optionIds);
+    private void savePreference(Member member, List<Long> optionIds) {
+        List<Option> options = optionRepository.findAllById(optionIds);
 
-		List<Preference> preferences = options.stream()
-			.map(option -> new Preference(member, option))
-			.collect(Collectors.toList());
+        List<Preference> preferences = options.stream()
+                .map(option -> new Preference(member, option))
+                .collect(Collectors.toList());
 
 
-		preferenceRepository.saveAll(preferences);
-	}
+        preferenceRepository.saveAll(preferences);
+    }
 }
 
 // options.stream() -> 리스트 데이터 하나씩 처리

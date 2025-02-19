@@ -8,9 +8,9 @@ import org.springframework.web.client.RestTemplate;
 //RestTemplate 빈으로 등록 : RestTemplate : 서버로 Header&Body 보내고 응답받을 때 사용
 @Configuration
 public class RestTemplateConfig {
-	@Bean
-	public RestTemplate restTemplate() {
-		return new RestTemplate();
-	}
+    @Bean
+    public RestTemplate restTemplate() {
+        return new RestTemplate();
+    }
 }
 

@@ -13,11 +13,13 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
-import ch.qos.logback.core.boolex.EvaluationException;
+
 import hello.roommate.auth.service.KakaoAuthService;
 import hello.roommate.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import java.util.HashMap;
+import java.util.Map;
 
 // 엑세스 토큰을 이용해 회원번호를 가져오고, Member_ID에 회원번호를 Set하여 DB에 저장.
 @RestController
