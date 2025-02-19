@@ -1,20 +1,16 @@
 package hello.roommate.chat.controller;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import hello.roommate.chat.domain.Message;
-import hello.roommate.chat.dto.CreateChatRoomDTO;
-import hello.roommate.chat.dto.MessageDTO;
-import hello.roommate.chat.service.MessageService;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-
 import hello.roommate.chat.domain.ChatRoom;
+import hello.roommate.chat.dto.CreateChatRoomDTO;
 import hello.roommate.chat.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor

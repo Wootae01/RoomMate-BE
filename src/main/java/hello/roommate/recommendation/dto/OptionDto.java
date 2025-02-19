@@ -8,6 +8,6 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 public class OptionDto {
-	private String Category;
-	private String option_value;
+    private String Category;
+    private String option_value;
 }

@@ -4,6 +4,7 @@ import hello.roommate.chat.domain.ChatRoom;
 import hello.roommate.member.domain.MemberChatRoom;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+
 import java.util.Optional;
 
 public interface MemberChatRoomRepository extends JpaRepository<MemberChatRoom, Long> {

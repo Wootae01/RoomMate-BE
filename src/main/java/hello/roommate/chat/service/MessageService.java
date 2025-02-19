@@ -27,7 +27,7 @@ public class MessageService {
 
     //해당 채팅방의 가장 최근 메시지 찾아서 반환
     public Message findLatestMessage(Long chatRoomId) {
-        return  messageRepository.findFirstByChatRoomIdOrderBySendTimeDesc(chatRoomId);
+        return messageRepository.findFirstByChatRoomIdOrderBySendTimeDesc(chatRoomId);
     }
 
     //해당 채팅 방의 모든 메시지 내용 반환
@@ -35,11 +35,11 @@ public class MessageService {
         return messageRepository.findAllByChatRoomId(chatRoomId);
     }
 
-    //MessageDTO를 Entity로 변환
+    //MessageDTO -> Entity로 변환
     public Message convertToEntity(MessageDTO dto) {
         Message message = new Message();
         ChatRoom chatRoom = chatRoomService.findRoomById(dto.getChatRoomId());
-        Member sender = memberService.findById(dto.getSenderId());
+        Member sender = memberService.findByNickname(dto.getNickname());
 
         message.setContent(dto.getContent());
         message.setSendTime(dto.getSendTime());
@@ -48,11 +48,13 @@ public class MessageService {
         return message;
     }
 
+    //Entity -> DTO로 변환
     public MessageDTO convertToDTO(Message message) {
         MessageDTO dto = new MessageDTO();
 
         dto.setChatRoomId(message.getChatRoom().getId());
-        dto.setSenderId(message.getSender().getId());
+        Member member = memberService.findById(message.getId());
+        dto.setNickname(member.getNickname());
         dto.setContent(message.getContent());
         dto.setSendTime(message.getSendTime());
 
