@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
-
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -14,16 +13,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Member;
-import hello.roommate.recommendation.repository.LifeStyleRepository;
 
 @DataJpaTest
 @Transactional
 class MemberRepositoryTest {
 	@Autowired
 	private MemberRepository memberRepository;
+
 	@Test
 	void save() {
-        Member member = createMember(1L, Dormitory.INUI, "abc");
+		Member member = createMember(1L, Dormitory.INUI, "abc");
 
 		//when
 		Member save = memberRepository.save(member);
@@ -36,10 +35,10 @@ class MemberRepositoryTest {
 	@Test
 	void findById() {
 		//given
-        Member member = createMember(1L, Dormitory.INUI, "abc");
-        Member save = memberRepository.save(member);
+		Member member = createMember(1L, Dormitory.INUI, "abc");
+		Member save = memberRepository.save(member);
 
-        //when
+		//when
 		Member find = memberRepository.findById(member.getId()).orElseThrow();
 		assertThat(find).isEqualTo(save);
 	}
@@ -67,7 +66,7 @@ class MemberRepositoryTest {
 	@Test
 	void delete() {
 		//given
-        Member member = createMember(1L, Dormitory.INUI, "abc");
+		Member member = createMember(1L, Dormitory.INUI, "abc");
 		memberRepository.save(member);
 
 		//when
@@ -79,10 +78,10 @@ class MemberRepositoryTest {
 			.isInstanceOf(NoSuchElementException.class);
 	}
 
-    @Test
-    void search() {
+	@Test
+	void search() {
 
-    }
+	}
 
 	private Member createMember(Long id, Dormitory dorm, String nickname) {
 		Member member = new Member();
