@@ -1,32 +1,43 @@
 package hello.roommate.init;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import org.springframework.stereotype.Component;
+
 import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Gender;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
-
-import java.util.Arrays;
-import java.util.List;
 
 @RequiredArgsConstructor
 @Component
 public class MemberInit {
-    private final MemberRepository memberRepository;
+	private final MemberRepository memberRepository;
 
-    public void createMember() {
-        if (memberRepository.count() == 0) {
-            List<Member> list = Arrays.asList(
-                    new Member(1L, "A", "hi", "img1", 21, Dormitory.INUI, Gender.MALE),
-                    new Member(2L, "B", "hi2", "img2", 23, Dormitory.INUI, Gender.MALE),
-                    new Member(3L, "C", "hi3", "img3", 24, Dormitory.INUI, Gender.MALE),
-                    new Member(4L, "D", "hi4", "img4", 25, Dormitory.INUI, Gender.MALE),
-                    new Member(5L, "E", "hi5", "img5", 21, Dormitory.YEJI, Gender.FEMALE)
-            );
+	//랜덤한 member 100개 생성해서 저장.
+	public void createMember() {
+		if (memberRepository.count() == 0) {
+			List<Member> members = new ArrayList<>();
+			for (long i = 1; i <= 100; i++) {
+				members.add(randomMember(i));
+			}
+			memberRepository.saveAll(members);
+		}
+	}
 
-            memberRepository.saveAll(list);
-        }
-    }
-
+	//임의로 member 데이터 생성
+	private Member randomMember(Long id) {
+		Member member = new Member();
+		member.setId(id);
+		member.setNickname(String.valueOf(id));
+		member.setImg("img");
+		member.setDorm(Dormitory.INUI);
+		member.setGender(Gender.MALE);
+		member.setAge(new Random().nextInt(5) + 20);
+		member.setIntroduce("hello " + id);
+		return member;
+	}
 }
