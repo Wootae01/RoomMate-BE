@@ -18,7 +18,7 @@ import hello.roommate.recommendation.domain.Option;
 import hello.roommate.recommendation.domain.Preference;
 import hello.roommate.recommendation.domain.enums.BedTime;
 import hello.roommate.recommendation.domain.enums.Category;
-import hello.roommate.recommendation.dto.OptionDto;
+import hello.roommate.recommendation.dto.OptionDTO;
 import hello.roommate.recommendation.service.LifestyleService;
 import hello.roommate.recommendation.service.OptionService;
 import hello.roommate.recommendation.service.PreferenceService;
@@ -90,8 +90,8 @@ class MemberServiceTest {
 		Preference preference = new Preference(save1, bedTime_23);
 		preferenceService.save(preference);
 
-		OptionDto optionDto = new OptionDto(Category.BED_TIME.name(), BedTime.AT_23.name());
-		List<OptionDto> list = List.of(optionDto);
+		OptionDTO optionDto = new OptionDTO(Category.BED_TIME.name(), BedTime.AT_23.name());
+		List<OptionDTO> list = List.of(optionDto);
 		List<Member> recommended1 = memberService.searchMembers(1L, list);
 
 		Assertions.assertThat(recommended1).contains(save2);

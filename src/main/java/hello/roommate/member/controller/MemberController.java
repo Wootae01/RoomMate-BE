@@ -20,7 +20,7 @@ import hello.roommate.member.domain.Member;
 import hello.roommate.member.domain.MemberChatRoom;
 import hello.roommate.member.dto.MemberDTO;
 import hello.roommate.member.service.MemberService;
-import hello.roommate.recommendation.dto.OptionDto;
+import hello.roommate.recommendation.dto.OptionDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -94,7 +94,7 @@ public class MemberController {
 	 * @return 필터 적용된 추천목록 멤버 반환
 	 */
 	@PostMapping("/{memberId}/recommendation")
-	public List<MemberDTO> searchMembers(@PathVariable Long memberId, @RequestBody List<OptionDto> optionDto) {
+	public List<MemberDTO> searchMembers(@PathVariable Long memberId, @RequestBody List<OptionDTO> optionDto) {
 		List<Member> members = memberSevice.searchMembers(memberId, optionDto);
 		List<MemberDTO> dtoList = members.stream()
 			.map(member -> memberSevice.convertToDTO(member))

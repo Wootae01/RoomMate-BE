@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class OptionDto {
+public class OptionDTO {
     private String Category;
     private String option_value;
 }
