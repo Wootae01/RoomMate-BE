@@ -15,7 +15,7 @@ import hello.roommate.member.dto.MemberDTO;
 import hello.roommate.member.repository.MemberRepository;
 import hello.roommate.recommendation.domain.Option;
 import hello.roommate.recommendation.domain.enums.Category;
-import hello.roommate.recommendation.dto.OptionDto;
+import hello.roommate.recommendation.dto.OptionDTO;
 import hello.roommate.recommendation.repository.OptionRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -62,13 +62,13 @@ public class MemberService {
 		return repository.recommendMembers(myId);
 	}
 
-	public List<Member> searchMembers(Long myId, List<OptionDto> dto) {
+	public List<Member> searchMembers(Long myId, List<OptionDTO> dto) {
 		if (dto.isEmpty() || dto == null) {
 			return repository.recommendMembers(myId);
 		}
 
 		List<Long> cond = new ArrayList<>();
-		for (OptionDto optionDto : dto) {
+		for (OptionDTO optionDto : dto) {
 			Category category = Category.valueOf(optionDto.getCategory());
 			String optionValue = optionDto.getOption_value();
 			Option option = optionRepository.findByCategoryAndValue(category, optionValue);
