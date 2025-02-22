@@ -49,7 +49,7 @@ public class PreferenceInit {
 				if (list == null || list.isEmpty())
 					return null;
 				else {
-					int n = new Random().nextInt(list.size() + 9);
+					int n = new Random().nextInt(list.size() + 20);
 					if (n >= list.size()) { //해당 카테고리 선택 x
 						return null;
 					} else {
