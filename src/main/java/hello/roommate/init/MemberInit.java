@@ -17,11 +17,11 @@ import lombok.RequiredArgsConstructor;
 public class MemberInit {
 	private final MemberRepository memberRepository;
 
-	//랜덤한 member 100개 생성해서 저장.
+	//랜덤한 member 300개 생성해서 저장.
 	public void createMember() {
 		if (memberRepository.count() == 0) {
 			List<Member> members = new ArrayList<>();
-			for (long i = 1; i <= 100; i++) {
+			for (long i = 1; i <= 300; i++) {
 				members.add(randomMember(i));
 			}
 			memberRepository.saveAll(members);

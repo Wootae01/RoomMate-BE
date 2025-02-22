@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,7 +26,6 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/members")
-@CrossOrigin(origins = "*") //임시로 설정
 @Slf4j
 public class MemberController {
 	private final MemberService memberSevice;
@@ -82,7 +80,7 @@ public class MemberController {
 		List<MemberDTO> dtoList = members.stream()
 			.map(member -> memberSevice.convertToDTO(member))
 			.collect(Collectors.toList());
-
+		log.info("{}", dtoList.toString());
 		return dtoList;
 	}
 
