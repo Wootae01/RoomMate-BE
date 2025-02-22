@@ -10,22 +10,21 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-
 
 import hello.roommate.auth.service.KakaoAuthService;
 import hello.roommate.member.domain.Member;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import java.util.HashMap;
-import java.util.Map;
 
 // 엑세스 토큰을 이용해 회원번호를 가져오고, Member_ID에 회원번호를 Set하여 DB에 저장.
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*") //임시로 설정
 @Slf4j
 public class KakaoAuthControllerNew {
 
@@ -47,7 +46,8 @@ public class KakaoAuthControllerNew {
 
 		Map<String, Object> response = new HashMap<>();
 		response.put("userId", member.getId().toString()); // Long → String 변환(Json이 Long을 안받음)
-		response.put("isFirstLogin", member.getNickname() == null);  // 닉네임아직 입력하지 않았으므로 첫 로그인인 경우 True(회원가입 폼 화면으로 이동), False -> 홈 화면으로 이동
+		response.put("isFirstLogin",
+			member.getNickname() == null);  // 닉네임아직 입력하지 않았으므로 첫 로그인인 경우 True(회원가입 폼 화면으로 이동), False -> 홈 화면으로 이동
 		response.put("accessToken", accessToken);
 
 		return ResponseEntity.ok(response); //ResponseEntity : Http응답을 만들어 반환
@@ -62,7 +62,7 @@ public class KakaoAuthControllerNew {
 
 		String tokenRequestUrl = "https://kauth.kakao.com/oauth/token";
 
-		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();		// 그냥 Map사용해도 될꺼같은데 chatgpt가 multivaluemap권장해서 일단 이렇게 함. 근데 Map해도 문제있을 확률은 적다네요
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();        // 그냥 Map사용해도 될꺼같은데 chatgpt가 multivaluemap권장해서 일단 이렇게 함. 근데 Map해도 문제있을 확률은 적다네요
 		params.add("grant_type", "authorization_code");
 		params.add("client_id", "YOUR_CLIENT_ID");
 		params.add("redirect_uri", "https://localhost:8080/auth/kakao/callback");
@@ -76,7 +76,8 @@ public class KakaoAuthControllerNew {
 		HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(params, headers);
 
 		// 위 URL로 Post요청 보내서 JSON 응답을 받아온다.
-		ResponseEntity<Map> response = restTemplate.exchange(tokenRequestUrl, HttpMethod.POST, requestEntity, Map.class);
+		ResponseEntity<Map> response = restTemplate.exchange(tokenRequestUrl, HttpMethod.POST, requestEntity,
+			Map.class);
 
 		// response에 저장된 ResponseEntity<Map>를 Map<String, Object>로 변환
 		Map<String, Object> responseBody = response.getBody();
@@ -85,7 +86,7 @@ public class KakaoAuthControllerNew {
 			throw new RuntimeException("카카오 액세스 토큰을 가져올 수 없습니다.");
 		}
 
-		return (String) responseBody.get("access_token");
+		return (String)responseBody.get("access_token");
 	}
 }
 
