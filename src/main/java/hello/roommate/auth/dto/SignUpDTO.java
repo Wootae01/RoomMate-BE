@@ -14,6 +14,7 @@ public class SignUpDTO {
     private Long userId;
     private String nickname;
     private Gender gender;
+    private String introduce;
     private Dormitory dormitory;
     private int age;
     private List<Long> lifeStyle;   // 선택한 LifeStyle의 option_id(Long) 리스트
