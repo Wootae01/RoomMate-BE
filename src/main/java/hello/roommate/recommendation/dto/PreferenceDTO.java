@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PreferenceDTO {
-	private Long id;
+	private Long memberId;
 	private List<Long> options;
 
 }
