@@ -17,7 +17,7 @@ import hello.roommate.chat.dto.ChatRoomDTO;
 import hello.roommate.chat.service.MessageService;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.domain.MemberChatRoom;
-import hello.roommate.member.dto.MemberDTO;
+import hello.roommate.member.dto.RecommendMemberDTO;
 import hello.roommate.member.service.MemberService;
 import hello.roommate.recommendation.dto.OptionDTO;
 import lombok.RequiredArgsConstructor;
@@ -72,15 +72,15 @@ public class MemberController {
 	 * @return 추천 목록 멤버 반환
 	 */
 	@GetMapping("/{memberId}/recommendation")
-	public List<MemberDTO> recommendMembers(@PathVariable Long memberId) {
+	public List<RecommendMemberDTO> recommendMembers(@PathVariable Long memberId) {
 		log.info("추천 목록 반환 요청, id={}", memberId);
 		List<Member> members = memberSevice.recommendMembers(memberId);
 
 		//dto로 변환
-		List<MemberDTO> dtoList = members.stream()
+		List<RecommendMemberDTO> dtoList = members.stream()
 			.map(member -> memberSevice.convertToDTO(member))
 			.collect(Collectors.toList());
-		log.info("{}", dtoList.toString());
+		log.info("{}", dtoList);
 		return dtoList;
 	}
 
@@ -92,9 +92,9 @@ public class MemberController {
 	 * @return 필터 적용된 추천목록 멤버 반환
 	 */
 	@PostMapping("/{memberId}/recommendation")
-	public List<MemberDTO> searchMembers(@PathVariable Long memberId, @RequestBody List<OptionDTO> optionDto) {
+	public List<RecommendMemberDTO> searchMembers(@PathVariable Long memberId, @RequestBody List<OptionDTO> optionDto) {
 		List<Member> members = memberSevice.searchMembers(memberId, optionDto);
-		List<MemberDTO> dtoList = members.stream()
+		List<RecommendMemberDTO> dtoList = members.stream()
 			.map(member -> memberSevice.convertToDTO(member))
 			.collect(Collectors.toList());
 

@@ -11,7 +11,7 @@ import hello.roommate.chat.domain.ChatRoom;
 import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.domain.MemberChatRoom;
-import hello.roommate.member.dto.MemberDTO;
+import hello.roommate.member.dto.RecommendMemberDTO;
 import hello.roommate.member.repository.MemberRepository;
 import hello.roommate.recommendation.domain.Option;
 import hello.roommate.recommendation.domain.enums.Category;
@@ -78,8 +78,8 @@ public class MemberService {
 	}
 
 	//dto로 전환
-	public MemberDTO convertToDTO(Member member) {
-		MemberDTO dto = new MemberDTO();
+	public RecommendMemberDTO convertToDTO(Member member) {
+		RecommendMemberDTO dto = new RecommendMemberDTO();
 		dto.setMemberId(member.getId());
 		dto.setNickname(member.getNickname());
 		dto.setIntroduce(member.getIntroduce());
