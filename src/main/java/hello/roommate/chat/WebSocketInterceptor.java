@@ -9,8 +9,12 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 
 import lombok.extern.slf4j.Slf4j;
 
-//WebSocket 연결 요청 로그
 @Slf4j
+/**
+ * 웹소켓 연결 요청 로그를 작성하기 위한 Interceptor
+ *
+ * @author Wootae
+ */
 public class WebSocketInterceptor implements HandshakeInterceptor {
 	@Override
 	public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler,

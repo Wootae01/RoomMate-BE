@@ -31,13 +31,12 @@ public class MemberController {
 	private final MemberService memberSevice;
 	private final MessageService messageService;
 
-	/*
-	 * 나의 모든 채팅방 반환
-	 * 1. 나의 채팅방 찾음
-	 * 2. 그 채팅방의 상대 닉네임 찾고
-	 * 3. 해당 채팅방의 최근 대화 날짜, 대화 내역 찾아서
-	 * 4. dto로 변환
-	 * */
+	/**
+	 * 나의 모든 채팅방을 찾아 반환
+	 *
+	 * @param memberId 사용자 Id
+	 * @return 모든 채팅방
+	 */
 	@GetMapping("/{memberId}/chatrooms")
 	public List<ChatRoomDTO> findAllChatRooms(@PathVariable Long memberId) {
 		List<ChatRoomDTO> result = new ArrayList<>();
