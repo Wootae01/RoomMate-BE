@@ -21,7 +21,12 @@ public class ChatRoomController {
 
 	private final ChatRoomService chatService;
 
-	//채팅방 생성 후 id 반환
+	/**
+	 * 기존 채팅방이 있으면 기존 채팅방 id 반환, 없으면 새로운 채팅방 반환 하는 REST 엔드포인트
+	 *
+	 * @param dto 채팅에 참여한 사용자 id 정보
+	 * @return 채팅방 id
+	 */
 	@PostMapping("/chatroom")
 	public ResponseEntity<Map<String, Object>> createChatRoom(@RequestBody CreateChatRoomDTO dto) {
 		log.info("채팅방 생성 요청");

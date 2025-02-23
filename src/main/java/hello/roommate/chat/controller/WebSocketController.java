@@ -17,7 +17,12 @@ public class WebSocketController {
 
 	private final MessageService messageService;
 
-	//메시지 전송
+	/**
+	 * 웹소켓을 통해 메시지를 받아 처리하고, 저장 후 동일한 메시지를 구독자에게 전송하는 메서드
+	 *
+	 * @param messageDto 전송할 메시지 정보 담고 있는 DTO 객체
+	 * @return 저장 후 클라이언트에게 전송할 메시지 DTO 객체
+	 */
 	@MessageMapping("/{roomId}")
 	@SendTo("/topic/chatroom/{roomId}")
 	public MessageDTO sendMessage(MessageDTO messageDto) {
