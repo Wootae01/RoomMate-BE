@@ -52,7 +52,7 @@ public class MemberController {
 					Message latestMessage = messageService.findLatestMessage(chatRoom.getId()); //최근 메시지 찾고
 
 					ChatRoomDTO dto = new ChatRoomDTO(); //dto로 변환
-					dto.setId(chatRoom.getId());
+					dto.setChatRoomId(chatRoom.getId());
 					dto.setNickname(nickname);
 					dto.setUpdatedTime(latestMessage.getSendTime());
 					dto.setMessage(latestMessage.getContent());
