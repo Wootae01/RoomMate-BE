@@ -1,11 +1,7 @@
 package hello.roommate.auth.controller;
 
-import hello.roommate.auth.dto.EditMemberDTO;
-import hello.roommate.auth.dto.SignUpDTO;
-import hello.roommate.auth.service.SignUpService;
-import hello.roommate.recommendation.dto.LifeStyleDTO;
-import hello.roommate.recommendation.dto.PreferenceDTO;
-import lombok.RequiredArgsConstructor;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,12 +9,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
+import hello.roommate.auth.dto.EditMemberDTO;
+import hello.roommate.auth.dto.SignUpDTO;
+import hello.roommate.auth.service.SignUpService;
+import hello.roommate.recommendation.dto.LifeStyleDTO;
+import hello.roommate.recommendation.dto.PreferenceDTO;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Slf4j
 public class SignUpController {
 
 	// 프론트에서 회원가입 폼 작성 후 제출 버튼을 누를시
@@ -26,7 +28,8 @@ public class SignUpController {
 
 	@PostMapping("/signup")    // 로그인 완료 후 회원가입 폼 작성한 후 Post로 전달
 	public ResponseEntity<Map<String, Object>> signUp(
-		@RequestBody SignUpDTO request) { // 프론트에서 받은 Json데이터를 SignUpDTO 객체로 변환
+		@RequestBody SignUpDTO request) { // 프론트에서 받은 Json데이터를 SignUpDTO 객체로 변환\
+		log.info("signup request= {}", request);
 		signUpService.registerMember(request);
 
 		Map<String, Object> response = new HashMap<>();
