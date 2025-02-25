@@ -16,7 +16,9 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -87,21 +89,33 @@ public class SignUpService {
 	}
 
 	// LifeStyle 저장
-	private void saveLifeStyle(Member member, List<Long> optionIds) {
-		List<Option> options = optionRepository.findAllById(optionIds);
+	private void saveLifeStyle(Member member, Map<String, List<Long>> lifeStyle) {
+		List<Option> allOptions = new ArrayList<>();
 
-		List<LifeStyle> lifeStyles = options.stream()
-			.map(option -> new LifeStyle(member, option))
+		// Map<String, List<Long>> 구조를 List<Long>으로 변환
+		// map.values()를 사용해서 List<Long>을 collection으로 반환.
+		for (List<Long> optionIds : lifeStyle.values()) {
+			allOptions.addAll(optionRepository.findAllById(optionIds));
+		}
+
+		List<LifeStyle> lifeStyles = allOptions.stream()
+			.map(option -> new LifeStyle(member, option))//option: alloptions.stream의 Option 객체
+			//각 Option 객체에 대해, new LifeStyle(member, option)를 호출하여 LifeStyle 객체를 생성
 			.collect(Collectors.toList());
+		//생성된 모든 LifeStyle 객체를 lifeStyles 리스트에 추가
 
 		lifeStyleRepository.saveAll(lifeStyles);
 	}
 
 	// Preference 저장
-	private void savePreference(Member member, List<Long> optionIds) {
-		List<Option> options = optionRepository.findAllById(optionIds);
+	private void savePreference(Member member, Map<String, List<Long>> preference) {
+		List<Option> allOptions = new ArrayList<>();
 
-		List<Preference> preferences = options.stream()
+		for (List<Long> optionIds : preference.values()) {
+			allOptions.addAll(optionRepository.findAllById(optionIds));
+		}
+
+		List<Preference> preferences = allOptions.stream()
 			.map(option -> new Preference(member, option))
 			.collect(Collectors.toList());
 
@@ -109,6 +123,6 @@ public class SignUpService {
 	}
 }
 // options.stream() -> 리스트 데이터 하나씩 처리
-// options:Option을 LifeStyle&Preference로 변환 후 해당 객체에 저장
+// .map -> 각 Option 객체에 대해, LifeStyle, Preference를 호출하여 LifeStyle객체 생성
 // .collect(Collectors.toList()) -> map()으로 변환된 객체들을 리스트로 반환
 //option = List options에 들어있는 개별 Option 객체

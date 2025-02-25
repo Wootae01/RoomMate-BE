@@ -3,6 +3,7 @@ package hello.roommate.recommendation.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,15 +50,16 @@ public class LifestyleService {
 		//기존 lifestyle 삭제
 		lifeStyleRepository.deleteByMemberId(memberId);
 
-		//새 LifeStyle 등록
-		List<LifeStyle> updateList = new ArrayList<>();
-		List<Long> options = dto.getOptions();
-		for (Long option : options) {
-			Option find = optionRepository.findById(option)
-				.orElseThrow(() -> new NoSuchElementException("Invalid Option id"));
-
-			updateList.add(new LifeStyle(member, find));
+		// Map<String, List<Long>>에서 모든 옵션 Id를 추출 휴, Option 객체 조회
+		List<Option> allOptions = new ArrayList<>();
+		for (List<Long> optionIds : dto.getOptions().values()) {
+			allOptions.addAll(optionRepository.findAllById(optionIds));
 		}
+
+		// 조회된 Option 객체들을 이용하여 새로운 LifeStyle 객체들을 생성
+		List<LifeStyle> updateList = allOptions.stream()
+			.map(option -> new LifeStyle(member, option))
+			.collect(Collectors.toList());
 
 		lifeStyleRepository.saveAll(updateList);
 

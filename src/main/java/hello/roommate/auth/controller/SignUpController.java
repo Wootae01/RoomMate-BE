@@ -8,6 +8,7 @@ import hello.roommate.recommendation.dto.PreferenceDTO;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,7 +39,6 @@ public class SignUpController {
 	// 프론트에서 내정보 1단계만 수정할 시(Member만 수정시)
 	@PostMapping("/EditProfile")
 	public ResponseEntity<Map<String, Object>> editProfile(@RequestBody EditMemberDTO member) {
-		// Member Profile만 수정할 경우 아 이거 하나로 통합해버리고 싶은데 아직 잘 모르겠네. 고민해봄
 		signUpService.EditMember(member);
 
 		Map<String, Object> response = new HashMap<>();

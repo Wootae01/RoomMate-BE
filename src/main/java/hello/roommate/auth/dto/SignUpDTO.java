@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Map;
 
 //JSON으로 프론트에서 회원가입폼으로 입력한 값들 넘겨줌
 @Getter
@@ -17,6 +18,6 @@ public class SignUpDTO {
     private String introduce;
     private Dormitory dormitory;
     private int age;
-    private List<Long> lifeStyle;   // 선택한 LifeStyle의 option_id(Long) 리스트
-    private List<Long> preference;  // 선택한 Preference의 option_id(Long) 리스트
+    private Map<String, List<Long>> lifeStyle;   // 선택한 LifeStyle
+    private Map<String, List<Long>> preference;  // 선택한 Preference
 }
