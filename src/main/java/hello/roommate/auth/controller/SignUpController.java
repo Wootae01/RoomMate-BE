@@ -38,41 +38,5 @@ public class SignUpController {
 
 		return ResponseEntity.ok(response);   //프론트에서 success 값 확인하여 해당 화면에 맞게 처리하도록
 	}
-
-	// 프론트에서 내정보 1단계만 수정할 시(Member만 수정시)
-	@PostMapping("/EditProfile")
-	public ResponseEntity<Map<String, Object>> editProfile(@RequestBody EditMemberDTO member) {
-		signUpService.EditMember(member);
-
-		Map<String, Object> response = new HashMap<>();
-		response.put("success", true);
-
-		return ResponseEntity.ok(response);
-	}
-
-	// 프론트에서 LifeStyle 2단계만 수정할 시(LifeStyle만 수정시)
-	@PostMapping("/EditLifeStyle")
-	public ResponseEntity<Map<String, Object>> editLifeStyle(@RequestBody LifeStyleDTO member) {
-		// Member LifeStyle만 수정할 경우
-		signUpService.EditLifeStyle(member);
-
-		Map<String, Object> response = new HashMap<>();
-		response.put("success", true);
-
-		return ResponseEntity.ok(response);
-	}
-
-	// 프론트에서 Preference 1단계만 수정할 시(Preference만 수정시)
-	@PostMapping("/EditPreference")
-	public ResponseEntity<Map<String, Object>> editPreference(@RequestBody PreferenceDTO member) {
-		// Member Preference만 수정할 경우
-		signUpService.EditPreference(member);
-
-		Map<String, Object> response = new HashMap<>();
-		response.put("success", true);
-
-		return ResponseEntity.ok(response);
-	}
-
 }
 
