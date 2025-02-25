@@ -1,9 +1,12 @@
 package hello.roommate.member.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -11,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import hello.roommate.auth.dto.EditMemberDTO;
+import hello.roommate.auth.service.SignUpService;
 import hello.roommate.chat.domain.ChatRoom;
 import hello.roommate.chat.domain.Message;
 import hello.roommate.chat.dto.ChatRoomDTO;
@@ -19,7 +24,9 @@ import hello.roommate.member.domain.Member;
 import hello.roommate.member.domain.MemberChatRoom;
 import hello.roommate.member.dto.RecommendMemberDTO;
 import hello.roommate.member.service.MemberService;
+import hello.roommate.recommendation.dto.LifeStyleDTO;
 import hello.roommate.recommendation.dto.OptionDTO;
+import hello.roommate.recommendation.dto.PreferenceDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,8 +35,50 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/members")
 @Slf4j
 public class MemberController {
-	private final MemberService memberSevice;
+	private final MemberService memberService;
 	private final MessageService messageService;
+	private final SignUpService signUpService;
+
+	// 프론트에서 내정보 1단계만 수정할 시(Member만 수정시)
+	@PostMapping("/{memberId}/editprofile")
+	public ResponseEntity<Map<String, Object>> editProfile(@RequestBody EditMemberDTO member,
+		@PathVariable Long memberId) {
+
+		signUpService.EditMember(member, memberId);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("success", true);
+
+		return ResponseEntity.ok(response);
+	}
+
+	// 프론트에서 LifeStyle 2단계만 수정할 시(LifeStyle만 수정시)
+	@PostMapping("/{memberId}/editlifestyle")
+	public ResponseEntity<Map<String, Object>> editLifeStyle(@RequestBody LifeStyleDTO member,
+		@PathVariable Long memberId) {
+
+		// Member LifeStyle만 수정할 경우
+		signUpService.EditLifeStyle(member, memberId);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("success", true);
+
+		return ResponseEntity.ok(response);
+	}
+
+	// 프론트에서 Preference 1단계만 수정할 시(Preference만 수정시)
+	@PostMapping("/{memberId}/editpreference")
+	public ResponseEntity<Map<String, Object>> editPreference(@RequestBody PreferenceDTO member,
+		@PathVariable Long memberId) {
+
+		// Member Preference만 수정할 경우
+		signUpService.EditPreference(member, memberId);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("success", true);
+
+		return ResponseEntity.ok(response);
+	}
 
 	/**
 	 * 나의 모든 채팅방을 찾아 반환
@@ -40,7 +89,7 @@ public class MemberController {
 	@GetMapping("/{memberId}/chatrooms")
 	public List<ChatRoomDTO> findAllChatRooms(@PathVariable Long memberId) {
 		List<ChatRoomDTO> result = new ArrayList<>();
-		List<ChatRoom> chatRooms = memberSevice.findAllChatRooms(memberId);
+		List<ChatRoom> chatRooms = memberService.findAllChatRooms(memberId);
 
 		for (ChatRoom chatRoom : chatRooms) {
 			List<MemberChatRoom> memberChatRooms = chatRoom.getMemberChatRooms();
@@ -73,11 +122,11 @@ public class MemberController {
 	@GetMapping("/{memberId}/recommendation")
 	public List<RecommendMemberDTO> recommendMembers(@PathVariable Long memberId) {
 		log.info("추천 목록 반환 요청, id={}", memberId);
-		List<Member> members = memberSevice.recommendMembers(memberId);
+		List<Member> members = memberService.recommendMembers(memberId);
 
 		//dto로 변환
 		List<RecommendMemberDTO> dtoList = members.stream()
-			.map(member -> memberSevice.convertToDTO(member))
+			.map(member -> memberService.convertToDTO(member))
 			.collect(Collectors.toList());
 		log.info("{}", dtoList);
 		return dtoList;
@@ -92,9 +141,9 @@ public class MemberController {
 	 */
 	@PostMapping("/{memberId}/recommendation")
 	public List<RecommendMemberDTO> searchMembers(@PathVariable Long memberId, @RequestBody List<OptionDTO> optionDto) {
-		List<Member> members = memberSevice.searchMembers(memberId, optionDto);
+		List<Member> members = memberService.searchMembers(memberId, optionDto);
 		List<RecommendMemberDTO> dtoList = members.stream()
-			.map(member -> memberSevice.convertToDTO(member))
+			.map(member -> memberService.convertToDTO(member))
 			.collect(Collectors.toList());
 
 		return dtoList;
