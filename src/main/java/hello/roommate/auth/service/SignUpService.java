@@ -72,6 +72,8 @@ public class SignUpService {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new RuntimeException("회원 정보를 찾을 수 없습니다."));
 
+		// 기존꺼 삭제
+		lifeStyleRepository.deleteByMemberId(memberId);
 		// 2. LifeStyle 저장
 		saveLifeStyle(member, request.getOptions());
 
@@ -82,6 +84,9 @@ public class SignUpService {
 		// 1. 가입되어있는 회원인지 조회 후 Member_Id = 회원번호 반환
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new RuntimeException("회원 정보를 찾을 수 없습니다."));
+
+		// 기존꺼 삭제
+		preferenceRepository.deleteByMemberId(memberId);
 
 		// 2. LifeStyle 저장
 		savePreference(member, request.getOptions());
