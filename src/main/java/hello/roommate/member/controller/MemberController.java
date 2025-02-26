@@ -44,7 +44,7 @@ public class MemberController {
 	public ResponseEntity<Map<String, Object>> editProfile(@RequestBody EditMemberDTO member,
 		@PathVariable Long memberId) {
 
-		signUpService.EditMember(member, memberId);
+		signUpService.editMember(member, memberId);
 
 		Map<String, Object> response = new HashMap<>();
 		response.put("success", true);
@@ -58,7 +58,7 @@ public class MemberController {
 		@PathVariable Long memberId) {
 
 		// Member LifeStyle만 수정할 경우
-		signUpService.EditLifeStyle(member, memberId);
+		signUpService.editLifeStyle(member, memberId);
 
 		Map<String, Object> response = new HashMap<>();
 		response.put("success", true);
@@ -72,7 +72,7 @@ public class MemberController {
 		@PathVariable Long memberId) {
 
 		// Member Preference만 수정할 경우
-		signUpService.EditPreference(member, memberId);
+		signUpService.editPreference(member, memberId);
 
 		Map<String, Object> response = new HashMap<>();
 		response.put("success", true);

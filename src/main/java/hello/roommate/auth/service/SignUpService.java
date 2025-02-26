@@ -52,7 +52,7 @@ public class SignUpService {
 	}
 
 	// Member Profile만 수정할경우: EditMemberDTO를 받음
-	public void EditMember(EditMemberDTO request, Long memberId) {
+	public void editMember(EditMemberDTO request, Long memberId) {
 		// 가입되어있는 회원인지 조회
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new RuntimeException("회원 정보를 찾을 수 없습니다."));
@@ -62,12 +62,14 @@ public class SignUpService {
 		member.setIntroduce(request.getIntroduce());
 		member.setDorm(request.getDormitory());
 		member.setAge(request.getAge());
+		member.setGender(request.getGender());
+
 		// 업데이트된 Member 저장
 		member = memberRepository.save(member);
 	}
 
 	// Member LifeStyle만 수정할경우: LifeStyleDTO를 받음
-	public void EditLifeStyle(LifeStyleDTO request, Long memberId) {
+	public void editLifeStyle(LifeStyleDTO request, Long memberId) {
 		// 1. 가입되어있는 회원인지 조회 후 Member_Id = 회원번호 반환
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new RuntimeException("회원 정보를 찾을 수 없습니다."));
@@ -80,7 +82,7 @@ public class SignUpService {
 	}
 
 	// Member Preference만 수정할경우: PreferenceDTO를 받음
-	public void EditPreference(PreferenceDTO request, Long memberId) {
+	public void editPreference(PreferenceDTO request, Long memberId) {
 		// 1. 가입되어있는 회원인지 조회 후 Member_Id = 회원번호 반환
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new RuntimeException("회원 정보를 찾을 수 없습니다."));
