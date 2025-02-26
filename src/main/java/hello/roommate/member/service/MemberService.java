@@ -2,7 +2,9 @@ package hello.roommate.member.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,11 +13,12 @@ import hello.roommate.chat.domain.ChatRoom;
 import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.domain.MemberChatRoom;
+import hello.roommate.member.dto.FilterCond;
 import hello.roommate.member.dto.RecommendMemberDTO;
 import hello.roommate.member.repository.MemberRepository;
 import hello.roommate.recommendation.domain.Option;
+import hello.roommate.recommendation.domain.Preference;
 import hello.roommate.recommendation.domain.enums.Category;
-import hello.roommate.recommendation.dto.OptionDTO;
 import hello.roommate.recommendation.repository.OptionRepository;
 import lombok.RequiredArgsConstructor;
 
@@ -58,23 +61,45 @@ public class MemberService {
 		repository.deleteById(id);
 	}
 
+	/**
+	 * 나의 preference 와 상대 LifeStyle 을 비교하여 추천 멤버 조회
+	 * @param myId
+	 * @return 추천 멤버
+	 */
 	public List<Member> recommendMembers(Long myId) {
-		return repository.recommendMembers(myId);
+		Member member = memberRepository.findById(myId)
+			.orElseThrow(() -> new NoSuchElementException("id not found"));
+
+		List<Preference> preferences = member.getPreference();
+
+		List<Option> options = preferences
+			.stream().map(preference -> preference.getOption())
+			.toList();
+
+		Map<Category, List<Long>> collect = options.stream()
+			.collect(
+				Collectors.groupingBy(
+					Option::getCategory,
+					Collectors.mapping(Option::getId, Collectors.toList())
+				));
+
+		FilterCond filterCond = new FilterCond();
+		filterCond.setCond(collect);
+
+		List<Member> search = memberRepository.search(myId, filterCond);
+
+		return search;
 	}
 
-	public List<Member> searchMembers(Long myId, List<OptionDTO> dto) {
-		if (dto.isEmpty() || dto == null) {
-			return repository.recommendMembers(myId);
-		}
-
-		List<Long> cond = new ArrayList<>();
-		for (OptionDTO optionDto : dto) {
-			Category category = Category.valueOf(optionDto.getCategory());
-			String optionValue = optionDto.getOption_value();
-			Option option = optionRepository.findByCategoryAndValue(category, optionValue);
-			cond.add(option.getId());
-		}
-		return memberRepository.searchMembers(myId, cond, cond.size());
+	/**
+	 * 검색 조건을 입력받아 추천 멤버 검색
+	 * @param myId 사용자 id
+	 * @param filterCond 검색 조건
+	 * @return 추천 멤버
+	 */
+	public List<Member> searchMembers(Long myId, FilterCond filterCond) {
+		List<Member> search = memberRepository.search(myId, filterCond);
+		return search;
 	}
 
 	//dto로 전환

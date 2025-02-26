@@ -22,10 +22,10 @@ import hello.roommate.chat.dto.ChatRoomDTO;
 import hello.roommate.chat.service.MessageService;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.domain.MemberChatRoom;
+import hello.roommate.member.dto.FilterCond;
 import hello.roommate.member.dto.RecommendMemberDTO;
 import hello.roommate.member.service.MemberService;
 import hello.roommate.recommendation.dto.LifeStyleDTO;
-import hello.roommate.recommendation.dto.OptionDTO;
 import hello.roommate.recommendation.dto.PreferenceDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -136,12 +136,12 @@ public class MemberController {
 	 * 필터 적용하여 추천목록 반환
 	 *
 	 * @param memberId 사용자 id
-	 * @param optionDto 사용자가 적용한 필터 항목들
+	 * @param filterCond 사용자가 적용한 필터 항목들
 	 * @return 필터 적용된 추천목록 멤버 반환
 	 */
 	@PostMapping("/{memberId}/recommendation")
-	public List<RecommendMemberDTO> searchMembers(@PathVariable Long memberId, @RequestBody List<OptionDTO> optionDto) {
-		List<Member> members = memberService.searchMembers(memberId, optionDto);
+	public List<RecommendMemberDTO> searchMembers(@PathVariable Long memberId, @RequestBody FilterCond filterCond) {
+		List<Member> members = memberService.searchMembers(memberId, filterCond);
 		List<RecommendMemberDTO> dtoList = members.stream()
 			.map(member -> memberService.convertToDTO(member))
 			.collect(Collectors.toList());

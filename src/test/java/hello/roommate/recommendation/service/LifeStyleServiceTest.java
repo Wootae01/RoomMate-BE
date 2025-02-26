@@ -1,7 +1,9 @@
 package hello.roommate.recommendation.service;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 import org.assertj.core.api.Assertions;
@@ -75,20 +77,21 @@ class LifeStyleServiceTest {
 		lifeStyleService.save(lifeStyle1);
 
 		List<Long> options = new ArrayList<>();
-		options.add(1L);
-		options.add(10L);
-		options.add(15L);
-		options.add(20L);
+		options.add(101L);
+		options.add(102L);
+		options.add(103L);
+		Map<String, List<Long>> map = new HashMap<>();
+		map.put(Category.BED_TIME.name(), options);
 
 		LifeStyleDTO dto = new LifeStyleDTO();
 		dto.setMemberId(1L);
-		dto.setOptions(options);
+		dto.setOptions(map);
 
 		lifeStyleService.update(1L, dto);
 
 		List<LifeStyle> lifeStyles = lifeStyleService.findByMemberId(1L);
 		for (LifeStyle lifeStyle : lifeStyles) {
-			Assertions.assertThat(lifeStyle.getOption().getId()).isIn(1L, 10L, 15L, 20L);
+			Assertions.assertThat(lifeStyle.getOption().getId()).isIn(101L, 102L, 103L);
 		}
 
 	}
