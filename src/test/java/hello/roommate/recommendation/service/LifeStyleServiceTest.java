@@ -84,7 +84,6 @@ class LifeStyleServiceTest {
 		map.put(Category.BED_TIME.name(), options);
 
 		LifeStyleDTO dto = new LifeStyleDTO();
-		dto.setMemberId(1L);
 		dto.setOptions(map);
 
 		lifeStyleService.update(1L, dto);
