@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,9 +28,7 @@ import hello.roommate.member.dto.RecommendMemberDTO;
 import hello.roommate.member.repository.MemberRepository;
 import hello.roommate.member.service.MemberService;
 import hello.roommate.recommendation.domain.LifeStyle;
-import hello.roommate.recommendation.domain.Option;
 import hello.roommate.recommendation.domain.Preference;
-import hello.roommate.recommendation.domain.enums.Category;
 import hello.roommate.recommendation.dto.LifeStyleDTO;
 import hello.roommate.recommendation.dto.PreferenceDTO;
 import lombok.RequiredArgsConstructor;
@@ -102,8 +99,7 @@ public class MemberController {
 		Map<String, List<Long>> memberLifeStyleList =
 			memberService.convertLifeStyleListToMap(member.getLifeStyle());
 
-		LifeStyleDTO myLifeStyleDTO = new LifeStyleDTO(
-			memberId, memberLifeStyleList);
+		LifeStyleDTO myLifeStyleDTO = new LifeStyleDTO(memberLifeStyleList);
 
 		return ResponseEntity.ok(myLifeStyleDTO);
 	}
@@ -117,8 +113,7 @@ public class MemberController {
 		Map<String, List<Long>> memberPreferenceList =
 			memberService.convertPreferenceListToMap(member.getPreference());
 
-		PreferenceDTO myPreferenceDTO = new PreferenceDTO(
-			memberId, memberPreferenceList);
+		PreferenceDTO myPreferenceDTO = new PreferenceDTO(memberPreferenceList);
 
 		return ResponseEntity.ok(myPreferenceDTO);
 	}
@@ -148,6 +143,8 @@ public class MemberController {
 	public ResponseEntity<Map<String, Object>> editLifeStyle(@RequestBody LifeStyleDTO member,
 		@PathVariable Long memberId) {
 
+		log.info("LifeStlye 수정 요청 data={}", member);
+
 		// Member LifeStyle만 수정할 경우
 		signUpService.editLifeStyle(member, memberId);
 
@@ -162,6 +159,7 @@ public class MemberController {
 	public ResponseEntity<Map<String, Object>> editPreference(@RequestBody PreferenceDTO member,
 		@PathVariable Long memberId) {
 
+		log.info("Preference 수정 요청 data={}", member);
 		// Member Preference만 수정할 경우
 		signUpService.editPreference(member, memberId);
 
@@ -186,7 +184,7 @@ public class MemberController {
 			List<MemberChatRoom> memberChatRooms = chatRoom.getMemberChatRooms();
 
 			for (MemberChatRoom memberChatRoom : memberChatRooms) {
-				if (memberChatRoom.getMember().getId() != memberId) { // 채팅방 중 내가 아닌 상대방 닉네임 찾고
+				if (memberChatRoom.getMember().getId().equals(memberId)) { // 채팅방 중 내가 아닌 상대방 닉네임 찾고
 					Member opponent = memberChatRoom.getMember();
 					String nickname = opponent.getNickname();
 					Message latestMessage = messageService.findLatestMessage(chatRoom.getId()); //최근 메시지 찾고
