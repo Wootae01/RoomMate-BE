@@ -43,14 +43,16 @@ public class PreferenceInit {
 	private List<Option> selectOption(List<Option> options) {
 		Map<Category, List<Option>> collect = options.stream()
 			.collect(Collectors.groupingBy(Option::getCategory));
-
+		// Collectors.groupingBy=> 각 Option 객체를 분류기준 : Category 값에 따라 그룹으로 묶음
+		// 각 Option 객체의 getCategory()를 통해 해당 옵션의 Category 값을 얻음 <- Key 역할
+		// 인자로 받은 List<Option>의 모든 Option 객체들이 해당 카테고리에 맞춰 분류되어 저장.
 		List<Option> result = collect.values().stream()
-			.map(list -> {
+			.map(list -> {			// list = collect.values()를 통해 나온 List<Option>
 				if (list == null || list.isEmpty())
 					return null;
 				else {
 					int n = new Random().nextInt(list.size() + 20);
-					if (n >= list.size()) { //해당 카테고리 선택 x
+					if (n >= list.size()) { //해당 카테고리에서 옵션 선택 x
 						return null;
 					} else {
 						return list.get(n); //해당 카테고리 값 랜덤으로 선택
@@ -58,9 +60,9 @@ public class PreferenceInit {
 
 				}
 			})
-			.filter(Objects::nonNull)
-			.toList();
+			.filter(Objects::nonNull)    // null이 아니면 true 반환해 .filter() 다음꺼 실행
+			.toList();                   // List로 만들어 반환
 
-		return result;
+		return result;					 // null이 제거된 옵션들만 담은 List<Option> 반환
 	}
 }

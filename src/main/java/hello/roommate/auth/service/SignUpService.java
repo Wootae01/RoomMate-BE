@@ -67,7 +67,7 @@ public class SignUpService {
 		member.setGender(request.getGender());
 
 		// 업데이트된 Member 저장
-		member = memberRepository.save(member);
+		memberRepository.save(member);
 	}
 
 	// Member LifeStyle만 수정할경우: LifeStyleDTO를 받음
@@ -108,7 +108,7 @@ public class SignUpService {
 		}
 
 		List<LifeStyle> lifeStyles = allOptions.stream()
-			.map(option -> new LifeStyle(member, option))//option: alloptions.stream의 Option 객체
+			.map(option -> new LifeStyle(member, option)) //option: alloptions.stream의 Option 객체
 			//각 Option 객체에 대해, new LifeStyle(member, option)를 호출하여 LifeStyle 객체를 생성
 			.collect(Collectors.toList());
 		//생성된 모든 LifeStyle 객체를 lifeStyles 리스트에 추가
