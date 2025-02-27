@@ -57,6 +57,8 @@ public class MemberController {
 	public ResponseEntity<Map<String, Object>> editLifeStyle(@RequestBody LifeStyleDTO member,
 		@PathVariable Long memberId) {
 
+		log.info("LifeStlye 수정 요청 data={}", member);
+
 		// Member LifeStyle만 수정할 경우
 		signUpService.editLifeStyle(member, memberId);
 
@@ -71,6 +73,7 @@ public class MemberController {
 	public ResponseEntity<Map<String, Object>> editPreference(@RequestBody PreferenceDTO member,
 		@PathVariable Long memberId) {
 
+		log.info("Preference 수정 요청 data={}", member);
 		// Member Preference만 수정할 경우
 		signUpService.editPreference(member, memberId);
 

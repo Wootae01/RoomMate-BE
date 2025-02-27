@@ -9,6 +9,5 @@ import lombok.Setter;
 @Getter
 @Setter
 public class PreferenceDTO {
-	private Long memberId;
 	private Map<String, List<Long>> options; 	// Category : Option_value
 }
