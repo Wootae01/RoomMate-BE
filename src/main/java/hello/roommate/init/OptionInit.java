@@ -66,7 +66,7 @@ public class OptionInit {
 
 				// 흡연 여부
 				new Option(601L, Category.SMOKING, Smoking.NON_SMOKER.name()),
-				new Option(603L, Category.SMOKING, Smoking.SMOKER.name()),
+				new Option(602L, Category.SMOKING, Smoking.SMOKER.name()),
 
 				// 소음 민감도
 				new Option(701L, Category.NOISE, Noise.EARPHONES.name()),

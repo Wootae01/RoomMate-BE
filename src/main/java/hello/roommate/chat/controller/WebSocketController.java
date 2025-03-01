@@ -29,8 +29,9 @@ public class WebSocketController {
 		log.info("arrive message");
 		log.info("message ={}", messageDto);
 		Message message = messageService.convertToEntity(messageDto);
-		messageService.save(message);
-
+		Message save = messageService.save(message);
+		String nickname = save.getSender().getNickname();
+		messageDto.setNickname(nickname);
 		return messageDto;
 	}
 
