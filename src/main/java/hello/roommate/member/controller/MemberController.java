@@ -1,9 +1,6 @@
 package hello.roommate.member.controller;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
@@ -177,14 +174,14 @@ public class MemberController {
 	 */
 	@GetMapping("/{memberId}/chatrooms")
 	public List<ChatRoomDTO> findAllChatRooms(@PathVariable Long memberId) {
+		log.info("모든 채팅방 반환 요청 id={}", memberId);
 		List<ChatRoomDTO> result = new ArrayList<>();
 		List<ChatRoom> chatRooms = memberService.findAllChatRooms(memberId);
-
 		for (ChatRoom chatRoom : chatRooms) {
 			List<MemberChatRoom> memberChatRooms = chatRoom.getMemberChatRooms();
 
 			for (MemberChatRoom memberChatRoom : memberChatRooms) {
-				if (memberChatRoom.getMember().getId().equals(memberId)) { // 채팅방 중 내가 아닌 상대방 닉네임 찾고
+				if (!memberChatRoom.getMember().getId().equals(memberId)) { // 채팅방 중 내가 아닌 상대방 닉네임 찾고
 					Member opponent = memberChatRoom.getMember();
 					String nickname = opponent.getNickname();
 					Message latestMessage = messageService.findLatestMessage(chatRoom.getId()); //최근 메시지 찾고
@@ -198,7 +195,8 @@ public class MemberController {
 				}
 			}
 		}
-
+		log.info("반환 데이터 = {}", result);
+		result.sort(((o1, o2) -> o2.getUpdatedTime().compareTo(o1.getUpdatedTime())));
 		return result;
 	}
 
