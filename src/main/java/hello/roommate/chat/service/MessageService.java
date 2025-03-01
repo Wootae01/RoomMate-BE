@@ -70,7 +70,7 @@ public class MessageService {
 	public Message convertToEntity(MessageDTO dto) {
 		Message message = new Message();
 		ChatRoom chatRoom = chatRoomService.findRoomById(dto.getChatRoomId());
-		Member sender = memberService.findByNickname(dto.getNickname());
+		Member sender = memberService.findById(dto.getMemberId());
 
 		message.setContent(dto.getContent());
 
