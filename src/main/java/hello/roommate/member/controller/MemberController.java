@@ -1,6 +1,9 @@
 package hello.roommate.member.controller;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
@@ -22,7 +25,6 @@ import hello.roommate.member.domain.Member;
 import hello.roommate.member.domain.MemberChatRoom;
 import hello.roommate.member.dto.FilterCond;
 import hello.roommate.member.dto.RecommendMemberDTO;
-import hello.roommate.member.repository.MemberRepository;
 import hello.roommate.member.service.MemberService;
 import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.domain.Preference;
@@ -39,7 +41,6 @@ public class MemberController {
 	private final MemberService memberService;
 	private final MessageService messageService;
 	private final SignUpService signUpService;
-	private final MemberRepository memberRepository;
 
 	/**
 	 * 상대방 아이디를 넘겨받아 상대 프로필 정보 조회 후 해당 정보 반환
@@ -164,6 +165,18 @@ public class MemberController {
 		response.put("success", true);
 
 		return ResponseEntity.ok(response);
+	}
+
+	/**
+	 * 사용자 닉네임 반환
+	 * @param memberId 사용자 id
+	 * @return 닉네임
+	 */
+	@GetMapping("/{memberId}/nickname")
+	public String getNickName(@PathVariable Long memberId) {
+		Member member = memberService.findById(memberId);
+		String nickname = member.getNickname();
+		return nickname;
 	}
 
 	/**
