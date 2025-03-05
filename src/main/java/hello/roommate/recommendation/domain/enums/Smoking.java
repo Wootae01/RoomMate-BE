@@ -1,6 +1,7 @@
 package hello.roommate.recommendation.domain.enums;
 
 public enum Smoking {
-    NON_SMOKER,
-    SMOKER
+	NO_PREF, //상관 없음
+	NON_SMOKER,
+	SMOKER
 }
