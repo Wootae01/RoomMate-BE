@@ -1,7 +1,8 @@
 package hello.roommate.recommendation.domain.enums;
 
 public enum Noise {
-    EARPHONES,
-    FLEXIBLE,
-    SPEAKERS
+	NO_PREF, //상관 없음
+	EARPHONES,
+	FLEXIBLE,
+	SPEAKERS
 }
