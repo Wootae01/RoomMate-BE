@@ -27,6 +27,7 @@ import hello.roommate.member.dto.FilterCond;
 import hello.roommate.member.dto.RecommendMemberDTO;
 import hello.roommate.member.service.MemberService;
 import hello.roommate.recommendation.domain.LifeStyle;
+import hello.roommate.recommendation.domain.Option;
 import hello.roommate.recommendation.domain.Preference;
 import hello.roommate.recommendation.dto.LifeStyleDTO;
 import hello.roommate.recommendation.dto.PreferenceDTO;
@@ -57,8 +58,14 @@ public class MemberController {
 		List<LifeStyle> lifeStyleList = friend.getLifeStyle();
 		Map<String, List<Long>> lifestylemap = memberService.convertLifeStyleListToMap(lifeStyleList);
 
-		List<Preference> preferenceList = friend.getPreference();
-		Map<String, List<Long>> preferencemap = memberService.convertPreferenceListToMap(preferenceList);
+		//상관 없음 항목 제외한 preferenceMap
+		Map<String, List<Long>> preferencemap = friend.getPreference().stream()
+			.filter(preference -> preference.getOption().getId() > 100)
+			.map(Preference::getOption)
+			.collect(Collectors.groupingBy(
+				option -> option.getCategory().name(),
+				Collectors.mapping(Option::getId, Collectors.toList())
+			));
 
 		SignUpDTO friendData = new SignUpDTO(
 			friend.getId(), friend.getNickname(), friend.getIntroduce(), friend.getAge(),
