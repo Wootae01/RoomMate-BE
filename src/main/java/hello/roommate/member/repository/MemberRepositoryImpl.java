@@ -10,7 +10,6 @@ import com.querydsl.jpa.JPQLQuery;
 
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.domain.QMember;
-import hello.roommate.member.dto.FilterCond;
 import hello.roommate.recommendation.domain.QLifeStyle;
 import hello.roommate.recommendation.domain.enums.Category;
 
@@ -28,24 +27,36 @@ public class MemberRepositoryImpl extends QuerydslRepositorySupport implements M
 	 * @return
 	 */
 	@Override
-	public List<Member> search(Long memberId, FilterCond cond) {
-		Map<Category, List<Long>> map = cond.getCond();
+	public List<Member> search(Long memberId, Map<Category, List<Long>> cond, List<Integer> ages) {
 
 		QMember member = QMember.member;
 		QLifeStyle lifeStyle = QLifeStyle.lifeStyle;
 
+		//내 id 제외, 나와 같은 기숙사 사람 찾기
 		JPQLQuery<Member> query = from(member);
-		query.where(member.id.ne(memberId));
+		query.where(member.id.ne(memberId))
+			.where(member.dorm.eq(
+				JPAExpressions.select(member.dorm)
+					.from(member)
+					.where(member.id.eq(memberId))
+			));
 
-		map.forEach((category, optionIds) -> {
-			query.where(
-				JPAExpressions
-					.selectOne()
-					.from(lifeStyle)
-					.where(lifeStyle.member.eq(member))
-					.where(lifeStyle.option.id.in(optionIds))
-					.exists()
-			);
+		//나이 비교
+		if (!ages.isEmpty()) {
+			query.where(member.age.in(ages));
+		}
+
+		cond.forEach((category, optionIds) -> {
+			if (!optionIds.isEmpty()) {
+				query.where(
+					JPAExpressions
+						.selectOne()
+						.from(lifeStyle)
+						.where(lifeStyle.member.eq(member))
+						.where(lifeStyle.option.id.in(optionIds))
+						.exists()
+				);
+			}
 		});
 
 		return query.fetch();
