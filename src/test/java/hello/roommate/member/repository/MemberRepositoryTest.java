@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 import hello.roommate.init.OptionInit;
 import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Member;
-import hello.roommate.member.dto.FilterCond;
 import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.domain.Option;
 import hello.roommate.recommendation.domain.enums.Category;
@@ -112,6 +111,8 @@ class MemberRepositoryTest {
 		//내 정보
 		Member member = new Member();
 		member.setId(1111L);
+		member.setDorm(Dormitory.INUI);
+		member.setAge(1999);
 		Member save = memberRepository.save(member);
 
 		//사용할 option
@@ -126,53 +127,72 @@ class MemberRepositoryTest {
 		//상대방1
 		Member member1 = new Member();
 		member1.setId(2222L);
+		member1.setDorm(Dormitory.INUI);
+		member1.setAge(1999);
 		Member save1 = memberRepository.save(member1);
 
 		List<LifeStyle> lifeStyles = new ArrayList<>();
-		lifeStyles.add(new LifeStyle(save1, options.get(0)));
-		lifeStyles.add(new LifeStyle(save1, options.get(3)));
-		lifeStyles.add(new LifeStyle(save1, options.get(4)));
+		lifeStyles.add(new LifeStyle(save1, options.get(0))); //101
+		lifeStyles.add(new LifeStyle(save1, options.get(3))); //201
+		lifeStyles.add(new LifeStyle(save1, options.get(4))); //301
 		lifeStyleRepository.saveAll(lifeStyles);
+
+		//상대방2
+		Member member2 = new Member();
+		member2.setId(22222L);
+		member2.setDorm(Dormitory.INUI);
+		member2.setAge(2000);
+		Member save2 = memberRepository.save(member2);
+
+		List<LifeStyle> lifeStyles2 = new ArrayList<>();
+		lifeStyles2.add(new LifeStyle(save2, options.get(0))); //101
+		lifeStyles2.add(new LifeStyle(save2, options.get(3))); //201
+		lifeStyles2.add(new LifeStyle(save2, options.get(4))); //301
+		lifeStyleRepository.saveAll(lifeStyles2);
 
 		//상대방3
 		Member member3 = new Member();
 		member3.setId(3333L);
+		member3.setDorm(Dormitory.INUI);
+		member3.setAge(1999);
 		Member save3 = memberRepository.save(member3);
 
 		List<LifeStyle> lifeStyles3 = new ArrayList<>();
-		lifeStyles3.add(new LifeStyle(save3, options.get(0)));
-		lifeStyles3.add(new LifeStyle(save3, options.get(4)));
+		lifeStyles3.add(new LifeStyle(save3, options.get(0))); //101
+		lifeStyles3.add(new LifeStyle(save3, options.get(4))); //301
 		lifeStyleRepository.saveAll(lifeStyles3);
 
 		//상대방4
 		Member member4 = new Member();
 		member4.setId(4444L);
+		member4.setDorm(Dormitory.INUI);
+		member4.setAge(1999);
 		Member save4 = memberRepository.save(member4);
 
 		List<LifeStyle> lifeStyles4 = new ArrayList<>();
-		lifeStyles4.add(new LifeStyle(save4, options.get(1)));
-		lifeStyles4.add(new LifeStyle(save4, options.get(3)));
-		lifeStyles4.add(new LifeStyle(save4, options.get(4)));
-		lifeStyles4.add(new LifeStyle(save4, options.get(5)));
+		lifeStyles4.add(new LifeStyle(save4, options.get(1))); //102
+		lifeStyles4.add(new LifeStyle(save4, options.get(3))); //201
+		lifeStyles4.add(new LifeStyle(save4, options.get(4))); //301
+		lifeStyles4.add(new LifeStyle(save4, options.get(5))); //302
 		lifeStyleRepository.saveAll(lifeStyles4);
 
-		//when
+		//내 preference
 		Map<Category, List<Long>> listMap = new HashMap<>();
 		listMap.put(Category.BED_TIME, new ArrayList<>(List.of(101L, 102L, 103L)));
 		listMap.put(Category.WAKEUP_TIME, new ArrayList<>(List.of(201L)));
 		listMap.put(Category.HEATING, new ArrayList<>(List.of(301L)));
+		List<Integer> ages = new ArrayList<>();
+		ages.add(1999);
+		ages.add(2000);
+		//when
 
-		FilterCond filterCond = new FilterCond();
-		filterCond.setCond(listMap);
+		List<Member> search = memberRepository.search(save.getId(), listMap, ages);
 
-		log.info("검색 시작");
-		List<Member> search = memberRepository.search(member.getId(), filterCond);
-		log.info("검색 종료");
-		//then
 		Assertions.assertThat(search).contains(save1);
 		Assertions.assertThat(search).contains(save4);
+		Assertions.assertThat(search).contains(save2);
 
-		Assertions.assertThat(search.size()).isEqualTo(2);
+		Assertions.assertThat(search.size()).isEqualTo(3);
 
 	}
 

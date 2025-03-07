@@ -20,7 +20,6 @@ import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.domain.Option;
 import hello.roommate.recommendation.domain.Preference;
 import hello.roommate.recommendation.domain.enums.Category;
-import hello.roommate.recommendation.repository.OptionRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -29,7 +28,6 @@ import lombok.RequiredArgsConstructor;
 public class MemberService {
 	private final MemberRepository repository;
 	private final MemberRepository memberRepository;
-	private final OptionRepository optionRepository;
 
 	public Member save(Member member) {
 		return repository.save(member);
@@ -105,21 +103,25 @@ public class MemberService {
 
 		List<Preference> preferences = member.getPreference();
 
+		//상관 없음 체크한 항목 제외한 옵션 추출
 		List<Option> options = preferences
-			.stream().map(preference -> preference.getOption())
+			.stream()
+			.filter(preference -> preference.getOption().getId() > 100)
+			.map(Preference::getOption)
 			.toList();
 
-		Map<Category, List<Long>> collect = options.stream()
+		Map<Category, List<Long>> cond = options.stream()
 			.collect(
 				Collectors.groupingBy(
 					Option::getCategory,
 					Collectors.mapping(Option::getId, Collectors.toList())
 				));
 
-		FilterCond filterCond = new FilterCond();
-		filterCond.setCond(collect);
+		//나이 추출
+		List<Long> ages = cond.remove(Category.AGE);
+		List<Integer> intAges = getIntAges(ages);
 
-		List<Member> search = memberRepository.search(myId, filterCond);
+		List<Member> search = memberRepository.search(myId, cond, intAges);
 
 		return search;
 	}
@@ -131,8 +133,21 @@ public class MemberService {
 	 * @return 추천 멤버
 	 */
 	public List<Member> searchMembers(Long myId, FilterCond filterCond) {
-		List<Member> search = memberRepository.search(myId, filterCond);
+		Map<Category, List<Long>> cond = filterCond.getCond();
+		List<Long> ages = cond.remove(Category.AGE);
+		List<Integer> intAges = getIntAges(ages);
+
+		List<Member> search = memberRepository.search(myId, cond, intAges);
 		return search;
+	}
+
+	//age Long 값 Integer 로 변경
+	private static List<Integer> getIntAges(List<Long> ages) {
+
+		List<Integer> intAges = ages == null ? new ArrayList<>() : ages.stream()
+			.map(Long::intValue)
+			.toList();
+		return intAges;
 	}
 
 	//dto로 전환
