@@ -38,7 +38,8 @@ public class MemberService {
 	}
 
 	public List<ChatRoom> findAllChatRooms(Long memberId) {
-		Member member = memberRepository.findById(memberId).orElseThrow();
+		Member member = memberRepository.findById(memberId)
+			.orElseThrow(() -> new NoSuchElementException("등록되지 않은 사용자 입니다."));
 		List<MemberChatRoom> memberChatRooms = member.getMemberChatRooms();
 		List<ChatRoom> chatRooms = new ArrayList<>();
 		for (MemberChatRoom memberChatRoom : memberChatRooms) {
@@ -53,7 +54,7 @@ public class MemberService {
 	}
 
 	public Member findByNickname(String nickname) {
-		return repository.findByNickname(nickname).orElseThrow(() -> new NoSuchElementException("Member not found"));
+		return repository.findByNickname(nickname).orElseThrow(() -> new NoSuchElementException("등록되지 않은 사용자 입니다."));
 	}
 
 	public void delete(Long id) {

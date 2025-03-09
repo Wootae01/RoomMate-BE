@@ -1,6 +1,7 @@
 package hello.roommate.advice;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
@@ -56,6 +57,20 @@ public class GlobalControllerAdvice {
 	public ErrorResult handleHttpNotReadable(HttpMessageNotReadableException e) {
 		log.error("HttpMessageNotReadableException, message= {}", e.getMessage());
 		return new ErrorResult(HttpStatus.BAD_REQUEST.value(), "잘못된 타입 값 입니다.");
+	}
+
+	/**
+	 * NoSuchElementException 발생 시 예외를 처리하는 메서드
+	 * Http400코드를 담은 ErrorResult 객체를 반환
+	 *
+	 * @param e NoSuchElementException 예외
+	 * @return Http 400 코드를 담은 ErrorResult 객체
+	 */
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(NoSuchElementException.class)
+	public ErrorResult handleNoSuchElementException(NoSuchElementException e) {
+		log.error("NoSuchElementException, message={}", e.getMessage());
+		return new ErrorResult(HttpStatus.BAD_REQUEST.value(), e.getMessage());
 	}
 
 	/**
