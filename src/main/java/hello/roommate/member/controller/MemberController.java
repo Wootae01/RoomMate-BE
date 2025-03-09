@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -132,7 +133,7 @@ public class MemberController {
 
 	// 프론트에서 내정보 1단계만 수정할 시(Member basic만 수정시)
 	@PostMapping("/{memberId}/editprofile")
-	public ResponseEntity<Map<String, Object>> editProfile(@RequestBody EditMemberDTO member,
+	public ResponseEntity<Map<String, Object>> editProfile(@Validated @RequestBody EditMemberDTO member,
 		@PathVariable Long memberId) {
 
 		signUpService.editMember(member, memberId);
@@ -145,7 +146,7 @@ public class MemberController {
 
 	// 프론트에서 LifeStyle만 수정할 시
 	@PostMapping("/{memberId}/editlifestyle")
-	public ResponseEntity<Map<String, Object>> editLifeStyle(@RequestBody LifeStyleDTO member,
+	public ResponseEntity<Map<String, Object>> editLifeStyle(@Validated @RequestBody LifeStyleDTO member,
 		@PathVariable Long memberId) {
 
 		log.info("LifeStlye 수정 요청 data={}", member);
@@ -161,7 +162,7 @@ public class MemberController {
 
 	// 프론트에서 Preference만 수정할 시
 	@PostMapping("/{memberId}/editpreference")
-	public ResponseEntity<Map<String, Object>> editPreference(@RequestBody PreferenceDTO member,
+	public ResponseEntity<Map<String, Object>> editPreference(@Validated @RequestBody PreferenceDTO member,
 		@PathVariable Long memberId) {
 
 		log.info("Preference 수정 요청 data={}", member);

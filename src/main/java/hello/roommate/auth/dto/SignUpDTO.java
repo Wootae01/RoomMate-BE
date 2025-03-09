@@ -21,23 +21,23 @@ import lombok.ToString;
 @ToString
 @AllArgsConstructor
 public class SignUpDTO {
-	@NotNull
+	@NotNull(message = "{NotNull.userId}")
 	private Long userId;
 
-	@NotBlank(message = "닉네임은 필수 값 입니다.")
-	@Size(max = 10, message = "닉네임의 최대 길이는 10글자 입니다.")
+	@NotBlank(message = "{NotBlank.nickname}")
+	@Size(max = 10, message = "{Size.nickname}")
 	private String nickname;
 
-	@Size(max = 60, message = "한줄 소개는 최대 60글자 입니다.")
+	@Size(max = 60, message = "{Size.introduce}")
 	private String introduce;
 
-	@NotNull(message = "출생년도는 필수 값 입니다.")
+	@NotNull(message = "{NotNull.age}")
 	private int age;
 
-	@NotNull(message = "성별은 필수 값 입니다.")
+	@NotNull(message = "{NotNull.gender}")
 	private Gender gender;
 
-	@NotNull(message = "기숙사 정보는 필수 값 입니다.")
+	@NotNull(message = "{NotNull.dormitory}")
 	private Dormitory dormitory;
 
 	@ValidLifeStyle

@@ -3,7 +3,12 @@ package hello.roommate.recommendation.dto;
 import java.util.List;
 import java.util.Map;
 
-import lombok.*;
+import hello.roommate.validator.ValidPreference;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -11,5 +16,6 @@ import lombok.*;
 @NoArgsConstructor
 @ToString
 public class PreferenceDTO {
-	private Map<String, List<Long>> options; 	// Category : Option_value
+	@ValidPreference
+	private Map<String, List<Long>> options;    // Category : Option_value
 }

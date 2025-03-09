@@ -15,11 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice
 @Slf4j
-public class SignupControllerAdvice {
+public class GlobalControllerAdvice {
 
 	/**
 	 * Validated 검증에 실패한 모든 필드의 에러 메시지를 담아
-	 * HttpStatus 코드 400으로 ErrorResult 객체로 반환합니다.
+	 * HttpStatus 코드 400으로 ErrorResult 객체로 반환
 	 *
 	 * @param e Validated 검증에 실패했을 때 발생한 에러
 	 * @return HttpStatus 코드 400으로 ErrorResult 객체
@@ -46,7 +46,7 @@ public class SignupControllerAdvice {
 
 	/**
 	 * JSON 등의 타입 변환이나 읽기 과정에서 발생한 에러를 잡아
-	 * Http400코드를 담은 ErrorResult 객체를 반환합니다.
+	 * Http400코드를 담은 ErrorResult 객체를 반환
 	 *
 	 * @param e Http 메시지를 읽을 수 없을 때 발생한 에러
 	 * @return Http 400 코드를 담은 ErrorResult 객체
@@ -58,6 +58,13 @@ public class SignupControllerAdvice {
 		return new ErrorResult(HttpStatus.BAD_REQUEST.value(), "잘못된 타입 값 입니다.");
 	}
 
+	/**
+	 * 기타 정의 되지 않은 모든 에러를 잡아
+	 * Http 500 코드를 담은 ErrorResult 객체를 반환
+	 *
+	 * @param e Exception
+	 * @return 500에러 코드를 담은 ErrorResult 객체
+	 */
 	@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(Exception.class)
 	public ErrorResult handleException(Exception e) {
