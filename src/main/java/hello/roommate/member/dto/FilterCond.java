@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import hello.roommate.recommendation.domain.enums.Category;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -15,6 +16,7 @@ import lombok.Setter;
 @Setter
 public class FilterCond {
 
+	@NotNull(message = "{NotNull}")
 	private Map<Category, List<Long>> cond = new HashMap<>();
 
 }
