@@ -245,10 +245,10 @@ public class MemberController {
 	 *
 	 * @param memberId 사용자 id
 	 * @param filterCond 사용자가 적용한 필터 항목들
-	 * @return 필터 적용된 추천목록 멤버 반환
+	 * @return 필터 적용된 추천 목록 멤버 반환
 	 */
 	@PostMapping("/{memberId}/recommendation")
-	public List<RecommendMemberDTO> searchMembers(@PathVariable Long memberId, @RequestBody FilterCond filterCond) {
+	public List<RecommendMemberDTO> searchMembers(@PathVariable Long memberId, @RequestBody @Validated FilterCond filterCond) {
 		List<Member> members = memberService.searchMembers(memberId, filterCond);
 		List<RecommendMemberDTO> dtoList = members.stream()
 			.map(member -> memberService.convertToDTO(member))
