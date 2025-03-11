@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -74,6 +75,18 @@ public class GlobalControllerAdvice {
 	}
 
 	/**
+	 * 존재하지 않는 URL 로 요청했을 때 발생하는 예외
+	 * @param e NoResourceFoundException
+	 * @return Http 400 코드를 담은 ErrorResult 객체
+	 */
+	@ResponseStatus(value = HttpStatus.BAD_REQUEST)
+	@ExceptionHandler(NoResourceFoundException.class)
+	public ErrorResult handleNoResourceFoundException(NoResourceFoundException e) {
+		log.error("NoResourceFoundException, message={}", e.getMessage());
+		return new ErrorResult(HttpStatus.BAD_REQUEST.value(), "잘못된 요청 입니다.");
+	}
+
+	/**
 	 * 기타 정의 되지 않은 모든 에러를 잡아
 	 * Http 500 코드를 담은 ErrorResult 객체를 반환
 	 *
@@ -83,7 +96,7 @@ public class GlobalControllerAdvice {
 	@ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
 	@ExceptionHandler(Exception.class)
 	public ErrorResult handleException(Exception e) {
-		log.error("UnHandled exception e", e);
+		log.error("UnHandled exception e {}", e);
 		return new ErrorResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), "내부 서버 오류가 발생했습니다.");
 	}
 }
