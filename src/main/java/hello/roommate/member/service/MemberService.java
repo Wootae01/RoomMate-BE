@@ -20,6 +20,8 @@ import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.domain.Option;
 import hello.roommate.recommendation.domain.Preference;
 import hello.roommate.recommendation.domain.enums.Category;
+import hello.roommate.recommendation.repository.LifeStyleRepository;
+import hello.roommate.recommendation.repository.PreferenceRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -28,6 +30,8 @@ import lombok.RequiredArgsConstructor;
 public class MemberService {
 	private final MemberRepository repository;
 	private final MemberRepository memberRepository;
+	private final LifeStyleRepository lifeStyleRepository;
+	private final PreferenceRepository preferenceRepository;
 
 	public Member save(Member member) {
 		return repository.save(member);
@@ -58,6 +62,12 @@ public class MemberService {
 	}
 
 	public void delete(Long id) {
+		repository.deleteById(id);
+	}
+
+	public void deleteMemberCascade(Long id) {
+		lifeStyleRepository.deleteByMemberId(id);
+		preferenceRepository.deleteByMemberId(id);
 		repository.deleteById(id);
 	}
 

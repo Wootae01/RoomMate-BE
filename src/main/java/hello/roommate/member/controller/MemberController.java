@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,6 +44,22 @@ public class MemberController {
 	private final MemberService memberService;
 	private final MessageService messageService;
 	private final SignUpService signUpService;
+
+	/**
+	 * 회원 탈퇴 처리
+	 *
+	 * @param memberId memberId
+	 * @return 성공여부 {JSON} : "success":"true"
+	 */
+	@DeleteMapping("/{memberId}/resign")
+	public ResponseEntity<Map<String, Object>> reSign(@Validated @PathVariable Long memberId){
+		memberService.deleteMemberCascade(memberId);
+
+		Map<String, Object> response = new HashMap<>();
+		response.put("success", true);
+
+		return ResponseEntity.ok(response);
+	}
 
 	/**
 	 * 상대방 아이디를 넘겨받아 상대 프로필 정보 조회 후 해당 정보 반환
