@@ -1,5 +1,6 @@
 package hello.roommate.chat.controller;
 
+import java.util.HashMap;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -69,12 +70,12 @@ public class WebSocketController {
 		}
 
 		NotificationPushDTO pushDTO = new NotificationPushDTO();
-		pushDTO.setTo(String.valueOf(opponent.getId()));
+		pushDTO.setTo(optionalNotification.get().getToken());
 		pushDTO.setBody(messageReceiveDTO.getContent());
 		pushDTO.setTitle(nickname);
 		pushDTO.setSound("default");
-		pushDTO.setData(null);
-		
+		pushDTO.setData(new HashMap<>());
+
 		// push 알림 전송 후 sendDTO 반환
 		return pushNotificationService.sendNotification(pushDTO)
 			.thenReturn(sendDTO);
