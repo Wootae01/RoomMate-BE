@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import hello.roommate.chat.domain.Notification;
-import hello.roommate.chat.dto.NotificationDTO;
+import hello.roommate.chat.dto.NotificationSaveDTO;
 import hello.roommate.chat.repository.NotificationRepository;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.repository.MemberRepository;
@@ -21,7 +21,7 @@ public class NotificationService {
 	private final NotificationRepository notificationRepository;
 	private final MemberRepository memberRepository;
 
-	public void saveOrUpdate(NotificationDTO dto) {
+	public void saveOrUpdate(NotificationSaveDTO dto) {
 
 		Optional<Notification> optional = notificationRepository.findByMemberId(dto.getMemberId());
 		if (optional.isEmpty()) {
@@ -36,6 +36,10 @@ public class NotificationService {
 			Notification notification = optional.get();
 			notification.setToken(dto.getToken());
 		}
+	}
+
+	public Optional<Notification> findByMemberId(Long memberId) {
+		return notificationRepository.findByMemberId(memberId);
 
 	}
 }
