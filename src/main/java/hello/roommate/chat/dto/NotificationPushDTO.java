@@ -16,5 +16,5 @@ public class NotificationPushDTO {
 	private String sound;      //알림 소리 정보 (default, null)
 	private String title;      //알림 제목
 	private String body;      //알림 내용
-	private Map<String, Object> data;    //알림과 함께 전달할 추가 데이터
+	private Map<String, String> data;    //알림과 함께 전달할 추가 데이터
 }

@@ -1,6 +1,7 @@
 package hello.roommate.chat.controller;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 
@@ -74,7 +75,9 @@ public class WebSocketController {
 		pushDTO.setBody(messageReceiveDTO.getContent());
 		pushDTO.setTitle(nickname);
 		pushDTO.setSound("default");
-		pushDTO.setData(new HashMap<>());
+		Map<String, String> dataMap = new HashMap<>();
+		dataMap.put("chatRoomId", String.valueOf(messageReceiveDTO.getChatRoomId()));
+		pushDTO.setData(dataMap);
 
 		// push 알림 전송 후 sendDTO 반환
 		return pushNotificationService.sendNotification(pushDTO)
