@@ -65,13 +65,18 @@ public class WebSocketController {
 
 		Optional<Notification> optionalNotification = notificationService.findByMemberId(opponent.getId());
 
-		//상대방이 알림 권한 허용을 안했으면 알림 보내지 않음
+		//상대방이 알림 권한 허용을 안했으면 알림 전송 x (토큰 생성 되있지 않으면)
 		if (optionalNotification.isEmpty()) {
+			return Mono.just(sendDTO);
+		}
+		//알림 허용 하지 않았으면 알림 전송 x
+		Notification notification = optionalNotification.get();
+		if (!notification.getPermission()) {
 			return Mono.just(sendDTO);
 		}
 
 		NotificationPushDTO pushDTO = new NotificationPushDTO();
-		pushDTO.setTo(optionalNotification.get().getToken());
+		pushDTO.setTo(notification.getToken());
 		pushDTO.setBody(messageReceiveDTO.getContent());
 		pushDTO.setTitle(nickname);
 		pushDTO.setSound("default");
