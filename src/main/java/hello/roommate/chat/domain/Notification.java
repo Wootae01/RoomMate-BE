@@ -23,4 +23,6 @@ public class Notification {
 	private Member member;
 
 	private String token;
+
+	private Boolean permission;
 }

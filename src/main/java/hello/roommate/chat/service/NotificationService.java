@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import hello.roommate.chat.domain.Notification;
+import hello.roommate.chat.dto.NotificationPermitDTO;
 import hello.roommate.chat.dto.NotificationSaveDTO;
 import hello.roommate.chat.repository.NotificationRepository;
 import hello.roommate.member.domain.Member;
@@ -31,6 +32,7 @@ public class NotificationService {
 			Notification notification = new Notification();
 			notification.setMember(member);
 			notification.setToken(dto.getToken());
+			notification.setPermission(true);
 			notificationRepository.save(notification);
 		} else {
 			Notification notification = optional.get();
@@ -40,6 +42,12 @@ public class NotificationService {
 
 	public Optional<Notification> findByMemberId(Long memberId) {
 		return notificationRepository.findByMemberId(memberId);
+	}
 
+	public void updatePermission(Long memberId, NotificationPermitDTO dto) {
+		Notification notification = notificationRepository.findByMemberId(memberId)
+			.orElseThrow(() -> new NoSuchElementException("알림 허용을 하지 않은 사용자 입니다."));
+
+		notification.setPermission(dto.getPermission());
 	}
 }
