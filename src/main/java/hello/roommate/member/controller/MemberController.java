@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import hello.roommate.auth.dto.EditMemberDTO;
@@ -52,7 +54,7 @@ public class MemberController {
 	 * @return 성공여부 {JSON} : "success":"true"
 	 */
 	@DeleteMapping("/{memberId}/resign")
-	public ResponseEntity<Map<String, Object>> reSign(@Validated @PathVariable Long memberId){
+	public ResponseEntity<Map<String, Object>> reSign(@Validated @PathVariable Long memberId) {
 		memberService.deleteMemberCascade(memberId);
 
 		Map<String, Object> response = new HashMap<>();
@@ -193,6 +195,23 @@ public class MemberController {
 	}
 
 	/**
+	 * 사용 가능한 닉네임인지 확인하여 사용 가능하면 true, 불가능 false 반환한다.
+	 *
+	 * @param nickname
+	 * @return 사용 불가 : false, 사용 가능 true 반환
+	 */
+	@GetMapping("/validate-nickname")
+	public Boolean validateDuplicatedNickname(@RequestParam String nickname) {
+		Optional<Member> optional = memberService.findByNickname(nickname);
+
+		if (optional.isEmpty()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * 사용자 닉네임 반환
 	 * @param memberId 사용자 id
 	 * @return 닉네임
@@ -265,7 +284,8 @@ public class MemberController {
 	 * @return 필터 적용된 추천 목록 멤버 반환
 	 */
 	@PostMapping("/{memberId}/recommendation")
-	public List<RecommendMemberDTO> searchMembers(@PathVariable Long memberId, @RequestBody @Validated FilterCond filterCond) {
+	public List<RecommendMemberDTO> searchMembers(@PathVariable Long memberId,
+		@RequestBody @Validated FilterCond filterCond) {
 		List<Member> members = memberService.searchMembers(memberId, filterCond);
 		List<RecommendMemberDTO> dtoList = members.stream()
 			.map(member -> memberService.convertToDTO(member))

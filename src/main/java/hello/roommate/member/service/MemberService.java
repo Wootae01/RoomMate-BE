@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -57,8 +58,8 @@ public class MemberService {
 		return repository.findByDorm(dorm);
 	}
 
-	public Member findByNickname(String nickname) {
-		return repository.findByNickname(nickname).orElseThrow(() -> new NoSuchElementException("등록되지 않은 사용자 입니다."));
+	public Optional<Member> findByNickname(String nickname) {
+		return repository.findByNickname(nickname);
 	}
 
 	public void delete(Long id) {
