@@ -1,7 +1,18 @@
 package hello.roommate.auth.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import hello.roommate.auth.dto.EditMemberDTO;
+import hello.roommate.auth.dto.LoginResponseDTO;
 import hello.roommate.auth.dto.SignUpDTO;
+import hello.roommate.auth.jwt.JWTConstants;
+import hello.roommate.auth.jwt.JWTUtil;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.repository.MemberRepository;
 import hello.roommate.recommendation.domain.LifeStyle;
@@ -14,14 +25,6 @@ import hello.roommate.recommendation.repository.OptionRepository;
 import hello.roommate.recommendation.repository.PreferenceRepository;
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -31,6 +34,29 @@ public class SignUpService {
 	private final OptionRepository optionRepository;
 	private final LifeStyleRepository lifeStyleRepository;
 	private final PreferenceRepository preferenceRepository;
+	private final JWTUtil jwtUtil;
+
+	public LoginResponseDTO createLoginResponse(Member member) {
+		LoginResponseDTO dto = new LoginResponseDTO();
+		dto.setMemberId(member.getId());
+		dto.setIsFirstLogin(member.getNickname() == null);
+
+		String accessToken = jwtUtil.createJwt(member.getUsername(), "ROLE_USER", "access",
+			JWTConstants.ACCESS_TOKEN_EXPIRATION);
+		String refreshToken = jwtUtil.createJwt(member.getUsername(), "ROLE_USER", "refresh",
+			JWTConstants.REFRESH_TOKEN_EXPIRATION);
+
+		dto.setAccessToken(accessToken);
+		dto.setRefreshToken(refreshToken);
+
+		return dto;
+	}
+
+	public Member createNewMember(String username) {
+		Member member = new Member();
+		member.setUsername(username);
+		return memberRepository.save(member);
+	}
 
 	public void registerMember(SignUpDTO request) {
 		// 가입되어있는 회원인지 조회
@@ -130,8 +156,6 @@ public class SignUpService {
 
 		preferenceRepository.saveAll(preferences);
 	}
+
 }
-// options.stream() -> 리스트 데이터 하나씩 처리
-// .map -> 각 Option 객체에 대해, LifeStyle, Preference를 호출하여 LifeStyle객체 생성
-// .collect(Collectors.toList()) -> map()으로 변환된 객체들을 리스트로 반환
-//option = List options에 들어있는 개별 Option 객체
+

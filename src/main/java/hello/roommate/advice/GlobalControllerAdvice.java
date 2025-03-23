@@ -35,7 +35,7 @@ public class GlobalControllerAdvice {
 		List<String> errorMessages = bindingResult.getAllErrors()
 			.stream()
 			.map(error -> error.getDefaultMessage())
-			.collect(Collectors.toList());
+			.toList();
 
 		String errorMessage = errorMessages.stream()
 			.collect(Collectors.joining(", "));
@@ -99,4 +99,5 @@ public class GlobalControllerAdvice {
 		log.error("UnHandled exception e {}", e);
 		return new ErrorResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), "내부 서버 오류가 발생했습니다.");
 	}
+
 }

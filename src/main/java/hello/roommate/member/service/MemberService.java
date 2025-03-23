@@ -42,6 +42,10 @@ public class MemberService {
 		return repository.findById(id).orElseThrow();
 	}
 
+	public Optional<Member> findByUsername(String username) {
+		return memberRepository.findByUsername(username);
+	}
+
 	public List<ChatRoom> findAllChatRooms(Long memberId) {
 		Member member = memberRepository.findById(memberId)
 			.orElseThrow(() -> new NoSuchElementException("등록되지 않은 사용자 입니다."));
