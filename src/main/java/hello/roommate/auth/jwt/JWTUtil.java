@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
-import hello.roommate.auth.exception.ExpiredTokenException;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 
 /**
@@ -68,8 +68,8 @@ public class JWTUtil {
 				.getExpiration();
 
 			return expiration.before(new Date());
-		} catch (ExpiredTokenException e) {
-			return false;
+		} catch (ExpiredJwtException e) {
+			return true;
 		}
 
 	}

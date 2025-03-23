@@ -41,7 +41,7 @@ public class AuthControllerAdivce {
 	 */
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(ExpiredJwtException.class)
-	public AuthErrorResult handleExpiredJwtException(ExpiredTokenException e) {
+	public AuthErrorResult handleExpiredJwtException(ExpiredJwtException e) {
 		log.error("ExpiredJwtException");
 
 		return new AuthErrorResult(EXPIRED_TOKEN.getCode(), EXPIRED_TOKEN.getMessage());
