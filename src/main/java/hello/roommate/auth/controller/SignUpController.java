@@ -27,7 +27,6 @@ public class SignUpController {
 	@PostMapping("/signup")    // 로그인 완료 후 회원가입 폼 작성한 후 Post로 전달
 	public ResponseEntity<Map<String, Object>> signUp(
 		@Validated @RequestBody SignUpDTO signUpDTO) { // 프론트에서 받은 Json데이터를 SignUpDTO 객체로 변환\
-
 		log.info("signup request= {}", signUpDTO);
 		signUpService.registerMember(signUpDTO);
 

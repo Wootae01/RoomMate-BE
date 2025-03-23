@@ -1,5 +1,6 @@
 package hello.roommate.advice;
 
+import java.security.SignatureException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -35,7 +36,7 @@ public class GlobalControllerAdvice {
 		List<String> errorMessages = bindingResult.getAllErrors()
 			.stream()
 			.map(error -> error.getDefaultMessage())
-			.collect(Collectors.toList());
+			.toList();
 
 		String errorMessage = errorMessages.stream()
 			.collect(Collectors.joining(", "));
@@ -87,6 +88,18 @@ public class GlobalControllerAdvice {
 	}
 
 	/**
+	 * 잘못된 jwt 토큰 정보를 갖고 요청했을 때 발생하는 예외
+	 * @param e SignatureException
+	 * @return Http 401 코드를 담은 ErrorResult 객체
+	 */
+	@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
+	@ExceptionHandler(SignatureException.class)
+	public ErrorResult handleSignatureException(SignatureException e) {
+		log.error("SignatureException, message={}", e.getMessage());
+		return new ErrorResult(HttpStatus.BAD_REQUEST.value(), "잘못된 토큰입니다.");
+	}
+
+	/**
 	 * 기타 정의 되지 않은 모든 에러를 잡아
 	 * Http 500 코드를 담은 ErrorResult 객체를 반환
 	 *
@@ -99,4 +112,5 @@ public class GlobalControllerAdvice {
 		log.error("UnHandled exception e {}", e);
 		return new ErrorResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), "내부 서버 오류가 발생했습니다.");
 	}
+
 }
