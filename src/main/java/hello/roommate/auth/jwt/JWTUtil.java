@@ -1,11 +1,15 @@
 package hello.roommate.auth.jwt;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.Date;
 
 import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import hello.roommate.auth.exception.ExpiredTokenException;
@@ -45,6 +49,13 @@ public class JWTUtil {
 			.parseSignedClaims(token)
 			.getPayload()
 			.get("category", String.class);
+	}
+
+	public Authentication getAuthentication(String token) {
+		String username = getUsername(token);
+		String role = getRole(token);
+		return new UsernamePasswordAuthenticationToken(username, null,
+			Collections.singletonList(new SimpleGrantedAuthority(role)));
 	}
 
 	public Boolean isExpired(String token) {
