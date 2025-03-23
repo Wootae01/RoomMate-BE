@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -14,9 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import hello.roommate.auth.dto.JWTTokenDTO;
 import hello.roommate.auth.dto.LoginRequestDTO;
 import hello.roommate.auth.dto.LoginResponseDTO;
-import hello.roommate.auth.exception.ExpiredTokenException;
-import hello.roommate.auth.exception.JWTErrorCode;
-import hello.roommate.auth.exception.RefreshTokenException;
+import hello.roommate.auth.exception.MissingTokenException;
 import hello.roommate.auth.jwt.JWTConstants;
 import hello.roommate.auth.jwt.JWTUtil;
 import hello.roommate.auth.service.RefreshEntityService;
@@ -51,24 +48,13 @@ public class AuthController {
 		String header = request.getHeader("Authorization");
 
 		if (header == null || !header.startsWith("Bearer ")) {
-			return new ResponseEntity<>(
-				Map.of("code", JWTErrorCode.MISSING_TOKEN.getCode(), "message",
-					JWTErrorCode.MISSING_TOKEN.getMessage()),
-				HttpStatus.BAD_REQUEST);
+			throw new MissingTokenException();
 		}
 
 		String[] split = header.split(" ");
 		String refresh = split[1];
-		try {
-			refreshEntityService.validateRefresh(refresh);
-		} catch (RefreshTokenException e) {
-			return new ResponseEntity<>(Map.of("code", JWTErrorCode.INVALID_TOKEN.getCode(), "message", e.getMessage()),
-				HttpStatus.BAD_REQUEST);
 
-		} catch (ExpiredTokenException e) {
-			return new ResponseEntity<>(Map.of("code", JWTErrorCode.EXPIRED_TOKEN.getCode(), "message", e.getMessage()),
-				HttpStatus.UNAUTHORIZED);
-		}
+		refreshEntityService.validateRefresh(refresh);
 
 		//새로운 토큰 생성 후 저장, 기존 refresh 토큰 삭제
 		JWTTokenDTO newToken = refreshEntityService.createNewToken(refresh);

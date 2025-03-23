@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import hello.roommate.auth.domain.RefreshEntity;
 import hello.roommate.auth.dto.JWTTokenDTO;
 import hello.roommate.auth.exception.ExpiredTokenException;
+import hello.roommate.auth.exception.InvalidTokenException;
 import hello.roommate.auth.exception.JWTErrorCode;
 import hello.roommate.auth.exception.RefreshTokenException;
 import hello.roommate.auth.jwt.JWTConstants;
@@ -45,7 +46,7 @@ public class RefreshEntityService {
 		String category = jwtUtil.getCategory(refresh);
 		if (!category.equals("refresh")) {
 			log.info("해당 토큰은 refresh 토큰이 아닙니다.");
-			throw new RefreshTokenException(JWTErrorCode.INVALID_TOKEN.getMessage());
+			throw new InvalidTokenException(JWTErrorCode.INVALID_TOKEN.getMessage());
 		}
 		if (jwtUtil.isExpired(refresh)) {
 			log.info("해당 refresh 토큰은 만료되었습니다.");
@@ -55,7 +56,7 @@ public class RefreshEntityService {
 		Boolean isExist = refreshEntityRepository.existsByRefresh(refresh);
 		if (!isExist) {
 			log.info("해당 refresh 토큰은 존재하지 않습니다.");
-			throw new RefreshTokenException(JWTErrorCode.INVALID_TOKEN.getMessage());
+			throw new InvalidTokenException(JWTErrorCode.INVALID_TOKEN.getMessage());
 		}
 	}
 
