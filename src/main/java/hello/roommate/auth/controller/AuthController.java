@@ -109,4 +109,27 @@ public class AuthController {
 			return ResponseEntity.ok(response);
 		}
 	}
+	/**
+	 * 로그인 상태 여부를 확인하는 엔드포인트. 앱 시작시 사용된다.
+	 * @param dto username 을 담고있는 dto 객체
+	 * @return memberId
+	 */
+	@PostMapping("/check-login")
+	public Map<String, Long> checkLogin(@RequestBody LoginRequestDTO dto) {
+		log.info("로그인 여부 요청");
+		String username = dto.getUsername();
+		Optional<Member> optional = memberService.findByUsername(username);
+		if (optional.isEmpty()) {
+			return Map.of("memberId", -1L); //회원 가입 하지 않는 사용자 의미
+		}
+
+		Member member = optional.get();
+		if (member.getNickname() == null) {
+			return Map.of("memberId", -1L); //회원 가입 하지 않는 사용자 의미
+		} else {
+			return Map.of("memberId", member.getId());
+		}
+
+	}
+
 }
