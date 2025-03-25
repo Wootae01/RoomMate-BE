@@ -1,6 +1,5 @@
 package hello.roommate.advice;
 
-import java.security.SignatureException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
@@ -85,18 +84,6 @@ public class GlobalControllerAdvice {
 	public ErrorResult handleNoResourceFoundException(NoResourceFoundException e) {
 		log.error("NoResourceFoundException, message={}", e.getMessage());
 		return new ErrorResult(HttpStatus.BAD_REQUEST.value(), "잘못된 요청 입니다.");
-	}
-
-	/**
-	 * 잘못된 jwt 토큰 정보를 갖고 요청했을 때 발생하는 예외
-	 * @param e SignatureException
-	 * @return Http 401 코드를 담은 ErrorResult 객체
-	 */
-	@ResponseStatus(value = HttpStatus.UNAUTHORIZED)
-	@ExceptionHandler(SignatureException.class)
-	public ErrorResult handleSignatureException(SignatureException e) {
-		log.error("SignatureException, message={}", e.getMessage());
-		return new ErrorResult(HttpStatus.BAD_REQUEST.value(), "잘못된 토큰입니다.");
 	}
 
 	/**

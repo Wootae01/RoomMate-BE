@@ -38,6 +38,7 @@ public class SecurityConfig {
 				(auth) -> auth
 					.requestMatchers("/auth/token").permitAll()
 					.requestMatchers("/auth/reissue").permitAll()
+					.requestMatchers("/ws/chat").permitAll()
 					.anyRequest().authenticated());
 
 		//세션 설정. state less로 설정
