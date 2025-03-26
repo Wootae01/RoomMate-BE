@@ -1,5 +1,8 @@
 package hello.roommate.auth.config;
 
+import hello.roommate.auth.jwt.CustomLogoutFilter;
+import hello.roommate.auth.repository.RefreshEntityRepository;
+import hello.roommate.auth.service.RefreshEntityService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,11 +13,13 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import hello.roommate.auth.jwt.JWTFilter;
 import hello.roommate.auth.jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.web.authentication.logout.LogoutFilter;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
 	private final JWTUtil jwtUtil;
+	private final RefreshEntityService refreshEntityService;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws
@@ -31,6 +36,9 @@ public class SecurityConfig {
 
 		http
 			.addFilterBefore(new JWTFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
+
+		http
+				.addFilterBefore(new CustomLogoutFilter(jwtUtil, refreshEntityService), LogoutFilter.class);
 
 		//경로별 인가 작업
 		http
