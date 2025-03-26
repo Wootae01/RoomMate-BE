@@ -73,6 +73,9 @@ public class RefreshEntityService {
 		return save;
 	}
 
+	public boolean existsByRefresh(String refresh) {
+		return refreshEntityRepository.existsByRefresh(refresh);
+	}
 	public void deleteByRefresh(String refresh) {
 		refreshEntityRepository.deleteByRefresh(refresh);
 
