@@ -31,7 +31,6 @@ public class MemberInit {
     //임의로 member 데이터 생성
     private Member randomMember(Long id) {
         Member member = new Member();
-        member.setId(id);
         member.setNickname(String.valueOf(id));
         member.setImg("img");
         member.setDorm(Dormitory.INUI);
