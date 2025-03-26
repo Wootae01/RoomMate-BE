@@ -43,7 +43,7 @@ public class AuthController {
 	 * @return 새로운 access 토큰과 refresh 토큰
 	 */
 	@PostMapping("/reissue")
-	public ResponseEntity<?> reissue(HttpServletRequest request) {
+	public ResponseEntity<JWTTokenDTO> reissue(HttpServletRequest request) {
 		log.info("reissue");
 		String header = request.getHeader("Authorization");
 
@@ -89,7 +89,7 @@ public class AuthController {
 	 */
 	@PostMapping("/login")
 	public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO dto) {
-
+		log.info("로그인 요청 username={}",dto.getUsername());
 		String username = dto.getUsername();
 		Optional<Member> optional = memberService.findByUsername(username);
 

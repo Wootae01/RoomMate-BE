@@ -7,7 +7,9 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import hello.roommate.auth.exception.MissingTokenException;
 import hello.roommate.auth.service.RefreshEntityService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -47,6 +49,8 @@ public class MemberController {
 	private final MemberService memberService;
 	private final MessageService messageService;
 	private final SignUpService signUpService;
+	private final RefreshEntityService refreshService;
+
 
 	/**
 	 * 회원 탈퇴 처리
@@ -55,8 +59,22 @@ public class MemberController {
 	 * @return 성공여부 {JSON} : "success":"true"
 	 */
 	@DeleteMapping("/{memberId}/resign")
-	public ResponseEntity<Map<String, Object>> reSign(@Validated @PathVariable Long memberId) {
-		memberService.deleteMemberCascade(memberId);
+	public ResponseEntity<Map<String, Object>> reSign(HttpServletRequest request, @Validated @PathVariable Long memberId) {
+
+		//refresh 토큰 검증
+		String header = request.getHeader("Authorization");
+		log.info("header={}", header);
+		if (header == null || !header.startsWith("Bearer ")) {
+			throw new MissingTokenException();
+		}
+
+		String[] split = header.split(" ");
+		String refresh = split[1];
+		refreshService.validateRefresh(refresh);
+
+		memberService.delete(memberId);
+		refreshService.deleteByRefresh(refresh);
+
 		Map<String, Object> response = new HashMap<>();
 		response.put("success", true);
 
