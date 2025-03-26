@@ -35,7 +35,6 @@ public class CustomLogoutFilter extends GenericFilterBean {
             return;
         }
 
-
         //post 요청 확인
         String requestMethod = request.getMethod();
         if (!requestMethod.equals("POST")) {
@@ -47,7 +46,8 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         //헤더 확인
         String header = request.getHeader("Authorization");
-        if (header == null || header.startsWith("Bearer ")) {
+        if (header == null || !header.startsWith("Bearer ")) {
+            log.info("헤더 오류={}", header);
             writeErrorResponse(response, JWTErrorCode.INVALID_TOKEN.getCode(), JWTErrorCode.INVALID_TOKEN.getMessage());
             return;
         }
@@ -64,6 +64,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         //refresh 토큰이 맞는지 확인
         String category = jwtUtil.getCategory(token);
         if(!category.equals("refresh")){
+            log.info("refresh token 아닙니다.");
             writeErrorResponse(response, JWTErrorCode.INVALID_TOKEN.getCode(), JWTErrorCode.INVALID_TOKEN.getMessage());
             return;
         }
@@ -71,10 +72,11 @@ public class CustomLogoutFilter extends GenericFilterBean {
         //토큰 확인
         Boolean isExist = refreshEntityService.existsByRefresh(token);
         if (!isExist) {
+            log.info("해당 토큰이 존재하지 않습니다.");
             writeErrorResponse(response, JWTErrorCode.INVALID_TOKEN.getCode(), JWTErrorCode.INVALID_TOKEN.getMessage());
             return;
         }
-
+        log.info("refresh token={}", token);
         refreshEntityService.deleteByRefresh(token);
         response.setStatus(HttpServletResponse.SC_OK);
     }
