@@ -4,13 +4,25 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import hello.roommate.chat.domain.Notification;
-import jakarta.persistence.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import hello.roommate.chat.domain.Message;
+import hello.roommate.chat.domain.Notification;
 import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.domain.Preference;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -52,6 +64,9 @@ public class Member {
 
 	@OneToOne(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private Notification notification;
+
+	@OneToMany(mappedBy = "sender", cascade = CascadeType.REMOVE, orphanRemoval = true)
+	private List<Message> messages;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@CreatedDate
