@@ -74,7 +74,7 @@ public class AuthController {
 	 */
 	@PostMapping("/token")
 	public Map<String, Object> issueToken() {
-		String token = jwtUtil.createJwt("serverUser", "ROLE_SERVER", "login", 3 * 60 * 1000L);
+		String token = jwtUtil.createJwt("serverUser", "ROLE_SERVER", "login", 2 * 60 * 1000L);
 		HashMap<String, Object> response = new HashMap<>();
 
 		response.put("accessToken", token);

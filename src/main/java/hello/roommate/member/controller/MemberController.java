@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import hello.roommate.auth.service.RefreshEntityService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -56,7 +57,6 @@ public class MemberController {
 	@DeleteMapping("/{memberId}/resign")
 	public ResponseEntity<Map<String, Object>> reSign(@Validated @PathVariable Long memberId) {
 		memberService.deleteMemberCascade(memberId);
-
 		Map<String, Object> response = new HashMap<>();
 		response.put("success", true);
 
