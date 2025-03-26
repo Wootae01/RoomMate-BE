@@ -29,17 +29,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional
 public class MemberService {
-	private final MemberRepository repository;
 	private final MemberRepository memberRepository;
 	private final LifeStyleRepository lifeStyleRepository;
 	private final PreferenceRepository preferenceRepository;
 
 	public Member save(Member member) {
-		return repository.save(member);
+		return memberRepository.save(member);
 	}
 
 	public Member findById(Long id) {
-		return repository.findById(id).orElseThrow();
+		return memberRepository.findById(id).orElseThrow();
 	}
 
 	public Optional<Member> findByUsername(String username) {
@@ -59,21 +58,15 @@ public class MemberService {
 	}
 
 	public List<Member> findByDorm(Dormitory dorm) {
-		return repository.findByDorm(dorm);
+		return memberRepository.findByDorm(dorm);
 	}
 
 	public Optional<Member> findByNickname(String nickname) {
-		return repository.findByNickname(nickname);
+		return memberRepository.findByNickname(nickname);
 	}
 
 	public void delete(Long id) {
-		repository.deleteById(id);
-	}
-
-	public void deleteMemberCascade(Long id) {
-		lifeStyleRepository.deleteByMemberId(id);
-		preferenceRepository.deleteByMemberId(id);
-		repository.deleteById(id);
+		memberRepository.deleteById(id);
 	}
 
 	// 상대방 회원번호를 통해 얻은 List<LifeStyle>을 Map<String, List<Long>>으로 변환
