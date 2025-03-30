@@ -2,6 +2,7 @@ package hello.roommate.chat;
 
 import java.util.List;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -11,6 +12,7 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.ChannelInterceptor;
 import org.springframework.messaging.support.MessageHeaderAccessor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
@@ -34,6 +36,17 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	private final JWTUtil jwtUtil;
 
 	/**
+	 * heart beat 관리하기 위한 task scheduler
+	 */
+	@Bean
+	public ThreadPoolTaskScheduler taskScheduler() {
+		ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+		scheduler.setPoolSize(1);
+		scheduler.setThreadNamePrefix("wss-heartbeat-thread");
+		return scheduler;
+	}
+
+	/**
 	 * 메시지 브로커 설정하는 메서드.
 	 * 클라이언트가 구독할 수 있는 브로커, 메시지를 보낼 때 사용할 prefix 설정
 	 *
@@ -42,7 +55,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry registry) {
 		//구독할 때 사용할 메시지 브로커의 prefix /topic 으로 설정
-		registry.enableSimpleBroker("/topic");
+		registry.enableSimpleBroker("/topic")
+			.setHeartbeatValue(new long[] {10000, 10000})
+			.setTaskScheduler(taskScheduler());
 
 		//메시지 보낼 때 사용할 prefix /app/chatroom 으로 설정
 		registry.setApplicationDestinationPrefixes("/app/chatroom");
