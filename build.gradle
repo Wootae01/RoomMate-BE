@@ -51,6 +51,12 @@ dependencies {
     //h2 db
     runtimeOnly 'com.h2database:h2'
 
+    //maria db
+    runtimeOnly 'org.mariadb.jdbc:mariadb-java-client'
+
+    //fly way
+    implementation 'org.flywaydb:flyway-mysql'
+
     implementation 'org.springframework.boot:spring-boot-starter-jdbc'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

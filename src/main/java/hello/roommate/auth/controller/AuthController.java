@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+import hello.roommate.auth.dto.ServerTokenRequestDTO;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,6 +26,7 @@ import hello.roommate.member.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequiredArgsConstructor
@@ -34,6 +38,9 @@ public class AuthController {
 	private final MemberService memberService;
 	private final RefreshEntityService refreshEntityService;
 	private final JWTUtil jwtUtil;
+
+	@Value("${spring.android.hashkey}")
+	private String hashKey;
 
 	/**
 	 * refresh 토큰을 이용하여 access 토큰을 재생성하는 엔드포인트
@@ -68,12 +75,19 @@ public class AuthController {
 	}
 
 	/**
-	 * 서버 사용자 인증용 토큰을 발급하는 엔드포인트
+	 * 사용자 검증용 토큰을 발급하는 엔드포인트
+	 * 임의의 사용자 요청인지, 내 앱에서 발생한 요청인지 확인한 후 토큰을 발급한다.
 	 * 현재 이 토큰은 /auth/login 요청 시에만 사용할 수 있다.
+	 *
+	 * @param dto 안드로이드 해시값. 추후 ios bundle id도 입력 하도록 변경
 	 * @return jwt 토큰 반환
 	 */
 	@PostMapping("/token")
-	public Map<String, Object> issueToken() {
+	public Map<String, Object> issueToken(@RequestBody ServerTokenRequestDTO dto) {
+		String identifier = dto.getIdentifier();
+		if (!identifier.equals(hashKey)) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid identifier");
+		}
 		String token = jwtUtil.createJwt("serverUser", "ROLE_SERVER", "login", 2 * 60 * 1000L);
 		HashMap<String, Object> response = new HashMap<>();
 

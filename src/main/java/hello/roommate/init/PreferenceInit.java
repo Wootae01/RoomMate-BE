@@ -26,6 +26,9 @@ public class PreferenceInit {
 	private final MemberRepository memberRepository;
 
 	public void createPreference() {
+		if (preferenceRepository.count() == 0) {
+			return;
+		}
 		List<Member> members = memberRepository.findAll();
 		List<Option> options = optionRepository.findAll();
 

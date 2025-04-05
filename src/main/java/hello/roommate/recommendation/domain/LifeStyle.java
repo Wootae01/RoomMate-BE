@@ -13,17 +13,17 @@ import lombok.*;
 @ToString
 public class LifeStyle {
     @Id
-    @GeneratedValue
-    @Column(name = "LIFESTYLE_ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "lifestyle_id")
     @Setter(value = AccessLevel.NONE)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "OPTION_ID")
+    @JoinColumn(name = "option_id")
     private Option option;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MEMBER_ID")
+    @JoinColumn(name = "member_id")
     private Member member;
 
     public LifeStyle(Member member, Option option) {

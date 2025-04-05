@@ -11,17 +11,17 @@ import lombok.*;
 @NoArgsConstructor
 public class Preference {
     @Id
-    @GeneratedValue
-    @Column(name = "PREFERENCE_ID")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "preference_id")
     @Setter(value = AccessLevel.NONE)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "OPTION_ID")
+    @JoinColumn(name = "option_id")
     private Option option;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MEMBER_ID")
+    @JoinColumn(name = "member_id")
     private Member member;
 
     public Preference(Member member, Option option) {

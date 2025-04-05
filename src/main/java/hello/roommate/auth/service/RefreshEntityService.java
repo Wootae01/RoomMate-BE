@@ -1,5 +1,7 @@
 package hello.roommate.auth.service;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 import org.springframework.stereotype.Service;
@@ -62,10 +64,13 @@ public class RefreshEntityService {
 
 	public RefreshEntity saveEntity(String username, String refresh, Long expiration) {
 		Date date = new Date(System.currentTimeMillis() + expiration);
-
+		LocalDateTime expirationDateTime = date.toInstant()
+				.atZone(ZoneId.systemDefault())
+				.toLocalDateTime();
 		RefreshEntity refreshEntity = new RefreshEntity();
 		refreshEntity.setRefresh(refresh);
-		refreshEntity.setExpiration(date.toString());
+
+		refreshEntity.setExpiration(expirationDateTime);
 		refreshEntity.setRole("ROLE_USER");
 		refreshEntity.setUsername(username);
 		RefreshEntity save = refreshEntityRepository.save(refreshEntity);

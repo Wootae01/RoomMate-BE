@@ -32,7 +32,6 @@ public class MemberInit {
     private Member randomMember(Long id) {
         Member member = new Member();
         member.setNickname(String.valueOf(id));
-        member.setImg("img");
         member.setDorm(Dormitory.INUI);
         member.setGender(Gender.MALE);
 
