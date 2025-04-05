@@ -48,7 +48,7 @@ class LifeStyleServiceTest {
 	@Test
 	void save() {
 
-		Member member = new Member(1L, "abc", "in", "img34", 21, Dormitory.INUI, Gender.MALE);
+		Member member = new Member( "abc", "in", 21, Dormitory.INUI, Gender.MALE);
 		memberService.save(member);
 		Option option = optionService.findByCategoryAndValue(Category.BED_TIME, BedTime.AT_02.name());
 		LifeStyle lifeStyle = new LifeStyle(member, option);
@@ -72,8 +72,8 @@ class LifeStyleServiceTest {
 
 	@Test
 	void update() {
-
 		LifeStyle lifeStyle1 = createLifeStyle();
+		Long memberId = lifeStyle1.getMember().getId();
 		lifeStyleService.save(lifeStyle1);
 
 		List<Long> options = new ArrayList<>();
@@ -86,9 +86,9 @@ class LifeStyleServiceTest {
 		LifeStyleDTO dto = new LifeStyleDTO();
 		dto.setOptions(map);
 
-		lifeStyleService.update(1L, dto);
+		lifeStyleService.update(memberId, dto);
 
-		List<LifeStyle> lifeStyles = lifeStyleService.findByMemberId(1L);
+		List<LifeStyle> lifeStyles = lifeStyleService.findByMemberId(memberId);
 		for (LifeStyle lifeStyle : lifeStyles) {
 			Assertions.assertThat(lifeStyle.getOption().getId()).isIn(101L, 102L, 103L);
 		}
@@ -110,7 +110,7 @@ class LifeStyleServiceTest {
 	}
 
 	private LifeStyle createLifeStyle() {
-		Member member = new Member(1L, "abc", "in", "img34", 21, Dormitory.INUI, Gender.MALE);
+		Member member = new Member("abc", "in", 21, Dormitory.INUI, Gender.MALE);
 		memberService.save(member);
 		Option option = optionService.findByCategoryAndValue(Category.BED_TIME, BedTime.AT_02.name());
 		return new LifeStyle(member, option);
