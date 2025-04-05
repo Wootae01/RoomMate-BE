@@ -26,6 +26,9 @@ public class LifeStyleInit {
 	private final MemberRepository memberRepository;
 
 	public void createLifeStyle() {
+		if (lifeStyleRepository.count() != 0) {
+			return;
+		}
 		List<Member> members = memberRepository.findAll();
 		List<Option> options = optionRepository.findAll();
 

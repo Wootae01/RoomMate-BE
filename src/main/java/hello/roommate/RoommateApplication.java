@@ -18,9 +18,10 @@ public class RoommateApplication {
     }
 
     @Bean
-    @Profile("local")
+    @Profile({"local", "dev"})
     public TestDataInit testDataInit(OptionInit optionInit, MemberInit memberInit, LifeStyleInit lifeStyleInit,
                                      PreferenceInit preferenceInit) {
         return new TestDataInit(optionInit, memberInit, lifeStyleInit, preferenceInit);
     }
+
 }

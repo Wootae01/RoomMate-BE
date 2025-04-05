@@ -18,5 +18,4 @@ public class TestDataInit {
         lifeStyleInit.createLifeStyle();
         preferenceInit.createPreference();
     }
-
 }

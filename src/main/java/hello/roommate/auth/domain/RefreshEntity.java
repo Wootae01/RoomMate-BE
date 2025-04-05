@@ -1,11 +1,10 @@
 package hello.roommate.auth.domain;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -13,10 +12,11 @@ import lombok.Setter;
 public class RefreshEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "refresh_id")
 	private Long id;
 
 	private String username;
 	private String refresh;
 	private String role;
-	private String expiration;
+	private LocalDateTime expiration;
 }
