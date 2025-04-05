@@ -58,8 +58,7 @@ public class Member {
 	private List<Message> messages;
 
 
-	public Member(Long id, String nickname, String introduce, String img, int age, Dormitory dorm, Gender gender) {
-		this.id = id;
+	public Member( String nickname, String introduce,int age, Dormitory dorm, Gender gender) {
 		this.nickname = nickname;
 		this.introduce = introduce;
 		this.age = age;
