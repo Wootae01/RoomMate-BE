@@ -38,4 +38,4 @@ out/
 
 ### properties ###
 application-local.properties
-application-test.properties
+application-test-local.properties
