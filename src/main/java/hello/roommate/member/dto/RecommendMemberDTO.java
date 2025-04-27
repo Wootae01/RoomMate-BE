@@ -14,4 +14,13 @@ public class RecommendMemberDTO {
 	private Long memberId;
 	private String nickname;
 	private String introduce;
+
+	public RecommendMemberDTO(Long memberId, String nickname, String introduce) {
+		this.memberId = memberId;
+		this.nickname = nickname;
+		this.introduce = introduce;
+	}
+
+	public RecommendMemberDTO() {
+	}
 }

@@ -32,11 +32,16 @@ public class MemberRepositoryImpl extends QuerydslRepositorySupport implements M
 		QMember member = QMember.member;
 		QLifeStyle lifeStyle = QLifeStyle.lifeStyle;
 
-		//내 id 제외, 나와 같은 기숙사 사람 찾기
+		//내 id 제외, 나와 같은 기숙사, 성별 사람 찾기
 		JPQLQuery<Member> query = from(member);
 		query.where(member.id.ne(memberId))
 			.where(member.dorm.eq(
 				JPAExpressions.select(member.dorm)
+					.from(member)
+					.where(member.id.eq(memberId))
+			))
+			.where(member.gender.eq(
+				JPAExpressions.select(member.gender)
 					.from(member)
 					.where(member.id.eq(memberId))
 			));
