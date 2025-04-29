@@ -23,6 +23,7 @@ import hello.roommate.recommendation.domain.Option;
 import hello.roommate.recommendation.domain.enums.Category;
 import hello.roommate.recommendation.repository.LifeStyleRepository;
 import hello.roommate.recommendation.repository.OptionRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest
 @Import(value = {
@@ -30,6 +31,7 @@ import hello.roommate.recommendation.repository.OptionRepository;
 	MemberService.class,
 	RecommendService.class
 })
+@Transactional
 class RecommendServiceTest {
 
 	@Autowired
@@ -74,7 +76,7 @@ class RecommendServiceTest {
 		save1.setLifeStyle(lifeStyles);
 
 		//when
-		Map<Long, Double> map = recommendService.getSimilarityMap(requestLifeStyleMap, List.of(save1));
+		Map<Long, Double> map = recommendService.getSimilarityMap(requestLifeStyleMap);
 		Double result = map.get(save1.getId());
 		//then
 		Assertions.assertThat(result).isEqualTo(1.0, Offset.offset(1e-9));
@@ -110,7 +112,7 @@ class RecommendServiceTest {
 		lifeStyleRepository.saveAll(lifeStyles);
 		save1.setLifeStyle(lifeStyles);
 
-		Map<Long, Double> map = recommendService.getSimilarityMap(requestLifeStyleMap, List.of(save1));
+		Map<Long, Double> map = recommendService.getSimilarityMap(requestLifeStyleMap);
 		Double sim = map.get(save1.getId());
 
 		Assertions.assertThat(sim).isEqualTo(0.384900179, Offset.offset(1e-9));
