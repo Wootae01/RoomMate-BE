@@ -101,64 +101,6 @@ public class MemberService {
 		return collect;
 	}
 
-	/**
-	 * 나의 preference 와 상대 LifeStyle 을 비교하여 추천 멤버 조회
-	 * @param myId
-	 * @return 추천 멤버
-	 */
-	public List<Member> recommendMembers(Long myId) {
-		Member member = memberRepository.findById(myId)
-			.orElseThrow(() -> new NoSuchElementException("id not found"));
-
-		List<Preference> preferences = member.getPreference();
-
-		//상관 없음 체크한 항목 제외한 옵션 추출
-		List<Option> options = preferences
-			.stream()
-			.filter(preference -> preference.getOption().getId() > 100)
-			.map(Preference::getOption)
-			.toList();
-
-		Map<Category, List<Long>> cond = options.stream()
-			.collect(
-				Collectors.groupingBy(
-					Option::getCategory,
-					Collectors.mapping(Option::getId, Collectors.toList())
-				));
-
-		//나이 추출
-		List<Long> ages = cond.remove(Category.AGE);
-		List<Integer> intAges = getIntAges(ages);
-
-		List<Member> search = memberRepository.search(myId, cond, intAges);
-
-		return search;
-	}
-
-	/**
-	 * 검색 조건을 입력받아 추천 멤버 검색
-	 * @param myId 사용자 id
-	 * @param filterCond 검색 조건
-	 * @return 추천 멤버
-	 */
-	public List<Member> searchMembers(Long myId, FilterCond filterCond) {
-		Map<Category, List<Long>> cond = filterCond.getCond();
-		List<Long> ages = cond.remove(Category.AGE);
-		List<Integer> intAges = getIntAges(ages);
-
-		List<Member> search = memberRepository.search(myId, cond, intAges);
-		return search;
-	}
-
-	//age Long 값 Integer 로 변경
-	private static List<Integer> getIntAges(List<Long> ages) {
-
-		List<Integer> intAges = ages == null ? new ArrayList<>() : ages.stream()
-			.map(Long::intValue)
-			.toList();
-		return intAges;
-	}
-
 	//dto로 전환
 	public RecommendMemberDTO convertToDTO(Member member) {
 		RecommendMemberDTO dto = new RecommendMemberDTO();

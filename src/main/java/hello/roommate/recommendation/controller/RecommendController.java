@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import hello.roommate.member.dto.FilterCond;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.dto.RecommendMemberDTO;
@@ -16,13 +19,15 @@ import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.service.RecommendService;
 import lombok.RequiredArgsConstructor;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
+@Slf4j
+@RequestMapping("/recommendations")
 public class RecommendController {
 	private final MemberService memberService;
 	private final RecommendService recommendService;
 
-	@GetMapping("/recommendation/{memberId}")
+	@GetMapping("/{memberId}/similarity")
 	public List<RecommendMemberDTO> recommend(@PathVariable Long memberId) {
 
 		//1. 요청한 사람의 lifestyle 정보
@@ -30,36 +35,67 @@ public class RecommendController {
 		List<LifeStyle> requestLifeStyle = requestMember.getLifeStyle();
 		Map<String, List<Long>> requestLifeStyleMap = memberService.convertLifeStyleListToMap(requestLifeStyle);
 
-		//2. 동일 기숙사 내 모든 사용자 (자신 제외)
-		List<Member> byDorms = memberService.findByDorm(requestMember.getDorm());
-		byDorms.remove(requestMember);
-
-		//3. 유사도 계산하여 반환
-		Map<Long, Double> simMemberMap = recommendService.getSimilarityMap(requestLifeStyleMap, byDorms);
+		//2. 유사도 계산하여 반환
+		Map<Long, Double> simMemberMap = recommendService.getSimilarityMap(requestLifeStyleMap);
 		if (simMemberMap.isEmpty()) {
 			return Collections.emptyList();
 		}
 
-		//4. 상위 30% 값 계산
+		//3. 상위 30% 값 계산
 		double top30 = recommendService.getTop30Value(new ArrayList<>(simMemberMap.values()));
 
-		//5. 추천 후보 가중 합산
-		Map<Long, Double> recommendMap = recommendService.accumSimilarityAboveThreshold(simMemberMap, top30);
+		//4. 추천 후보 가중 합산
+		Map<Long, Double> recommendMap = recommendService.accumSimilarityAboveThreshold(memberId, simMemberMap, top30);
 
-		//6. 상위 5개 반환
-		List<Long> recommendMemberIds = recommendMap.entrySet().stream()
+		//5. 유사도 순으로 정렬 후 추천 멤머 id 리스트 반환
+ 		List<Long> recommendMemberIds = recommendMap.entrySet().stream()
 			.sorted(Map.Entry.<Long, Double>comparingByValue().reversed())
-			.limit(5)
 			.map(e -> e.getKey())
 			.toList();
 
 		List<Member> recommendMember = memberService.findAllByIds(recommendMemberIds);
 
+		//6. dto로 변환
 		return recommendMember.stream()
-			.map(e -> {
-				return new RecommendMemberDTO(e.getId(), e.getNickname(), e.getIntroduce());
-			})
+			.map(e -> new RecommendMemberDTO(e.getId(), e.getNickname(), e.getIntroduce()))
 			.toList();
 	}
 
+	/**
+	 * 기본 추천 목록 반환
+	 * 요청자가 선택한 선호하는 룸메 조건을 기준으로 필터링
+	 *
+	 * @param memberId 사용자 id
+	 * @return 추천 목록 멤버 반환
+	 */
+	@GetMapping("/{memberId}/basic")
+	public List<RecommendMemberDTO> recommendMembers(@PathVariable Long memberId) {
+		log.info("추천 목록 반환 요청, id={}", memberId);
+		List<Member> members = recommendService.searchMembersByPreference(memberId);
+
+		//dto로 변환
+		List<RecommendMemberDTO> dtoList = members.stream()
+				.map(member -> memberService.convertToDTO(member))
+				.collect(Collectors.toList());
+		log.info("{}", dtoList);
+		return dtoList;
+	}
+
+	/**
+	 * 필터 적용하여 추천목록 반환
+	 *
+	 * @param memberId 사용자 id
+	 * @param filterCond 사용자가 적용한 필터 항목들
+	 * @return 필터 적용된 추천 목록 멤버 반환
+	 */
+	@PostMapping("/{memberId}/filter")
+	public List<RecommendMemberDTO> searchMembers(@PathVariable Long memberId,
+												  @RequestBody @Validated FilterCond filterCond) {
+		List<Member> members = recommendService.searchMembersByFilter(memberId, filterCond);
+		List<RecommendMemberDTO> dtoList = members.stream()
+				.map(member -> memberService.convertToDTO(member))
+				.collect(Collectors.toList());
+
+		return dtoList;
+	}
 }

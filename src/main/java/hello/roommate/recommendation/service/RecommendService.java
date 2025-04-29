@@ -1,11 +1,13 @@
 package hello.roommate.recommendation.service;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
+import hello.roommate.member.dto.FilterCond;
+import hello.roommate.member.repository.MemberRepository;
+import hello.roommate.recommendation.domain.Option;
+import hello.roommate.recommendation.domain.Preference;
+import hello.roommate.recommendation.domain.enums.Category;
 import org.springframework.stereotype.Service;
 
 import hello.roommate.member.domain.Member;
@@ -16,19 +18,20 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RecommendService {
 	private final MemberService memberService;
+	private final MemberRepository memberRepository;
 
 	/**
 	 * 요청한 사람 A와 요청한 사람과 같은 기숙사 정보를 갖는 B와의 유사도를 계산해서 Map으로 반환(key: id, value: 유사도 값)
 	 * 유사도는 코사인 유사도를 기반으로 계산한다.
 	 *
 	 * @param requestLifeStyleMap 요청한 사람의 LifeStyle (설문한 항목 별로 구분)
-	 * @param byDorms 요청한 사람과 같은 기숙사를 갖는 사람들. (자신 제외)
 	 * @return (memberId, 유사도)를 갖는 map 반환
 	 */
-	public Map<Long, Double> getSimilarityMap(Map<String, List<Long>> requestLifeStyleMap, List<Member> byDorms) {
+	public Map<Long, Double> getSimilarityMap(Map<String, List<Long>> requestLifeStyleMap) {
 		Map<Long, Double> simMemberMap = new HashMap<>();
 		int totalGroups = requestLifeStyleMap.size();
-		for (Member b : byDorms) {
+		List<Member> members = memberRepository.findAll();
+		for (Member b : members) {
 			Map<String, List<Long>> bMap = memberService.convertLifeStyleListToMap(b.getLifeStyle());
 			double sum = 0.0;
 			for (String key : requestLifeStyleMap.keySet()) {
@@ -66,13 +69,13 @@ public class RecommendService {
 	 * @param threshold 상위 30% 유사도 값
 	 * @return key: memberId, value: 유사도 누적 합
 	 */
-	public Map<Long, Double> accumSimilarityAboveThreshold(Map<Long, Double> simMemberMap, double threshold) {
+	public Map<Long, Double> accumSimilarityAboveThreshold(Long myId, Map<Long, Double> simMemberMap, double threshold) {
 		Map<Long, Double> resultMap = new HashMap<>();
 		simMemberMap.entrySet().stream()
 			.filter(e -> e.getValue() >= threshold)
 			.forEach(e -> {
 				double value = e.getValue();
-				List<Member> candidates = memberService.recommendMembers(e.getKey());
+				List<Member> candidates = recommendMembersBySimilarUsers(myId, e.getKey());
 				if (candidates == null || candidates.isEmpty()) {
 					return;
 				}
@@ -82,5 +85,92 @@ public class RecommendService {
 				}
 			});
 		return resultMap;
+	}
+
+	/**
+	 * 나와 비슷한 사용자의 Preference를 기준으로 추천 멤버를 찾는 메서드
+	 *
+	 * @param myId 나의 id
+	 * @param similarUserId 나와 비슷한 사용자 id
+	 * @return 추천 멤버 리스트
+	 */
+	public List<Member> recommendMembersBySimilarUsers(Long myId, Long similarUserId) {
+
+		Member simMember = memberRepository.findById(similarUserId)
+				.orElseThrow(() -> new NoSuchElementException("id not found"));
+
+		List<Preference> preferences = simMember.getPreference();
+		//상관 없음 체크한 항목 제외한 옵션 추출
+		List<Option> options = preferences
+				.stream()
+				.filter(preference -> preference.getOption().getId() > 100)
+				.map(Preference::getOption)
+				.toList();
+
+		Map<Category, List<Long>> cond = options.stream()
+				.collect(
+						Collectors.groupingBy(
+								Option::getCategory,
+								Collectors.mapping(Option::getId, Collectors.toList())
+						));
+
+		//나이 추출
+		List<Long> ages = cond.remove(Category.AGE);
+		List<Integer> intAges = getIntAges(ages);
+
+        return memberRepository.search(myId, cond, intAges);
+	}
+
+	public List<Member> searchMembersByPreference(Long myId) {
+		Member member = memberRepository.findById(myId)
+				.orElseThrow(() -> new NoSuchElementException("id not found"));
+
+		List<Preference> preferences = member.getPreference();
+
+		//상관 없음 체크한 항목 제외한 옵션 추출
+		List<Option> options = preferences
+				.stream()
+				.filter(preference -> preference.getOption().getId() > 100)
+				.map(Preference::getOption)
+				.toList();
+
+		Map<Category, List<Long>> cond = options.stream()
+				.collect(
+						Collectors.groupingBy(
+								Option::getCategory,
+								Collectors.mapping(Option::getId, Collectors.toList())
+						));
+
+		//나이 추출
+		List<Long> ages = cond.remove(Category.AGE);
+		List<Integer> intAges = getIntAges(ages);
+
+        return memberRepository.search(myId, cond, intAges);
+	}
+
+	/**
+	 * 검색 조건을 입력받아 추천 멤버 검색
+	 * @param myId 사용자 id
+	 * @param filterCond 검색 조건
+	 * @return 추천 멤버
+	 */
+	public List<Member> searchMembersByFilter(Long myId, FilterCond filterCond) {
+		Map<Category, List<Long>> cond = filterCond.getCond();
+		List<Long> ages = cond.remove(Category.AGE);
+		List<Integer> intAges = getIntAges(ages);
+
+		List<Member> search = memberRepository.search(myId, cond, intAges);
+		return search;
+	}
+
+
+
+	//age Long 값 Integer 로 변경
+	private static List<Integer> getIntAges(List<Long> ages) {
+
+		List<Integer> intAges = ages == null ? new ArrayList<>() : ages.stream()
+				.map(Long::intValue)
+				.toList();
+		return intAges;
 	}
 }
