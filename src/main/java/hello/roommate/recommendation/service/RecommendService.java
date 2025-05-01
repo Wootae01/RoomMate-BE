@@ -30,7 +30,7 @@ public class RecommendService {
 	public Map<Long, Double> getSimilarityMap(Map<String, List<Long>> requestLifeStyleMap) {
 		Map<Long, Double> simMemberMap = new HashMap<>();
 		int totalGroups = requestLifeStyleMap.size();
-		List<Member> members = memberRepository.findAll();
+		List<Member> members = memberRepository.findAllWithLifeStyle();
 		for (Member b : members) {
 			Map<String, List<Long>> bMap = memberService.convertLifeStyleListToMap(b.getLifeStyle());
 			double sum = 0.0;
@@ -56,7 +56,7 @@ public class RecommendService {
 	 * @param similarities 유사도 값
 	 * @return 상위 30% 값
 	 */
-	public double getTop30Value(List<Double> similarities) {
+	public double getThresholdValue(List<Double> similarities) {
 		similarities.sort(Comparator.reverseOrder());
 		int idx = (int)Math.ceil(similarities.size() * 0.3) - 1;
 		return similarities.get(Math.max(0, Math.min(idx, similarities.size() - 1)));

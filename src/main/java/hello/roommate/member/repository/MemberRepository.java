@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Member;
+import org.springframework.data.jpa.repository.Query;
 
 public interface MemberRepository extends JpaRepository<Member, Long>, MemberCustomRepository {
 
@@ -15,4 +16,8 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberCus
 	Optional<Member> findByNickname(String nickname);
 
 	Optional<Member> findByUsername(String username);
+
+	@Query("SELECT DISTINCT m FROM Member m JOIN FETCH m.lifeStyle")
+	List<Member> findAllWithLifeStyle();
+
 }
