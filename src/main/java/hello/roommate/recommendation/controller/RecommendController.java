@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 
 import hello.roommate.member.dto.FilterCond;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,23 +41,28 @@ public class RecommendController {
 		}
 
 		//3. 상위 30% 값 계산
-		double top30 = recommendService.getTop30Value(new ArrayList<>(simMemberMap.values()));
+		double top30 = recommendService.getThresholdValue(new ArrayList<>(simMemberMap.values()));
 
 		//4. 추천 후보 가중 합산
 		Map<Long, Double> recommendMap = recommendService.accumSimilarityAboveThreshold(memberId, simMemberMap, top30);
 
 		//5. 유사도 순으로 정렬 후 추천 멤머 id 리스트 반환
- 		List<Long> recommendMemberIds = recommendMap.entrySet().stream()
-			.sorted(Map.Entry.<Long, Double>comparingByValue().reversed())
-			.map(e -> e.getKey())
-			.toList();
+		List<Long> recommendMemberIds = recommendMap.entrySet().stream()
+				.sorted(Map.Entry.<Long, Double>comparingByValue().reversed())
+				.map(e -> e.getKey())
+				.toList();
 
 		List<Member> recommendMember = memberService.findAllByIds(recommendMemberIds);
+		Map<Long, Member> memberMap = recommendMember.stream()
+				.collect(Collectors.toMap(Member::getId, member -> member));
 
 		//6. dto로 변환
-		return recommendMember.stream()
-			.map(e -> new RecommendMemberDTO(e.getId(), e.getNickname(), e.getIntroduce()))
-			.toList();
+		return recommendMemberIds.stream()
+				.map(id ->{
+					Member member = memberMap.get(id);
+					RecommendMemberDTO dto = new RecommendMemberDTO(member.getId(), member.getNickname(), member.getIntroduce());
+					return dto;
+				}).toList();
 	}
 
 	/**

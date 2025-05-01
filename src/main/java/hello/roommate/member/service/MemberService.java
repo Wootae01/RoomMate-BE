@@ -7,6 +7,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import hello.roommate.recommendation.domain.enums.Category;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,13 +15,11 @@ import hello.roommate.chat.domain.ChatRoom;
 import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.domain.MemberChatRoom;
-import hello.roommate.member.dto.FilterCond;
 import hello.roommate.member.dto.RecommendMemberDTO;
 import hello.roommate.member.repository.MemberRepository;
 import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.domain.Option;
 import hello.roommate.recommendation.domain.Preference;
-import hello.roommate.recommendation.domain.enums.Category;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -55,10 +54,6 @@ public class MemberService {
 		}
 
 		return chatRooms;
-	}
-
-	public List<Member> findByDorm(Dormitory dorm) {
-		return memberRepository.findByDorm(dorm);
 	}
 
 	public Optional<Member> findByNickname(String nickname) {
@@ -99,6 +94,23 @@ public class MemberService {
 			));
 
 		return collect;
+	}
+
+	//상관 없음 체크한 항목 제외한 옵션 추출
+	public Map<Category, List<Long>> convertPreferenceListToMapWithoutNone(List<Preference> preferences) {
+		List<Option> options = preferences
+				.stream()
+				.filter(preference -> preference.getOption().getId() > 100)
+				.map(Preference::getOption)
+				.toList();
+
+		Map<Category, List<Long>> cond = options.stream()
+				.collect(
+						Collectors.groupingBy(
+								option -> option.getCategory(),
+								Collectors.mapping(Option::getId, Collectors.toList())
+						));
+		return cond;
 	}
 
 	//dto로 전환

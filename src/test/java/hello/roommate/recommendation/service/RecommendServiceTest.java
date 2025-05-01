@@ -121,7 +121,7 @@ class RecommendServiceTest {
 	@Test
 	void getTop30Value() {
 		List<Double> list = new ArrayList<>(List.of(0.1, 0.2, 0.3, 0.4, 0.5, 0.6));
-		double value = recommendService.getTop30Value(list);
+		double value = recommendService.getThresholdValue(list);
 		Assertions.assertThat(value).isEqualTo(0.5);
 	}
 }
