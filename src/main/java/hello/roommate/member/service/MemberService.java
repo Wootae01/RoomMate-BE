@@ -7,12 +7,12 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import hello.roommate.recommendation.domain.enums.Category;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import hello.roommate.chat.domain.ChatRoom;
 import hello.roommate.member.domain.Dormitory;
+import hello.roommate.member.domain.Gender;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.domain.MemberChatRoom;
 import hello.roommate.member.dto.RecommendMemberDTO;
@@ -20,6 +20,7 @@ import hello.roommate.member.repository.MemberRepository;
 import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.domain.Option;
 import hello.roommate.recommendation.domain.Preference;
+import hello.roommate.recommendation.domain.enums.Category;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -38,6 +39,22 @@ public class MemberService {
 
 	public List<Member> findAllByIds(List<Long> ids) {
 		return memberRepository.findAllById(ids);
+	}
+
+	public List<Member> findAllWithLifeStyle() {
+		return memberRepository.findAllWithLifeStyle();
+	}
+
+	public Member findWithLifeStyleById(Long id) {
+		return memberRepository.findWithLifeStyleById(id);
+	}
+
+	public List<Member> findAllWithPreferenceByIds(List<Long> ids) {
+		return memberRepository.findAllWithPreferenceByIds(ids);
+	}
+
+	public List<Member> findAllWithLifeStyleByDormAndGender(Dormitory dorm, Gender gender) {
+		return memberRepository.findAllWithLifeStyleByDormAndGender(dorm, gender);
 	}
 
 	public Optional<Member> findByUsername(String username) {
@@ -62,6 +79,10 @@ public class MemberService {
 
 	public void delete(Long id) {
 		memberRepository.deleteById(id);
+	}
+
+	public List<Member> search(Long memberId, Map<Category, List<Long>> cond, List<Integer> intAges) {
+		return memberRepository.search(memberId, cond, intAges);
 	}
 
 	// 상대방 회원번호를 통해 얻은 List<LifeStyle>을 Map<String, List<Long>>으로 변환
@@ -99,17 +120,17 @@ public class MemberService {
 	//상관 없음 체크한 항목 제외한 옵션 추출
 	public Map<Category, List<Long>> convertPreferenceListToMapWithoutNone(List<Preference> preferences) {
 		List<Option> options = preferences
-				.stream()
-				.filter(preference -> preference.getOption().getId() > 100)
-				.map(Preference::getOption)
-				.toList();
+			.stream()
+			.filter(preference -> preference.getOption().getId() > 100)
+			.map(Preference::getOption)
+			.toList();
 
 		Map<Category, List<Long>> cond = options.stream()
-				.collect(
-						Collectors.groupingBy(
-								option -> option.getCategory(),
-								Collectors.mapping(Option::getId, Collectors.toList())
-						));
+			.collect(
+				Collectors.groupingBy(
+					option -> option.getCategory(),
+					Collectors.mapping(Option::getId, Collectors.toList())
+				));
 		return cond;
 	}
 
