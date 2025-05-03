@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
+import org.springframework.transaction.annotation.Transactional;
 
 import hello.roommate.init.OptionInit;
 import hello.roommate.member.domain.Dormitory;
@@ -23,7 +24,6 @@ import hello.roommate.recommendation.domain.Option;
 import hello.roommate.recommendation.domain.enums.Category;
 import hello.roommate.recommendation.repository.LifeStyleRepository;
 import hello.roommate.recommendation.repository.OptionRepository;
-import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest
 @Import(value = {
@@ -53,6 +53,9 @@ class RecommendServiceTest {
 		new OptionInit(optionRepository).createOption();
 
 		//요청한 사람 lifeStyle
+		Member request = new Member();
+		Member save = memberRepository.save(request);
+
 		Map<String, List<Long>> requestLifeStyleMap = new HashMap<>();
 		requestLifeStyleMap.put(Category.BED_TIME.toString(), List.of(101L, 102L, 103L));
 		requestLifeStyleMap.put(Category.WAKEUP_TIME.toString(), List.of(201L, 202L, 203L));
@@ -76,7 +79,7 @@ class RecommendServiceTest {
 		save1.setLifeStyle(lifeStyles);
 
 		//when
-		Map<Long, Double> map = recommendService.getSimilarityMap(requestLifeStyleMap);
+		Map<Long, Double> map = recommendService.getSimilarityMap(save.getId(), requestLifeStyleMap);
 		Double result = map.get(save1.getId());
 		//then
 		Assertions.assertThat(result).isEqualTo(1.0, Offset.offset(1e-9));
@@ -88,6 +91,9 @@ class RecommendServiceTest {
 		new OptionInit(optionRepository).createOption();
 
 		//요청한 사람 lifeStyle
+		Member request = new Member();
+		Member save = memberRepository.save(request);
+
 		Map<String, List<Long>> requestLifeStyleMap = new HashMap<>();
 		requestLifeStyleMap.put(Category.BED_TIME.toString(), List.of(101L, 102L, 103L));
 		requestLifeStyleMap.put(Category.WAKEUP_TIME.toString(), List.of(201L, 202L, 203L));
@@ -112,7 +118,7 @@ class RecommendServiceTest {
 		lifeStyleRepository.saveAll(lifeStyles);
 		save1.setLifeStyle(lifeStyles);
 
-		Map<Long, Double> map = recommendService.getSimilarityMap(requestLifeStyleMap);
+		Map<Long, Double> map = recommendService.getSimilarityMap(save.getId(), requestLifeStyleMap);
 		Double sim = map.get(save1.getId());
 
 		Assertions.assertThat(sim).isEqualTo(0.384900179, Offset.offset(1e-9));
