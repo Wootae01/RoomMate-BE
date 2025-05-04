@@ -48,7 +48,7 @@ public class RecommendController {
 		//3. 상위 30% 값 계산
 		double top30 = recommendService.getThresholdValue(new ArrayList<>(simMemberMap.values()));
 		List<Long> simMemberIds = simMemberMap.entrySet().stream()
-			.filter(e -> e.getValue() > top30)
+			.filter(e -> e.getValue() >= top30)
 			.map(Map.Entry::getKey)
 			.toList();
 		List<Member> simMembers = memberService.findAllWithPreferenceByIds(simMemberIds); //B

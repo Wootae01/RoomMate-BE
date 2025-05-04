@@ -3,9 +3,9 @@ package hello.roommate.init;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Component;
 
@@ -49,23 +49,31 @@ public class PreferenceInit {
 		// Collectors.groupingBy=> 각 Option 객체를 분류기준 : Category 값에 따라 그룹으로 묶음
 		// 각 Option 객체의 getCategory()를 통해 해당 옵션의 Category 값을 얻음 <- Key 역할
 		// 인자로 받은 List<Option>의 모든 Option 객체들이 해당 카테고리에 맞춰 분류되어 저장.
+
+		Random random = new Random();
 		List<Option> result = collect.values().stream()
-			.map(list -> {			// list = collect.values()를 통해 나온 List<Option>
-				if (list == null || list.isEmpty())
-					return null;
-				else {
-					int n = new Random().nextInt(list.size() + 20);
-					if (n >= list.size()) { //해당 카테고리에서 옵션 선택 x
-						return null;
-					} else {
-						return list.get(n); //해당 카테고리 값 랜덤으로 선택
-					}
-
+			.flatMap(list -> {
+				if (list == null || list.isEmpty()) {
+					return Stream.<Option>empty();
 				}
-			})
-			.filter(Objects::nonNull)    // null이 아니면 true 반환해 .filter() 다음꺼 실행
-			.toList();                   // List로 만들어 반환
+				int n = new Random().nextInt(list.size() + 10); //상관 없음 항목 결정하기 위한 변수
+				if (n >= list.size()) {
+					return Stream.of(list.get(0));
+				} else {
+					int startIndex = random.nextInt(list.size());
+					int count = random.nextInt(list.size()) + 1; // 최소 1개
+					List<Option> sub = new ArrayList<>();
+					for (int i = startIndex, k = 0; i < list.size() && k < count; i++, k++) {
+						sub.add(list.get(i));
+					}
+					//모든 항목이 다 체크된 경우는 상관없음 항목 체크한 것과 동일하게 적용
+					if (sub.size() == list.size()) {
+						Stream.of(list.get(0));
+					}
+					return sub.stream();
+				}
+			}).toList();
 
-		return result;					 // null이 제거된 옵션들만 담은 List<Option> 반환
+		return result;
 	}
 }

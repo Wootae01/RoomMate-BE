@@ -83,9 +83,10 @@ public class RecommendService {
 			List<Preference> preferences = preMember.getPreference();
 			Map<Category, List<Long>> cond = memberService.convertPreferenceListToMapWithoutNone(preferences);
 			List<Long> ageList = cond.remove(Category.AGE);
+			List<Integer> intAges = getIntAges(ageList);
 			for (Member lifeMember : lifeMembers) {
 				int age = lifeMember.getAge();
-				if (ageList != null && !ageList.contains(age)) {
+				if (!intAges.isEmpty() && !intAges.contains(age)) {
 					continue;
 				}
 				Map<String, List<Long>> map = lifeMap.get(lifeMember.getId());

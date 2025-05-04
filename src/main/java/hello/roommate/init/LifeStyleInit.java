@@ -3,9 +3,9 @@ package hello.roommate.init;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Component;
 
@@ -51,15 +51,35 @@ public class LifeStyleInit {
 			.filter(option -> option.getId() > 100) //상관 없음 항목 제외
 			.collect(Collectors.groupingBy(Option::getCategory));
 
-		List<Option> selectOption = groupOption
-			.values().stream()
-			.map(list -> {
+		Random random = new Random();
+		List<Option> selectOption = groupOption.entrySet().stream()
+			.flatMap(e -> {
+				Category key = e.getKey();
+				List<Option> list = e.getValue();
 				if (list == null || list.isEmpty()) {
-					return null;
+					// 빈 스트림 반환
+					return Stream.<Option>empty();
 				}
-				return list.get(new Random().nextInt(list.size()));
+
+				//중복 체크 가능한 경우
+				if (key == Category.BED_TIME
+					|| key == Category.WAKEUP_TIME
+					|| key == Category.COOLING
+					|| key == Category.HEATING) {
+
+					int startIndex = random.nextInt(list.size());
+					int count = random.nextInt(list.size()) + 1; // 최소 1개
+					List<Option> sub = new ArrayList<>();
+					for (int i = startIndex, k = 0; i < list.size() && k < count; i++, k++) {
+						sub.add(list.get(i));
+					}
+					return sub.stream();
+				} else {
+					// 단일 선택인 경우
+					Option pick = list.get(random.nextInt(list.size()));
+					return Stream.of(pick);
+				}
 			})
-			.filter(Objects::nonNull)
 			.toList();
 
 		return selectOption;
