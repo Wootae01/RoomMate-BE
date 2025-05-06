@@ -29,7 +29,9 @@ import hello.roommate.recommendation.repository.OptionRepository;
 @Import(value = {
 	OptionInit.class,
 	MemberService.class,
-	RecommendService.class
+	RecommendService.class,
+	OptionService.class,
+	SimilarityUtils.class
 })
 @Transactional
 class RecommendServiceTest {
@@ -120,7 +122,6 @@ class RecommendServiceTest {
 
 		Map<Long, Double> map = recommendService.getSimilarityMap(save.getId(), requestLifeStyleMap);
 		Double sim = map.get(save1.getId());
-
 		Assertions.assertThat(sim).isEqualTo(0.384900179, Offset.offset(1e-9));
 	}
 

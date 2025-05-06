@@ -1,7 +1,10 @@
 package hello.roommate.recommendation.service;
 
 import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -35,5 +38,19 @@ public class OptionService {
 
 	public List<Option> findAll() {
 		return optionRepository.findAll();
+	}
+
+	public Map<Long, Integer> getOpionIdxMap(List<Option> options) {
+		List<Option> sorted = options.stream()
+			.filter(option -> option.getId() < 1900 && option.getId() > 100)
+			.sorted(Comparator.comparingLong(Option::getId))
+			.toList();
+
+		Map<Long, Integer> optionIdx = new HashMap<>();
+		int index = 0;
+		for (Option option : sorted) {
+			optionIdx.put(option.getId(), index++);
+		}
+		return optionIdx;
 	}
 }
