@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.dto.FilterCond;
@@ -21,8 +22,11 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RecommendService {
 	private final MemberService memberService;
+	private final OptionService optionService;
+	private final SimilarityUtils similarityUtils;
 
 	/**
 	 * 요청한 사람 A와 요청한 사람과 같은 기숙사 정보를 갖는 B와의 유사도를 계산해서 Map으로 반환(key: id, value: 유사도 값)
@@ -33,27 +37,21 @@ public class RecommendService {
 	 */
 	public Map<Long, Double> getSimilarityMap(Long requestId, Map<String, List<Long>> requestLifeStyleMap) {
 		Map<Long, Double> simMemberMap = new HashMap<>();
-		int totalGroups = requestLifeStyleMap.size();
+		List<Option> options = optionService.findAll();
+		Map<Long, Integer> opionIdxMap = optionService.getOpionIdxMap(options);
+
+		double[] reqVec = similarityUtils.getVec(requestLifeStyleMap, opionIdxMap);
+
 		List<Member> members = memberService.findAllWithLifeStyle();
-		for (Member b : members) {
-			if (b.getId() == requestId) {
+		for (Member member : members) {
+			if (member.getId() == requestId) {
 				continue;
 			}
-			Map<String, List<Long>> bMap = memberService.convertLifeStyleListToMap(b.getLifeStyle());
-			double sum = 0.0;
-			for (String key : requestLifeStyleMap.keySet()) {
-				List<Long> listA = requestLifeStyleMap.get(key);
-				List<Long> listB = bMap.getOrDefault(key, Collections.emptyList());
-
-				long count = listA.stream().filter(listB::contains).count();
-				double normA = Math.sqrt(listA.size());
-				double normB = Math.sqrt(listB.size());
-				if (normA > 0 && normB > 0) {
-					sum += count / (normA * normB);
-				}
-			}
-			double sim = totalGroups > 0 ? sum / totalGroups : 0.0;
-			simMemberMap.put(b.getId(), sim);
+			List<LifeStyle> lifeStyle = member.getLifeStyle();
+			Map<String, List<Long>> lifeStyleMap = memberService.convertLifeStyleListToMap(lifeStyle);
+			double[] vec = similarityUtils.getVec(lifeStyleMap, opionIdxMap);
+			double sim = similarityUtils.cosSimilarity(reqVec, vec);
+			simMemberMap.put(member.getId(), sim);
 		}
 		return simMemberMap;
 	}
@@ -61,7 +59,7 @@ public class RecommendService {
 	/**
 	 * B들이 선호하는 멤버 C를 찾아 반환한다.
 	 * B가 선호하는 사람 C가 존재하면 매개변수 simMap으로 받은 유사도 값을 더하여 맵으로 만들어 반환한다.
-	 *
+	 * 메모리 기반으로 C를 찾는다.
 	 * @param preMembers  preference 정보를 갖고 있는 멤버 리스트(B)
 	 * @param lifeMembers lifeStyle 정보를 갖고있는 멤버 리스트(C)
 	 * @param simMap 멤버별 유사도 값
@@ -131,6 +129,7 @@ public class RecommendService {
 	/**
 	 * 가장 유사한 사람 상위 30% (B)가 선호하는 사람(C)을 찾아 반환한다.
 	 * B가 선호하는 사람 C가 존재하면 매개변수 simMeberMap으로 받은 유사도 값을 더하여 맵으로 만들어 반환한다.
+	 * DB 쿼리를 통해 C를 찾는다.
 	 * @param simMemberMap key: memberId, value: 유사도 값
 	 * @param threshold 상위 30% 유사도 값
 	 * @return key: memberId, value: 유사도 누적 합
