@@ -21,7 +21,7 @@ public class MemberInit {
     public void createMember() {
         if (memberRepository.count() == 0) {
             List<Member> members = new ArrayList<>();
-            for (long i = 1; i <= 300; i++) {
+            for (long i = 1; i <= 400; i++) {
                 members.add(randomMember(i));
             }
             memberRepository.saveAll(members);
