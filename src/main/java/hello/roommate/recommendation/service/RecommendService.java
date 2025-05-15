@@ -86,6 +86,9 @@ public class RecommendService {
 			List<Long> ageList = cond.remove(Category.AGE);
 			List<Integer> intAges = getIntAges(ageList);
 			for (Member lifeMember : lifeMembers) {
+				if (lifeMember.getId().equals(myId)) {
+					continue;
+				}
 				int age = lifeMember.getAge();
 				if (!intAges.isEmpty() && !intAges.contains(age)) {
 					continue;
