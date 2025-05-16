@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -48,7 +49,7 @@ public class MessageService {
 	 * @param chatRoomId 채팅방 id
 	 * @return Message
 	 */
-	public Message findLatestMessage(Long chatRoomId) {
+	public Optional<Message> findLatestMessage(Long chatRoomId) {
 		return messageRepository.findFirstByChatRoomIdOrderBySendTimeDesc(chatRoomId);
 	}
 
