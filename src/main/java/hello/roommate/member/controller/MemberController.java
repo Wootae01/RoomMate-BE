@@ -7,9 +7,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import hello.roommate.auth.exception.MissingTokenException;
-import hello.roommate.auth.service.RefreshEntityService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -23,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import hello.roommate.auth.dto.EditMemberDTO;
 import hello.roommate.auth.dto.SignUpDTO;
+import hello.roommate.auth.exception.MissingTokenException;
+import hello.roommate.auth.service.RefreshEntityService;
 import hello.roommate.auth.service.SignUpService;
 import hello.roommate.chat.domain.ChatRoom;
 import hello.roommate.chat.domain.Message;
@@ -30,14 +29,13 @@ import hello.roommate.chat.dto.ChatRoomDTO;
 import hello.roommate.chat.service.MessageService;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.domain.MemberChatRoom;
-import hello.roommate.member.dto.FilterCond;
-import hello.roommate.member.dto.RecommendMemberDTO;
 import hello.roommate.member.service.MemberService;
 import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.domain.Option;
 import hello.roommate.recommendation.domain.Preference;
 import hello.roommate.recommendation.dto.LifeStyleDTO;
 import hello.roommate.recommendation.dto.PreferenceDTO;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,7 +49,6 @@ public class MemberController {
 	private final SignUpService signUpService;
 	private final RefreshEntityService refreshService;
 
-
 	/**
 	 * 회원 탈퇴 처리
 	 *
@@ -59,7 +56,8 @@ public class MemberController {
 	 * @return 성공여부 {JSON} : "success":"true"
 	 */
 	@DeleteMapping("/{memberId}/resign")
-	public ResponseEntity<Map<String, Object>> reSign(HttpServletRequest request, @Validated @PathVariable Long memberId) {
+	public ResponseEntity<Map<String, Object>> reSign(HttpServletRequest request,
+		@Validated @PathVariable Long memberId) {
 
 		//refresh 토큰 검증
 		String header = request.getHeader("Authorization");
@@ -259,8 +257,11 @@ public class MemberController {
 				if (!memberChatRoom.getMember().getId().equals(memberId)) { // 채팅방 중 내가 아닌 상대방 닉네임 찾고
 					Member opponent = memberChatRoom.getMember();
 					String nickname = opponent.getNickname();
-					Message latestMessage = messageService.findLatestMessage(chatRoom.getId()); //최근 메시지 찾고
-
+					Optional<Message> optional = messageService.findLatestMessage(chatRoom.getId()); //최근 메시지 찾고
+					if (optional.isEmpty()) {
+						continue;
+					}
+					Message latestMessage = optional.get();
 					ChatRoomDTO dto = new ChatRoomDTO(); //dto로 변환
 					dto.setChatRoomId(chatRoom.getId());
 					dto.setNickname(nickname);
