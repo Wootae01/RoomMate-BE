@@ -38,9 +38,6 @@ public class LifestyleService {
 		return lifeStyleRepository.findByMemberId(memberId);
 	}
 
-	public void saveAll(List<LifeStyle> lifeStyles) {
-		lifeStyleRepository.saveAll(lifeStyles);
-	}
 
 	public void update(Long memberId, LifeStyleDTO dto) {
 
