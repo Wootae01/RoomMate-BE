@@ -1,7 +1,6 @@
 package hello.roommate.auth.jwt;
 
 import hello.roommate.auth.exception.JWTErrorCode;
-import hello.roommate.auth.repository.RefreshEntityRepository;
 import hello.roommate.auth.service.RefreshEntityService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
