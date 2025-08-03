@@ -56,7 +56,7 @@ public class RecommendController {
 			requestMember.getGender()); //C
 
 		//4. 추천 후보 가중 합산
-		Map<Long, Double> recommendMap = recommendService.accumSimilarity(simMembers, byDorms, simMemberMap);
+		Map<Long, Double> recommendMap = recommendService.accumSimilarity(memberId, simMembers, byDorms, simMemberMap);
 		//Map<Long, Double> recommendMap = recommendService.accumSimilarityAboveThreshold(memberId, simMemberMap, top30);
 
 		//5. 유사도 순으로 정렬 후 추천 멤머 id 리스트 반환

@@ -66,12 +66,15 @@ public class RecommendService {
 	 * @return key:memberId, value: 누적된 유사도 값을 갖는 맵
 	 */
 	public Map<Long, Double> accumSimilarity(
-		List<Member> preMembers, List<Member> lifeMembers, Map<Long, Double> simMap) {
+		Long myId, List<Member> preMembers, List<Member> lifeMembers, Map<Long, Double> simMap) {
 		Map<Long, Double> result = new HashMap<>();
 
 		//각 멤버별 lifeStyle 조건 맵에 저장
 		Map<Long, Map<String, List<Long>>> lifeMap = new HashMap<>();
 		for (Member lifeMember : lifeMembers) {
+			if (lifeMember.getId().equals(myId)) {
+				continue;
+			}
 			List<LifeStyle> lifeStyles = lifeMember.getLifeStyle();
 			Map<String, List<Long>> map = memberService.convertLifeStyleListToMap(lifeStyles);
 			lifeMap.put(lifeMember.getId(), map);
@@ -83,6 +86,9 @@ public class RecommendService {
 			List<Long> ageList = cond.remove(Category.AGE);
 			List<Integer> intAges = getIntAges(ageList);
 			for (Member lifeMember : lifeMembers) {
+				if (lifeMember.getId().equals(myId)) {
+					continue;
+				}
 				int age = lifeMember.getAge();
 				if (!intAges.isEmpty() && !intAges.contains(age)) {
 					continue;
