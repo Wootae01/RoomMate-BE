@@ -1,9 +1,9 @@
 name: Deploy to AWS
 on:
   pull_request:
-    tags: [ closed ]
+    types: [ closed ]
     branches:
-      -main
+      - main
 env:
   AWS_REGION: ap-northeast-2
   ECR_REPOSITORY: roommate
@@ -17,7 +17,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Set up JDK 21
-        uses: action/setup-java@v2
+        uses: actions/setup-java@v2
         with:
           java-version: '21'
           distribution: 'adopt'
