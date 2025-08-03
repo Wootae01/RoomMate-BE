@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: test-local
+    active: test-dev
 
   messages:
     basename: errors
