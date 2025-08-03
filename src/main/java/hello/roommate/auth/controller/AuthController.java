@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import hello.roommate.auth.dto.ServerTokenRequestDTO;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,10 +11,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import hello.roommate.auth.dto.JWTTokenDTO;
 import hello.roommate.auth.dto.LoginRequestDTO;
 import hello.roommate.auth.dto.LoginResponseDTO;
+import hello.roommate.auth.dto.ServerTokenRequestDTO;
 import hello.roommate.auth.exception.MissingTokenException;
 import hello.roommate.auth.jwt.JWTConstants;
 import hello.roommate.auth.jwt.JWTUtil;
@@ -26,7 +27,6 @@ import hello.roommate.member.service.MemberService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequiredArgsConstructor
@@ -39,7 +39,7 @@ public class AuthController {
 	private final RefreshEntityService refreshEntityService;
 	private final JWTUtil jwtUtil;
 
-	@Value("${spring.android.hashkey}")
+	@Value("${android.hashkey}")
 	private String hashKey;
 
 	/**
@@ -103,7 +103,7 @@ public class AuthController {
 	 */
 	@PostMapping("/login")
 	public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO dto) {
-		log.info("로그인 요청 username={}",dto.getUsername());
+		log.info("로그인 요청 username={}", dto.getUsername());
 		String username = dto.getUsername();
 		Optional<Member> optional = memberService.findByUsername(username);
 
@@ -123,6 +123,7 @@ public class AuthController {
 			return ResponseEntity.ok(response);
 		}
 	}
+
 	/**
 	 * 로그인 상태 여부를 확인하는 엔드포인트. 앱 시작시 사용된다.
 	 * @param dto username 을 담고있는 dto 객체
