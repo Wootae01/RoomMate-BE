@@ -12,7 +12,7 @@ import java.util.Optional;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import hello.roommate.init.OptionInit;
@@ -26,7 +26,7 @@ import hello.roommate.recommendation.repository.LifeStyleRepository;
 import hello.roommate.recommendation.repository.OptionRepository;
 import lombok.extern.slf4j.Slf4j;
 
-@DataJpaTest
+@SpringBootTest
 @Transactional
 @Slf4j
 class MemberRepositoryTest {

@@ -9,8 +9,7 @@ import org.assertj.core.api.Assertions;
 import org.assertj.core.data.Offset;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.Import;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
 
 import hello.roommate.init.OptionInit;
@@ -18,21 +17,13 @@ import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Gender;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.repository.MemberRepository;
-import hello.roommate.member.service.MemberService;
 import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.domain.Option;
 import hello.roommate.recommendation.domain.enums.Category;
 import hello.roommate.recommendation.repository.LifeStyleRepository;
 import hello.roommate.recommendation.repository.OptionRepository;
 
-@DataJpaTest
-@Import(value = {
-	OptionInit.class,
-	MemberService.class,
-	RecommendService.class,
-	OptionService.class,
-	SimilarityUtils.class
-})
+@SpringBootTest
 @Transactional
 class RecommendServiceTest {
 

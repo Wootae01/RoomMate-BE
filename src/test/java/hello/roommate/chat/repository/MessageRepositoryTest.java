@@ -5,14 +5,14 @@ import java.time.LocalDateTime;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import hello.roommate.chat.domain.ChatRoom;
 import hello.roommate.chat.domain.Message;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.repository.MemberRepository;
 
-@DataJpaTest
+@SpringBootTest
 class MessageRepositoryTest {
 
 	@Autowired

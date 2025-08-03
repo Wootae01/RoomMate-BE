@@ -1,0 +1,22 @@
+spring:
+  datasource:
+    username: roommate_user
+    password: ${RDS_PASSWORD}
+    url: ${RDS_URL}
+  jpa:
+    defer-datasource-initialization: true
+    hibernate:
+      ddl-auto: create
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+
+# JWT 비밀키
+jwt:
+  secret: ${JWT_KEY}
+
+# Android 해시키
+android:
+  hashkey: ${ANDROID_HASH_KEY}

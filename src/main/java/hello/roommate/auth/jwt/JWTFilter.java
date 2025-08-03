@@ -81,9 +81,11 @@ public class JWTFilter extends OncePerRequestFilter {
 	protected boolean shouldNotFilter(HttpServletRequest request) {
 		String path = request.getRequestURI();
 		return path.equals("/auth/token")
-				|| path.equals("/auth/reissue")
-				|| path.startsWith("/ws")
-				|| path.matches("^/members/[^/]+/resign$");
+			|| path.equals("/auth/reissue")
+			|| path.equals("/actuator")
+			|| path.startsWith("/actuator/")
+			|| path.startsWith("/ws")
+			|| path.matches("^/members/[^/]+/resign$");
 	}
 
 	private void writeErrorResponse(HttpServletResponse response, String code, String message) throws IOException {
