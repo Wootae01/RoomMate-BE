@@ -51,22 +51,16 @@ jobs:
           REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           aws ssm send-command \
-            --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
-            --document-name "AWS-RunShellScript" \
-            --parameters '{
-              "commands": [
-                "docker stop roommate-app || true",
-                "docker rm roommate-app || true",
-                "aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin '"${{ steps.login-ecr.outputs.registry }}"'",
-                "docker run -d --name roommate-app -p 8080:8080 \
-                  -e JAVA_OPTS=-Xms256m \
-                  -e SPRING_DATASOURCE_URL=jdbc:mysql://${{ secrets.RDS_ENDPOINT }}/roommate?useSSL=false&serverTimezone=Asia/Seoul&allowPublicKeyRetrieval=true \
-                  -e ANDROID_HASHKEY=${{ secrets.ANDROID_HASH_KEY }} \
-                  -e JWT_SECRET=${{ secrets.JWT_KEY }} \
-                  -e SPRING_DATASOURCE_PASSWORD=${{ secrets.RDS_PASSWORD }} \
-                  '"${{ steps.login-ecr.outputs.registry }}"/$ECR_REPOSITORY:$GITHUB_SHA"
-              ]
-            }'
+          --instance-ids ${{ secrets.EC2_INSTANCE_ID }} \
+          --document-name "AWS-RunShellScript" \
+          --parameters '{
+            "commands": [
+              "docker stop roommate-app || true",
+              "docker rm roommate-app || true",
+              "aws ecr get-login-password --region ap-northeast-2 | docker login --username AWS --password-stdin ${{ steps.login-ecr.outputs.registry }}",
+              "docker run -d --name roommate-app -p 8080:8080 -e JAVA_OPTS=-Xms256m -e SPRING_DATASOURCE_URL=jdbc:mysql://${{secrets.RDS_ENDPOINT}}/roommate?useSSL=false\\&serverTimezone=Asia/Seoul\\&allowPublicKeyRetrieval=true -e ANDROID_HASHKEY=${{ secrets.ANDROID_HASH_KEY}} -e JWT_SECRET=${{ secrets.JWT_KEY }} -e SPRING_DATASOURCE_PASSWORD=${{ secrets.RDS_PASSWORD }} '$REGISTRY'/'$ECR_REPOSITORY':'$GITHUB_SHA'"
+            ]
+          }'
 
           
           
