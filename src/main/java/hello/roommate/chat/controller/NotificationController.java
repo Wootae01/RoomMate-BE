@@ -48,7 +48,7 @@ public class NotificationController {
 	@PostMapping("/{memberId}/settings")
 	public ResponseEntity<Void> setNotificationsPermit(@PathVariable Long memberId,
 		@RequestBody NotificationPermitDTO dto) {
-		log.info("알림 수정 요청");
+		log.info("알림 권한 수정 요청");
 
 		notificationService.updatePermission(memberId, dto);
 

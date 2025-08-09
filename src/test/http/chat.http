@@ -1,0 +1,27 @@
+### 채팅방 생성 요청
+POST {{baseUrl}}/chatroom
+Content-Type: application/json
+Accept: application/json
+
+{
+  "member1Id": 1,
+  "member2Id": 2
+}
+
+### 메시지 저장 요청
+POST {{baseUrl}}/message
+Content-Type: application/json
+Accept: application/json
+
+{
+  "memberId": 1,
+  "nickname": "nickname1",
+  "chatRoomId": 1,
+  "content": "write message",
+  "sendTime": "2025-08-09T14:30:45"
+}
+
+### 해당 채팅방의 모든 메시지 조회
+GET {{baseUrl}}}/chatroom/{chatRoomId}/messages
+Content-Type: application/json
+Accept: application/json

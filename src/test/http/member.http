@@ -1,0 +1,106 @@
+# MemberController HTTP requests for VSCode REST Client (or similar)
+# Base URL: http://localhost:8080
+# Replace {{baseUrl}}, {{memberId}}, {{friendId}}, {{nickname}}, {{refreshToken}} with actual values or set them as environment variables.
+
+### 회원 탈퇴 (requires Refresh token in Authorization header)
+DELETE {{baseUrl}}/members/{{memberId}}/resign
+Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+### 상대방 정보 조회 (profile, lifestyle, preference)
+GET {{baseUrl}}/members/1/information
+Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+### 내 기본 프로필 조회
+GET {{baseUrl}}/members/{{memberId}}/basic
+Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+### 내 LifeStyle 조회
+GET {{baseUrl}}/members/{{memberId}}/lifestyle
+Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+### 내 Preference 조회
+GET {{baseUrl}}/members/{{memberId}}/preference
+Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+### 내 프로필(기본) 수정 (EditMemberDTO)
+POST {{baseUrl}}/members/{{memberId}}/editprofile
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "nickname": "jh_park",
+  "introduce": "안녕하세요, 새내기입니다.",
+  "age": 2001,
+  "dormitory": "JINLI",
+  "gender": "MALE"
+}
+
+### 내 LifeStyle 수정 (LifeStyleDTO - Map<String, List<Long>> 예시)
+POST {{baseUrl}}/members/{{memberId}}/editlifestyle
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "options": {
+    "BED_TIME":      [101, 102],
+    "WAKEUP_TIME":   [202, 203],
+    "HEATING":       [301, 302, 303],
+    "COOLING":       [401, 402],
+    "SLEEP_HABIT":   [502],
+    "SMOKING":       [601],
+    "NOISE":         [702],
+    "INDOOR_CALL":   [802],
+    "EATING":        [902],
+    "DRINKING":      [1002],
+    "SCENT":         [1102],
+    "CLEANING":      [1202],
+    "RELATIONSHIP":  [1302]
+  }
+}
+
+### 내 Preference 수정 (PreferenceDTO - Map<String, List<Long>> 예시)
+POST {{baseUrl}}/members/{{memberId}}/editpreference
+Authorization: Bearer {{accessToken}}
+Content-Type: application/json
+Accept: application/json
+
+{
+  "options": {
+    "BED_TIME":      [101, 102],
+    "WAKEUP_TIME":   [202, 203],
+    "HEATING":       [301, 302, 303],
+    "COOLING":       [401, 402],
+    "SLEEP_HABIT":   [502],
+    "SMOKING":       [601],
+    "NOISE":         [702],
+    "INDOOR_CALL":   [802],
+    "EATING":        [902],
+    "DRINKING":      [1002],
+    "SCENT":         [1102],
+    "CLEANING":      [1202],
+    "RELATIONSHIP":  [1302],
+    "AGE": [2001, 2002]
+  }
+}
+
+### 닉네임 중복 확인
+GET {{baseUrl}}/members/validate-nickname?nickname={{nickname}}
+Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+### 사용자 닉네임 조회
+GET {{baseUrl}}/members/{{memberId}}/nickname
+Authorization: Bearer {{accessToken}}
+Accept: application/json
+
+### 사용자의 모든 채팅방 조회
+GET {{baseUrl}}/members/{{memberId}}/chatrooms
+Authorization: Bearer {{accessToken}}
+Accept: application/json

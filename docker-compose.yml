@@ -15,7 +15,7 @@ services:
     networks:
       - monitoring
     healthcheck:
-      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "portfolio_user", "--password=portfolio1234" ]
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "roommate_user", "--password=roommate1234" ]
       interval: 10s
       timeout: 5s
       retries: 5
