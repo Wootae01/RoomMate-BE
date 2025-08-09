@@ -46,7 +46,6 @@ public class SecurityConfig {
 					.requestMatchers("/auth/token").permitAll()
 					.requestMatchers("/auth/reissue").permitAll()
 					.requestMatchers("/ws/chat").permitAll()
-					.requestMatchers("/members/*/resign").permitAll()
 					.requestMatchers("/actuator/**").permitAll()
 					.anyRequest().authenticated());
 

@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import hello.roommate.auth.domain.RefreshEntity;
+import hello.roommate.auth.jwt.JWTUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -48,6 +50,7 @@ public class MemberController {
 	private final MessageService messageService;
 	private final SignUpService signUpService;
 	private final RefreshEntityService refreshService;
+	private final JWTUtil jwtUtil;
 
 	/**
 	 * 회원 탈퇴 처리
@@ -59,19 +62,17 @@ public class MemberController {
 	public ResponseEntity<Map<String, Object>> reSign(HttpServletRequest request,
 		@Validated @PathVariable Long memberId) {
 
-		//refresh 토큰 검증
+		//access 토큰
 		String header = request.getHeader("Authorization");
-		log.info("header={}", header);
-		if (header == null || !header.startsWith("Bearer ")) {
-			throw new MissingTokenException();
-		}
+
 
 		String[] split = header.split(" ");
-		String refresh = split[1];
-		refreshService.validateRefresh(refresh);
+		String accessToken = split[1];
+		String username = jwtUtil.getUsername(accessToken);
+		RefreshEntity refresh = refreshService.findByUsername(username);
 
 		memberService.delete(memberId);
-		refreshService.deleteByRefresh(refresh);
+		refreshService.deleteByRefresh(refresh.getRefresh());
 
 		Map<String, Object> response = new HashMap<>();
 		response.put("success", true);

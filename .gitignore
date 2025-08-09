@@ -45,6 +45,9 @@ application-test-local.yml
 roommate-key.*
 roommate-key
 
+#http env
+http-client.env.json
+
 #terraform
 # Local .terraform directories
 **/.terraform/*
