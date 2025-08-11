@@ -3,6 +3,7 @@ package hello.roommate.member.repository;
 import java.util.List;
 import java.util.Map;
 
+import hello.roommate.chat.domain.QNotification;
 import org.springframework.data.jpa.repository.support.QuerydslRepositorySupport;
 
 import com.querydsl.jpa.JPAExpressions;
@@ -31,9 +32,12 @@ public class MemberRepositoryImpl extends QuerydslRepositorySupport implements M
 
 		QMember member = QMember.member;
 		QLifeStyle lifeStyle = QLifeStyle.lifeStyle;
+		QNotification notification = QNotification.notification;
 
 		//내 id 제외, 나와 같은 기숙사, 성별 사람 찾기
-		JPQLQuery<Member> query = from(member);
+		JPQLQuery<Member> query = from(member)
+				.leftJoin(member.notification, notification).fetchJoin();
+
 		query.where(member.id.ne(memberId))
 			.where(member.dorm.eq(
 				JPAExpressions.select(member.dorm)

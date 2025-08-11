@@ -16,7 +16,7 @@ public class Preference {
     @Setter(value = AccessLevel.NONE)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "option_id")
     private Option option;
 

@@ -1,7 +1,7 @@
 create database IF NOT EXISTS roommate;
 use roommate;
 -- 1. 기본 옵션들 삽입
-INSERT INTO options (id, category, name)
+INSERT INTO options (option_id, category, option_value)
 VALUES
     -- 취침시간
     (1, 'BED_TIME', 'NO_PREF'),
@@ -88,7 +88,7 @@ VALUES
     (1303, 'RELATIONSHIP', 'CLOSE');
 
 -- 2. 연령(AGE) 옵션 삽입 (현재 연도 2025 기준, 18세부터 9단계)
-INSERT INTO option (id, category, name)
+INSERT INTO options (option_id, category, option_value)
 VALUES (2007, 'AGE', '2007'),
        (2006, 'AGE', '2006'),
        (2005, 'AGE', '2005'),
@@ -101,43 +101,45 @@ VALUES (2007, 'AGE', '2007'),
        (0, 'AGE', 'NO_PREF');
 
 
---회원 2만명 생성
+-- 회원 2만명 생성
 SET SESSION cte_max_recursion_depth = 20000;
-INSERT INTO member (nickname, dorm, gender, year)
-WITH RECURSIVE numbers AS (SELECT 1 AS n
-                           UNION ALL
-                           SELECT n + 1
-                           FROM numbers
-                           WHERE n <= 20000)
-SELECT CONCAT('user', LPAD(n, 6, '0')),
-       CASE MOD(n, 11)
-           WHEN 0 THEN 'JINLI'
-           WHEN 1 THEN 'JEONGUI'
-           WHEN 2 THEN 'GAECHUCK'
-           WHEN 3 THEN 'GYEYANG'
-           WHEN 4 THEN 'SINMIN'
-           WHEN 5 THEN 'JISUN'
-           WHEN 6 THEN 'MYEONGDEOK'
-           WHEN 7 THEN 'INUI'
-           WHEN 8 THEN 'YEJI'
-           WHEN 9 THEN 'YANGHYEON'
-           WHEN 10 THEN 'YANGHYEON'
+INSERT INTO member (nickname, username, dorm, gender, age, introduce)
+WITH RECURSIVE numbers AS (
+    SELECT 1 AS n
+    UNION ALL
+    SELECT n + 1
+    FROM numbers
+    WHERE n < 20000
+)
+SELECT
+    CONCAT('nick', n) AS nickname,
+    CONCAT('kakao@', n) AS username,
+    CASE MOD(n, 11)
+        WHEN 0 THEN 'JINLI'
+        WHEN 1 THEN 'JEONGUI'
+        WHEN 2 THEN 'GAECHUCK'
+        WHEN 3 THEN 'GYEYANG'
+        WHEN 4 THEN 'SINMIN'
+        WHEN 5 THEN 'JISUN'
+        WHEN 6 THEN 'MYEONGDEOK'
+        WHEN 7 THEN 'INUI'
+        WHEN 8 THEN 'YEJI'
+        WHEN 9 THEN 'YANGHYEON'
+        WHEN 10 THEN 'YANGHYEON'
         END AS dorm,
-
-       CASE MOD(n, 11)
-           WHEN 0 THEN 'MALE'
-           WHEN 1 THEN 'MALE'
-           WHEN 2 THEN 'FEMALE'
-           WHEN 3 THEN 'FEMALE'
-           WHEN 4 THEN 'MALE'
-           WHEN 5 THEN 'FEMALE'
-           WHEN 6 THEN 'MALE'
-           WHEN 7 THEN 'MALE'
-           WHEN 8 THEN 'FEMALE'
-           WHEN 9 THEN 'MALE'
-           WHEN 10 THEN 'MALE'
+    CASE MOD(n, 11)
+        WHEN 0 THEN 'MALE'
+        WHEN 1 THEN 'MALE'
+        WHEN 2 THEN 'FEMALE'
+        WHEN 3 THEN 'FEMALE'
+        WHEN 4 THEN 'MALE'
+        WHEN 5 THEN 'FEMALE'
+        WHEN 6 THEN 'MALE'
+        WHEN 7 THEN 'MALE'
+        WHEN 8 THEN 'FEMALE'
+        WHEN 9 THEN 'MALE'
+        WHEN 10 THEN 'MALE'
         END AS gender,
-
     CASE MOD(n, 9)
         WHEN 0 THEN '2007'
         WHEN 1 THEN '2006'
@@ -148,5 +150,418 @@ SELECT CONCAT('user', LPAD(n, 6, '0')),
         WHEN 6 THEN '2001'
         WHEN 7 THEN '2000'
         WHEN 8 THEN '1999'
-    END AS year
+        END AS age,
+    CONCAT('hello ', n) AS introduce
 FROM numbers;
+
+-- lifestyle 생성
+
+-- 1) 단일 선택 카테고리
+INSERT INTO lifestyle(member_id, option_id)
+SELECT t.member_id, t.option_id
+FROM (
+         SELECT m.member_id, o.option_id,
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+         FROM member m
+                  JOIN options o ON o.category = 'NOISE' AND o.option_id > 100
+     ) t
+WHERE t.rn = 1;
+
+
+INSERT INTO lifestyle(member_id, option_id)
+SELECT t.member_id, t.option_id
+FROM (
+         SELECT m.member_id, o.option_id,
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+         FROM member m
+                  JOIN options o ON o.category = 'SMOCKING' AND o.option_id > 100
+     ) t
+WHERE t.rn = 1;
+
+INSERT INTO lifestyle(member_id, option_id)
+SELECT t.member_id, t.option_id
+FROM (
+         SELECT m.member_id, o.option_id,
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+         FROM member m
+                  JOIN options o ON o.category = 'SCENT' AND o.option_id > 100
+     ) t
+WHERE t.rn = 1;
+
+INSERT INTO lifestyle(member_id, option_id)
+SELECT t.member_id, t.option_id
+FROM (
+         SELECT m.member_id, o.option_id,
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+         FROM member m
+                  JOIN options o ON o.category = 'EATING' AND o.option_id > 100
+     ) t
+WHERE t.rn = 1;
+
+INSERT INTO lifestyle(member_id, option_id)
+SELECT t.member_id, t.option_id
+FROM (
+         SELECT m.member_id, o.option_id,
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+         FROM member m
+                  JOIN options o ON o.category = 'RELATIONSHIP' AND o.option_id > 100
+     ) t
+WHERE t.rn = 1;
+
+INSERT INTO lifestyle(member_id, option_id)
+SELECT t.member_id, t.option_id
+FROM (
+         SELECT m.member_id, o.option_id,
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+         FROM member m
+                  JOIN options o ON o.category = 'DRINKING' AND o.option_id > 100
+     ) t
+WHERE t.rn = 1;
+
+INSERT INTO lifestyle(member_id, option_id)
+SELECT t.member_id, t.option_id
+FROM (
+         SELECT m.member_id, o.option_id,
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+         FROM member m
+                  JOIN options o ON o.category = 'INDOOR_CALL' AND o.option_id > 100
+     ) t
+WHERE t.rn = 1;
+
+-- sleep habit
+INSERT INTO lifestyle(member_id, option_id)
+SELECT t.member_id, t.option_id
+FROM (
+         SELECT m.member_id, o.option_id,
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+         FROM member m
+                  JOIN options o ON o.category = 'SLEEP_HABIT' AND o.option_id > 100
+     ) t
+WHERE t.rn = 1;
+
+-- cleaning
+INSERT INTO lifestyle(member_id, option_id)
+SELECT t.member_id, t.option_id
+FROM (
+         SELECT m.member_id, o.option_id,
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+         FROM member m
+                  JOIN options o ON o.category = 'CLEANING' AND o.option_id > 100
+     ) t
+WHERE t.rn = 1;
+
+-- 2) lifestyle 다중 선택 카테고리
+
+-- 취침 시간
+INSERT INTO lifestyle (member_id, option_id)
+SELECT member_id, option_id
+FROM (
+         SELECT
+             m.member_id AS member_id,
+             o.option_id AS option_id,
+             ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn,
+             -- 각 회원별로 1~3개 랜덤 선택
+                 FLOOR(1 + RAND()*3) AS max_choice
+         FROM member m
+                  JOIN options o
+                       ON o.category = 'BED_TIME' AND o.option_id > 100
+     ) t
+WHERE rn <= max_choice;
+
+-- 기상 시간
+INSERT INTO lifestyle (member_id, option_id)
+SELECT member_id, option_id
+FROM (
+         SELECT
+             m.member_id AS member_id,
+             o.option_id AS option_id,
+             ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn,
+             -- 각 회원별로 1~3개 랜덤 선택
+                 FLOOR(1 + RAND()*3) AS max_choice
+         FROM member m
+                  JOIN options o
+                       ON o.category = 'WAKEUP_TIME' AND o.option_id > 100
+     ) t
+WHERE rn <= max_choice;
+
+-- 냉방
+INSERT INTO lifestyle (member_id, option_id)
+SELECT member_id, option_id
+FROM (
+         SELECT
+             m.member_id AS member_id,
+             o.option_id AS option_id,
+             ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn,
+             -- 각 회원별로 1~3개 랜덤 선택
+                 FLOOR(1 + RAND()*3) AS max_choice
+         FROM member m
+                  JOIN options o
+                       ON o.category = 'COOLING' AND o.option_id > 100
+     ) t
+WHERE rn <= max_choice;
+
+-- 난방
+INSERT INTO lifestyle (member_id, option_id)
+SELECT member_id, option_id
+FROM (
+         SELECT
+             m.member_id AS member_id,
+             o.option_id AS option_id,
+             ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn,
+             -- 각 회원별로 1~3개 랜덤 선택
+                 FLOOR(1 + RAND()*3) AS max_choice
+         FROM member m
+                  JOIN options o
+                       ON o.category = 'HEATING' AND o.option_id > 100
+     ) t
+WHERE rn <= max_choice;
+
+-- preference 생성
+SET @prob_none = 0.3;
+
+-- BED_TIME
+SET @bed_time_no_pref := (
+    SELECT option_id
+    FROM options
+    WHERE category = 'BED_TIME' AND option_id < 100
+    ORDER BY option_id
+    LIMIT 1
+);
+
+-- 상관 없음인 경우
+INSERT INTO preference (member_id, option_id)
+SELECT m.member_id, @bed_time_no_pref
+FROM member m
+WHERE @bed_time_no_pref IS NOT NULL AND RAND(1001 + m.member_id) < @prob_none;
+
+-- 선택 있는 경우
+INSERT INTO preference (member_id, option_id)
+SELECT t.member_id AS member_id, t.option_id AS option_id
+FROM (
+    SELECT m.member_id AS member_id,
+           o.option_id AS option_id,
+           ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn,
+           FLOOR (1 + RAND() * 3) AS max_choice,
+           CASE WHEN RAND(member_id + 1001) < @prob_none THEN 1 ELSE 0 END AS choose_none
+
+    FROM member m
+    JOIN options o
+        ON o.category = 'BED_TIME' AND o.option_id > 100
+) t
+WHERE t.choose_none = 0 AND t.rn <= t.max_choice;
+
+-- WAKEUP_TIME
+    SET @wakeup_time_no_pref := (
+    SELECT option_id
+    FROM options
+    WHERE category = 'WAKEUP_TIME' AND option_id < 100
+    ORDER BY option_id
+    LIMIT 1
+);
+
+INSERT INTO preference (member_id, option_id)
+SELECT m.member_id, @wakeup_time_no_pref
+FROM member m
+WHERE @wakeup_time_no_pref IS NOT NULL AND RAND(1101 + m.member_id) < @prob_none;
+
+
+INSERT INTO preference (member_id, option_id)
+SELECT t.member_id AS member_id, t.option_id AS option_id
+FROM (
+         SELECT m.member_id AS member_id,
+                o.option_id AS option_id,
+                 ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn,
+                 FLOOR (1 + RAND() * 3) AS max_choice,
+             CASE WHEN RAND(member_id + 1101) < @prob_none THEN 1 ELSE 0 END AS choose_none
+
+         FROM member m
+             JOIN options o
+         ON o.category = 'WAKEUP_TIME' AND o.option_id > 100
+     ) t
+WHERE t.choose_none = 0 AND t.rn <= t.max_choice;
+
+-- HEATING
+    SET @heating_no_pref := (
+    SELECT option_id
+    FROM options
+    WHERE category = 'HEATING' AND option_id < 100
+    ORDER BY option_id
+    LIMIT 1
+);
+
+INSERT INTO preference (member_id, option_id)
+SELECT m.member_id, @heating_no_pref
+FROM member m
+WHERE @heating_no_pref IS NOT NULL AND RAND(1201 + m.member_id) < @prob_none;
+
+
+INSERT INTO preference (member_id, option_id)
+SELECT t.member_id AS member_id, t.option_id AS option_id
+FROM (
+         SELECT m.member_id AS member_id,
+                o.option_id AS option_id,
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn,
+                 FLOOR (1 + RAND() * 3) AS max_choice,
+                CASE WHEN RAND(member_id + 1201) < @prob_none THEN 1 ELSE 0 END AS choose_none
+
+         FROM member m
+                  JOIN options o
+                       ON o.category = 'HEATING' AND o.option_id > 100
+     ) t
+WHERE t.choose_none = 0 AND t.rn <= t.max_choice;
+
+-- COOLING
+    SET @cooling_no_pref := (
+    SELECT option_id
+    FROM options
+    WHERE category = 'COOLING' AND option_id < 100
+    ORDER BY option_id
+    LIMIT 1
+);
+
+INSERT INTO preference (member_id, option_id)
+SELECT m.member_id, @cooling_no_pref
+FROM member m
+WHERE @cooling_no_pref IS NOT NULL AND RAND(1301 + m.member_id) < @prob_none;
+
+
+INSERT INTO preference (member_id, option_id)
+SELECT t.member_id AS member_id, t.option_id AS option_id
+FROM (
+         SELECT m.member_id AS member_id,
+                o.option_id AS option_id,
+                 ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn,
+                 FLOOR (1 + RAND() * 3) AS max_choice,
+             CASE WHEN RAND(member_id + 1301) < @prob_none THEN 1 ELSE 0 END AS choose_none
+
+         FROM member m
+             JOIN options o
+         ON o.category = 'COOLING' AND o.option_id > 100
+     ) t
+WHERE t.choose_none = 0 AND t.rn <= t.max_choice;
+
+-- AGE
+SET @age_no_pref := (
+    SELECT option_id
+    FROM options
+    WHERE category = 'AGE' AND option_id < 100
+    ORDER BY option_id
+    LIMIT 1
+);
+
+INSERT INTO preference (member_id, option_id)
+SELECT m.member_id, @age_no_pref
+FROM member m
+WHERE @age_no_pref IS NOT NULL AND RAND(1401 + m.member_id) < @prob_none;
+
+
+INSERT INTO preference (member_id, option_id)
+SELECT t.member_id AS member_id, t.option_id AS option_id
+FROM (
+         SELECT m.member_id AS member_id,
+                o.option_id AS option_id,
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn,
+                 FLOOR (1 + RAND() * 3) AS max_choice,
+                CASE WHEN RAND(member_id + 1301) < @prob_none THEN 1 ELSE 0 END AS choose_none
+
+         FROM member m
+                  JOIN options o
+                       ON o.category = 'AGE' AND o.option_id > 100
+     ) t
+WHERE t.choose_none = 0 AND t.rn <= t.max_choice;
+
+-- 단일 선택
+
+INSERT INTO preference(member_id, option_id)
+SELECT t.member_id, t.option_id
+FROM (
+         SELECT m.member_id, o.option_id,
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+         FROM member m
+                  JOIN options o ON o.category = 'NOISE'
+     ) t
+WHERE t.rn = 1;
+
+
+INSERT INTO preference(member_id, option_id)
+SELECT t.member_id, t.option_id
+FROM (
+         SELECT m.member_id, o.option_id,
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+         FROM member m
+                  JOIN options o ON o.category = 'SMOCKING'
+     ) t
+WHERE t.rn = 1;
+
+INSERT INTO preference(member_id, option_id)
+SELECT t.member_id, t.option_id
+FROM (
+         SELECT m.member_id, o.option_id,
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+         FROM member m
+                  JOIN options o ON o.category = 'SCENT'
+     ) t
+WHERE t.rn = 1;
+
+INSERT INTO preference(member_id, option_id)
+SELECT t.member_id, t.option_id
+FROM (
+         SELECT m.member_id, o.option_id,
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+         FROM member m
+                  JOIN options o ON o.category = 'EATING'
+     ) t
+WHERE t.rn = 1;
+
+INSERT INTO preference(member_id, option_id)
+SELECT t.member_id, t.option_id
+FROM (
+         SELECT m.member_id, o.option_id,
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+         FROM member m
+                  JOIN options o ON o.category = 'RELATIONSHIP'
+     ) t
+WHERE t.rn = 1;
+
+INSERT INTO preference(member_id, option_id)
+SELECT t.member_id, t.option_id
+FROM (
+         SELECT m.member_id, o.option_id,
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+         FROM member m
+                  JOIN options o ON o.category = 'DRINKING'
+     ) t
+WHERE t.rn = 1;
+
+INSERT INTO preference(member_id, option_id)
+SELECT t.member_id, t.option_id
+FROM (
+         SELECT m.member_id, o.option_id,
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+         FROM member m
+                  JOIN options o ON o.category = 'INDOOR_CALL'
+     ) t
+WHERE t.rn = 1;
+
+-- sleep habit
+INSERT INTO preference(member_id, option_id)
+SELECT t.member_id, t.option_id
+FROM (
+         SELECT m.member_id, o.option_id,
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+         FROM member m
+                  JOIN options o ON o.category = 'SLEEP_HABIT'
+     ) t
+WHERE t.rn = 1;
+
+-- cleaning
+INSERT INTO preference(member_id, option_id)
+SELECT t.member_id, t.option_id
+FROM (
+         SELECT m.member_id, o.option_id,
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+         FROM member m
+                  JOIN options o ON o.category = 'CLEANING'
+     ) t
+WHERE t.rn = 1;
+
