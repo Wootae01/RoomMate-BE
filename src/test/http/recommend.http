@@ -21,3 +21,13 @@ Authorization: Bearer {{accessToken}}
     "WAKEUP_TIME": [202]
   }
 }
+
+### 추천 멤버 - 필터 적용
+POST {{baseUrl}}/recommendations/{{memberId}}/filter
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "cond": {}
+}

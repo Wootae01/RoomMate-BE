@@ -8,7 +8,7 @@ import lombok.*;
 @Setter
 @EqualsAndHashCode
 @Entity
-@Table(name = "LIFESTYLE")
+@Table(name = "lifestyle")
 @NoArgsConstructor
 @ToString
 public class LifeStyle {

@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 
 import hello.roommate.auth.domain.RefreshEntity;
 import hello.roommate.auth.jwt.JWTUtil;
+import hello.roommate.mapper.MemberRecommendationMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -51,6 +52,7 @@ public class MemberController {
 	private final SignUpService signUpService;
 	private final RefreshEntityService refreshService;
 	private final JWTUtil jwtUtil;
+	private final MemberRecommendationMapper mapper;
 
 	/**
 	 * 회원 탈퇴 처리
@@ -93,7 +95,7 @@ public class MemberController {
 		Member friend = memberService.findById(friendId);    // profile만 반환
 
 		List<LifeStyle> lifeStyleList = friend.getLifeStyle();
-		Map<String, List<Long>> lifestylemap = memberService.convertLifeStyleListToMap(lifeStyleList);
+		Map<String, List<Long>> lifestylemap = mapper.convertLifeStyleListToMap(lifeStyleList);
 
 		//상관 없음 항목 제외한 preferenceMap
 		Map<String, List<Long>> preferencemap = friend.getPreference().stream()
@@ -139,7 +141,7 @@ public class MemberController {
 		Member member = memberService.findById(memberId);
 
 		Map<String, List<Long>> memberLifeStyleList =
-			memberService.convertLifeStyleListToMap(member.getLifeStyle());
+			mapper.convertLifeStyleListToMap(member.getLifeStyle());
 
 		LifeStyleDTO myLifeStyleDTO = new LifeStyleDTO(memberLifeStyleList);
 
@@ -153,7 +155,7 @@ public class MemberController {
 		Member member = memberService.findById(memberId);
 
 		Map<String, List<Long>> memberPreferenceList =
-			memberService.convertPreferenceListToMap(member.getPreference());
+			mapper.convertPreferenceListToMap(member.getPreference());
 
 		PreferenceDTO myPreferenceDTO = new PreferenceDTO(memberPreferenceList);
 

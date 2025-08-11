@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import hello.roommate.mapper.MemberRecommendationMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,7 @@ public class RecommendService {
 	private final MemberService memberService;
 	private final OptionService optionService;
 	private final SimilarityUtils similarityUtils;
+	private final MemberRecommendationMapper mapper;
 
 	/**
 	 * 요청한 사람 A와 요청한 사람과 같은 기숙사 정보를 갖는 B와의 유사도를 계산해서 Map으로 반환(key: id, value: 유사도 값)
@@ -48,7 +50,7 @@ public class RecommendService {
 				continue;
 			}
 			List<LifeStyle> lifeStyle = member.getLifeStyle();
-			Map<String, List<Long>> lifeStyleMap = memberService.convertLifeStyleListToMap(lifeStyle);
+			Map<String, List<Long>> lifeStyleMap = mapper.convertLifeStyleListToMap(lifeStyle);
 			double[] vec = similarityUtils.getVec(lifeStyleMap, opionIdxMap);
 			double sim = similarityUtils.cosSimilarity(reqVec, vec);
 			simMemberMap.put(member.getId(), sim);
@@ -76,13 +78,13 @@ public class RecommendService {
 				continue;
 			}
 			List<LifeStyle> lifeStyles = lifeMember.getLifeStyle();
-			Map<String, List<Long>> map = memberService.convertLifeStyleListToMap(lifeStyles);
+			Map<String, List<Long>> map = mapper.convertLifeStyleListToMap(lifeStyles);
 			lifeMap.put(lifeMember.getId(), map);
 		}
 
 		for (Member preMember : preMembers) {
 			List<Preference> preferences = preMember.getPreference();
-			Map<Category, List<Long>> cond = memberService.convertPreferenceListToMapWithoutNone(preferences);
+			Map<Category, List<Long>> cond = mapper.convertPreferenceListToMapWithoutNone(preferences);
 			List<Long> ageList = cond.remove(Category.AGE);
 			List<Integer> intAges = getIntAges(ageList);
 			for (Member lifeMember : lifeMembers) {

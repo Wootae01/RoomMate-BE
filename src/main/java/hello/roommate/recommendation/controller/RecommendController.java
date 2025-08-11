@@ -1,11 +1,14 @@
 package hello.roommate.recommendation.controller;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import hello.roommate.mapper.MemberRecommendationMapper;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,6 +33,7 @@ import lombok.extern.slf4j.Slf4j;
 public class RecommendController {
 	private final MemberService memberService;
 	private final RecommendService recommendService;
+	private final MemberRecommendationMapper mapper;
 
 	@GetMapping("/{memberId}/similarity")
 	public List<RecommendMemberDTO> recommend(@PathVariable Long memberId) {
@@ -37,7 +41,7 @@ public class RecommendController {
 		//1. 요청한 사람의 lifestyle 정보
 		Member requestMember = memberService.findWithLifeStyleById(memberId);
 		List<LifeStyle> requestLifeStyle = requestMember.getLifeStyle();
-		Map<String, List<Long>> requestLifeStyleMap = memberService.convertLifeStyleListToMap(requestLifeStyle);
+		Map<String, List<Long>> requestLifeStyleMap = mapper.convertLifeStyleListToMap(requestLifeStyle);
 
 		//2. 유사도 계산하여 반환
 		Map<Long, Double> simMemberMap = recommendService.getSimilarityMap(memberId, requestLifeStyleMap);
@@ -93,7 +97,7 @@ public class RecommendController {
 
 		//dto로 변환
 		List<RecommendMemberDTO> dtoList = members.stream()
-			.map(member -> memberService.convertToDTO(member))
+			.map(mapper::convertToDTO)
 			.collect(Collectors.toList());
 		log.info("{}", dtoList);
 		return dtoList;
@@ -109,10 +113,15 @@ public class RecommendController {
 	@PostMapping("/{memberId}/filter")
 	public List<RecommendMemberDTO> searchMembers(@PathVariable Long memberId,
 		@RequestBody @Validated FilterCond filterCond) {
+		Instant t0 = Instant.now();
 		List<Member> members = recommendService.searchMembersByFilter(memberId, filterCond);
+		Instant t1 = Instant.now();
 		List<RecommendMemberDTO> dtoList = members.stream()
-			.map(member -> memberService.convertToDTO(member))
+			.map(mapper::convertToDTO)
 			.collect(Collectors.toList());
+		Instant t2 = Instant.now();
+
+		log.info("fetch={}ms, convert={}ms", Duration.between(t0, t1).toMillis(), Duration.between(t1, t2).toMillis());
 
 		return dtoList;
 	}
