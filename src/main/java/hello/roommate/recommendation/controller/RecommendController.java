@@ -99,7 +99,6 @@ public class RecommendController {
 		List<RecommendMemberDTO> dtoList = members.stream()
 			.map(mapper::convertToDTO)
 			.collect(Collectors.toList());
-		log.info("{}", dtoList);
 		return dtoList;
 	}
 

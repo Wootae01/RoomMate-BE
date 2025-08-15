@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -20,12 +21,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import static hello.roommate.interceptor.LogInterceptor.LOG_ID;
+
 @RequiredArgsConstructor
 @Slf4j
 public class JWTFilter extends OncePerRequestFilter {
 
 	private final JWTUtil jwtUtil;
-
+	public static final String USERNAME = "username";
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
 		FilterChain filterChain) throws ServletException, IOException {
@@ -67,7 +70,10 @@ public class JWTFilter extends OncePerRequestFilter {
 		}
 
 		String username = jwtUtil.getUsername(token);
+		String uuid = UUID.randomUUID().toString().substring(0, 8);
 		String role = jwtUtil.getRole(token);
+		request.setAttribute(LOG_ID, uuid);
+		log.info("AUTH[{}] {}", uuid, username);
 
 		List<GrantedAuthority> authorities = Arrays.asList(new SimpleGrantedAuthority(role));
 		UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(username,
