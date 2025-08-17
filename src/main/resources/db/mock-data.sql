@@ -161,7 +161,7 @@ INSERT INTO lifestyle(member_id, option_id)
 SELECT t.member_id, t.option_id
 FROM (
          SELECT m.member_id, o.option_id,
-                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn
          FROM member m
                   JOIN options o ON o.category = 'NOISE' AND o.option_id > 100
      ) t
@@ -172,9 +172,9 @@ INSERT INTO lifestyle(member_id, option_id)
 SELECT t.member_id, t.option_id
 FROM (
          SELECT m.member_id, o.option_id,
-                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn
          FROM member m
-                  JOIN options o ON o.category = 'SMOCKING' AND o.option_id > 100
+                  JOIN options o ON o.category = 'SMOKING' AND o.option_id > 100
      ) t
 WHERE t.rn = 1;
 
@@ -182,7 +182,7 @@ INSERT INTO lifestyle(member_id, option_id)
 SELECT t.member_id, t.option_id
 FROM (
          SELECT m.member_id, o.option_id,
-                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn
          FROM member m
                   JOIN options o ON o.category = 'SCENT' AND o.option_id > 100
      ) t
@@ -192,7 +192,7 @@ INSERT INTO lifestyle(member_id, option_id)
 SELECT t.member_id, t.option_id
 FROM (
          SELECT m.member_id, o.option_id,
-                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn
          FROM member m
                   JOIN options o ON o.category = 'EATING' AND o.option_id > 100
      ) t
@@ -202,7 +202,7 @@ INSERT INTO lifestyle(member_id, option_id)
 SELECT t.member_id, t.option_id
 FROM (
          SELECT m.member_id, o.option_id,
-                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn
          FROM member m
                   JOIN options o ON o.category = 'RELATIONSHIP' AND o.option_id > 100
      ) t
@@ -212,7 +212,7 @@ INSERT INTO lifestyle(member_id, option_id)
 SELECT t.member_id, t.option_id
 FROM (
          SELECT m.member_id, o.option_id,
-                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn
          FROM member m
                   JOIN options o ON o.category = 'DRINKING' AND o.option_id > 100
      ) t
@@ -222,7 +222,7 @@ INSERT INTO lifestyle(member_id, option_id)
 SELECT t.member_id, t.option_id
 FROM (
          SELECT m.member_id, o.option_id,
-                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn
          FROM member m
                   JOIN options o ON o.category = 'INDOOR_CALL' AND o.option_id > 100
      ) t
@@ -233,7 +233,7 @@ INSERT INTO lifestyle(member_id, option_id)
 SELECT t.member_id, t.option_id
 FROM (
          SELECT m.member_id, o.option_id,
-                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn
          FROM member m
                   JOIN options o ON o.category = 'SLEEP_HABIT' AND o.option_id > 100
      ) t
@@ -244,7 +244,7 @@ INSERT INTO lifestyle(member_id, option_id)
 SELECT t.member_id, t.option_id
 FROM (
          SELECT m.member_id, o.option_id,
-                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn
          FROM member m
                   JOIN options o ON o.category = 'CLEANING' AND o.option_id > 100
      ) t
@@ -489,7 +489,7 @@ FROM (
          SELECT m.member_id, o.option_id,
                 ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND(m.member_id + o.option_id)) AS rn
          FROM member m
-                  JOIN options o ON o.category = 'SMOCKING'
+                  JOIN options o ON o.category = 'SMOKING'
      ) t
 WHERE t.rn = 1;
 
@@ -565,3 +565,6 @@ FROM (
      ) t
 WHERE t.rn = 1;
 
+INSERT INTO notification(member_id, token, permission)
+SELECT m.member_id, 'TOKEN', TRUE
+FROM member m

@@ -30,4 +30,19 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberCus
 	@Query("SELECT DISTINCT m FROM Member m JOIN FETCH m.lifeStyle WHERE m.dorm =:dorm and m.gender = :gender")
 	List<Member> findAllWithLifeStyleByDormAndGender(Dormitory dorm, Gender gender);
 
+	@Query("SELECT m FROM Member m WHERE m.id IN :memberIds "
+		+ "AND m.age IN :ages "
+		+ "AND m.gender =:gender "
+		+ "AND m.dorm =:dorm "
+		+ "And m.id <> :myId")
+	List<Member> findEligibleMember(Long myId, List<Long> memberIds, Dormitory dorm, Gender gender, List<Integer> ages);
+
+	@Query("SELECT m FROM Member m WHERE m.id IN :memberIds "
+		+ "AND m.gender =:gender "
+		+ "AND m.dorm =:dorm "
+		+ "And m.id <> :myId")
+	List<Member> findEligibleMemberExceptAge(Long myId, List<Long> memberIds, Dormitory dorm, Gender gender);
+
+	@Query("SELECT m.id FROM Member m")
+	List<Long> findAllIds();
 }

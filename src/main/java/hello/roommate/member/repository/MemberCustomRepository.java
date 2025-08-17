@@ -8,5 +8,4 @@ import hello.roommate.recommendation.domain.enums.Category;
 
 public interface MemberCustomRepository {
 	List<Member> search(Long memberId, Map<Category, List<Long>> cond, List<Integer> ages);
-
 }

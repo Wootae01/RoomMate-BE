@@ -22,4 +22,14 @@ public interface LifeStyleRepository extends JpaRepository<LifeStyle, Long> {
 	@Query("delete from LifeStyle l where l.member.id = :memberId")
 	void deleteByMemberId(@Param("memberId") Long memberId);
 
+	@Query("""
+		    SELECT ls.member.id FROM LifeStyle ls
+		    JOIN ls.option o
+		    WHERE o.id IN :optionIds
+		    GROUP BY ls.member.id
+		    HAVING COUNT(DISTINCT o.category) = :totalCategory
+		""")
+	List<Long> findMemberIdsCoverAllCategory(
+		@Param("optionIds") List<Long> optionIds, @Param("totalCategory") Long totalCategory);
+
 }

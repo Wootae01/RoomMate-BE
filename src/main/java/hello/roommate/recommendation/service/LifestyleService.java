@@ -38,7 +38,6 @@ public class LifestyleService {
 		return lifeStyleRepository.findByMemberId(memberId);
 	}
 
-
 	public void update(Long memberId, LifeStyleDTO dto) {
 
 		Member member = memberRepository.findById(memberId)
@@ -60,6 +59,23 @@ public class LifestyleService {
 
 		lifeStyleRepository.saveAll(updateList);
 
+	}
+
+	/**
+	 * 각 카테고리 별로 조건에 맞는 멤버를 찾아 반환한다.
+	 * 카테고리마다 맞는 조건이 1개 이상 있어야 된다.
+	 *
+	 * @param optionIds 조건
+	 * @param totalCategory 조건의 전체 카테고리 개수
+	 * @return 조건에 맞는 memberIds
+	 */
+	public List<Long> findMemberIdsCoverAllCategory(List<Long> optionIds, long totalCategory) {
+
+		// 특정 조건이 없으면 모든 멤버 id 반환
+		if (optionIds.isEmpty()) {
+			return memberRepository.findAllIds();
+		}
+		return lifeStyleRepository.findMemberIdsCoverAllCategory(optionIds, totalCategory);
 	}
 
 	public void delete(Long id) {

@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,11 +14,7 @@ import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Gender;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.domain.MemberChatRoom;
-import hello.roommate.member.dto.RecommendMemberDTO;
 import hello.roommate.member.repository.MemberRepository;
-import hello.roommate.recommendation.domain.LifeStyle;
-import hello.roommate.recommendation.domain.Option;
-import hello.roommate.recommendation.domain.Preference;
 import hello.roommate.recommendation.domain.enums.Category;
 import lombok.RequiredArgsConstructor;
 
@@ -85,5 +80,14 @@ public class MemberService {
 		return memberRepository.search(memberId, cond, intAges);
 	}
 
+	public List<Member> findEligibleMember(Long myId, List<Long> memberIds, Dormitory dorm, Gender gender,
+		List<Integer> ages) {
+		if (ages.isEmpty()) {
+			return memberRepository.findEligibleMemberExceptAge(myId, memberIds, dorm, gender);
+		} else {
+			return memberRepository.findEligibleMember(myId, memberIds, dorm, gender, ages);
+		}
+
+	}
 
 }
