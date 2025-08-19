@@ -3,13 +3,25 @@ package hello.roommate.member.domain;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import hello.roommate.chat.domain.Message;
 import hello.roommate.chat.domain.Notification;
 import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.domain.Preference;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,9 +33,7 @@ import lombok.Setter;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
-@Table(indexes = {
-		@Index(name = "idx_member_dorm", columnList = "dorm")
-})
+@Table(name = "member")
 public class Member {
 	@Id
 	@Column(name = "member_id")
@@ -52,7 +62,7 @@ public class Member {
 	@OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private List<Preference> preference = new ArrayList<>();
 
-	@OneToOne(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true)
+	@OneToOne(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private Notification notification;
 
 	@OneToMany(mappedBy = "sender", cascade = CascadeType.REMOVE, orphanRemoval = true)

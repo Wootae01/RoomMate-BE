@@ -8,7 +8,7 @@ Authorization: Bearer {{accessToken}}
 Accept: application/json
 
 ### 상대방 정보 조회 (profile, lifestyle, preference)
-GET {{baseUrl}}/members/1/information
+GET {{baseUrl}}/members/8/information
 Authorization: Bearer {{accessToken}}
 Accept: application/json
 
@@ -41,7 +41,7 @@ Accept: application/json
   "gender": "MALE"
 }
 
-### 내 LifeStyle 수정 (LifeStyleDTO - Map<String, List<Long>> 예시)
+### 내 LifeStyle 수정
 POST {{baseUrl}}/members/{{memberId}}/editlifestyle
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
@@ -49,23 +49,54 @@ Accept: application/json
 
 {
   "options": {
-    "BED_TIME":      [101, 102],
-    "WAKEUP_TIME":   [202, 203],
-    "HEATING":       [301, 302, 303],
-    "COOLING":       [401, 402],
-    "SLEEP_HABIT":   [502],
-    "SMOKING":       [601],
-    "NOISE":         [702],
-    "INDOOR_CALL":   [802],
-    "EATING":        [902],
-    "DRINKING":      [1002],
-    "SCENT":         [1102],
-    "CLEANING":      [1202],
-    "RELATIONSHIP":  [1302]
+    "BED_TIME": [
+      101,
+      102
+    ],
+    "WAKEUP_TIME": [
+      202,
+      203
+    ],
+    "HEATING": [
+      301,
+      302,
+      303
+    ],
+    "COOLING": [
+      401,
+      402
+    ],
+    "SLEEP_HABIT": [
+      502
+    ],
+    "SMOKING": [
+      601
+    ],
+    "NOISE": [
+      702
+    ],
+    "INDOOR_CALL": [
+      802
+    ],
+    "EATING": [
+      902
+    ],
+    "DRINKING": [
+      1002
+    ],
+    "SCENT": [
+      1102
+    ],
+    "CLEANING": [
+      1202
+    ],
+    "RELATIONSHIP": [
+      1302
+    ]
   }
 }
 
-### 내 Preference 수정 (PreferenceDTO - Map<String, List<Long>> 예시)
+### 내 Preference 수정
 POST {{baseUrl}}/members/{{memberId}}/editpreference
 Authorization: Bearer {{accessToken}}
 Content-Type: application/json
@@ -73,20 +104,54 @@ Accept: application/json
 
 {
   "options": {
-    "BED_TIME":      [101, 102],
-    "WAKEUP_TIME":   [202, 203],
-    "HEATING":       [301, 302, 303],
-    "COOLING":       [401, 402],
-    "SLEEP_HABIT":   [502],
-    "SMOKING":       [601],
-    "NOISE":         [702],
-    "INDOOR_CALL":   [802],
-    "EATING":        [902],
-    "DRINKING":      [1002],
-    "SCENT":         [1102],
-    "CLEANING":      [1202],
-    "RELATIONSHIP":  [1302],
-    "AGE": [2001, 2002]
+    "BED_TIME": [
+      101,
+      102
+    ],
+    "WAKEUP_TIME": [
+      202,
+      203
+    ],
+    "HEATING": [
+      301,
+      302,
+      303
+    ],
+    "COOLING": [
+      401,
+      402
+    ],
+    "SLEEP_HABIT": [
+      502
+    ],
+    "SMOKING": [
+      601
+    ],
+    "NOISE": [
+      702
+    ],
+    "INDOOR_CALL": [
+      802
+    ],
+    "EATING": [
+      902
+    ],
+    "DRINKING": [
+      1002
+    ],
+    "SCENT": [
+      1102
+    ],
+    "CLEANING": [
+      1202
+    ],
+    "RELATIONSHIP": [
+      1302
+    ],
+    "AGE": [
+      2001,
+      2002
+    ]
   }
 }
 

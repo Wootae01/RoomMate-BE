@@ -69,13 +69,13 @@ public class LifestyleService {
 	 * @param totalCategory 조건의 전체 카테고리 개수
 	 * @return 조건에 맞는 memberIds
 	 */
-	public List<Long> findMemberIdsCoverAllCategory(List<Long> optionIds, long totalCategory) {
+	public List<Member> findMemberIdsCoverAllCategory(List<Long> optionIds, List<Long> memberIds, long totalCategory) {
 
 		// 특정 조건이 없으면 모든 멤버 id 반환
 		if (optionIds.isEmpty()) {
-			return memberRepository.findAllIds();
+			return memberRepository.findAllByIds(memberIds);
 		}
-		return lifeStyleRepository.findMemberIdsCoverAllCategory(optionIds, totalCategory);
+		return lifeStyleRepository.findMemberIdsCoverAllCategory(optionIds, memberIds, totalCategory);
 	}
 
 	public void delete(Long id) {

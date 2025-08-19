@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -22,6 +23,7 @@ import lombok.ToString;
 @Entity
 @NoArgsConstructor
 @ToString
+@Table(name = "lifestyle")
 public class LifeStyle {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

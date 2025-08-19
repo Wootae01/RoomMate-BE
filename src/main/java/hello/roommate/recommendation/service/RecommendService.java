@@ -199,7 +199,6 @@ public class RecommendService {
 
 	public List<Member> searchMembersByPreference(Long myId) {
 		Member member = memberService.findById(myId);
-
 		List<Preference> preferences = member.getPreference();
 
 		// 상관 없음 항목 제외, 나이 제외
@@ -218,13 +217,19 @@ public class RecommendService {
 			.toList();
 
 		//1. 조건 카테고리 수
+		log.info("cond = {}", cond);
+		log.info("ages = {}", ages);
 		long totalCategory = optionService.getTotalCategory(cond);
+		log.info("totalCategory = {}", totalCategory);
 
-		// 2. 조건에 맞는 사용자 검색
-		List<Long> memberIds = lifestyleService.findMemberIdsCoverAllCategory(cond, totalCategory);
+		//2. 기숙사, 나이 고려한 사용자 검색
+		List<Long> memberIds = memberService.findEligibleMember(myId, member.getDorm(), member.getGender(), ages);
+		log.info("memberIds = {}", memberIds);
+		log.info("dorm = {}, gender = {}", member.getDorm(), member.getGender());
 
-		//3. 기숙사, 나이 고려한 사용자 검색
-		return memberService.findEligibleMember(myId, memberIds, member.getDorm(), member.getGender(), ages);
+		//3. 조건에 맞는 사용자 검색
+		return lifestyleService.findMemberIdsCoverAllCategory(cond, memberIds, totalCategory);
+
 	}
 
 	/**
@@ -246,12 +251,11 @@ public class RecommendService {
 		//1. 조건 카테고리 수
 		long totalCategory = optionService.getTotalCategory(optionIds);
 
-		// 2. 조건에 맞는 사용자 검색
-		List<Long> memberIds = lifestyleService.findMemberIdsCoverAllCategory(optionIds,
-			totalCategory);
+		// 2. 기숙사, 나이 고렿나 사용자 검색
+		List<Long> memberIds = memberService.findEligibleMember(myId, member.getDorm(), member.getGender(), intAges);
 
 		//3. 기숙사, 나이 고려한 사용자 검색
-		return memberService.findEligibleMember(myId, memberIds, member.getDorm(), member.getGender(), intAges);
+		return lifestyleService.findMemberIdsCoverAllCategory(optionIds, memberIds, totalCategory);
 	}
 
 	//age Long 값 Integer 로 변경

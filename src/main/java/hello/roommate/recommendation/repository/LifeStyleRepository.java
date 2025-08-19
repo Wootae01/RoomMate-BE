@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import hello.roommate.member.domain.Member;
 import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.domain.enums.Category;
 
@@ -23,13 +24,15 @@ public interface LifeStyleRepository extends JpaRepository<LifeStyle, Long> {
 	void deleteByMemberId(@Param("memberId") Long memberId);
 
 	@Query("""
-		    SELECT ls.member.id FROM LifeStyle ls
+		    SELECT ls.member FROM LifeStyle ls
+		    LEFT JOIN FETCH ls.member.notification
 		    JOIN ls.option o
-		    WHERE o.id IN :optionIds
+		    WHERE ls.member.id IN :memberIds
+		    AND o.id IN :optionIds
 		    GROUP BY ls.member.id
 		    HAVING COUNT(DISTINCT o.category) = :totalCategory
 		""")
-	List<Long> findMemberIdsCoverAllCategory(
-		@Param("optionIds") List<Long> optionIds, @Param("totalCategory") Long totalCategory);
+	List<Member> findMemberIdsCoverAllCategory(
+		@Param("optionIds") List<Long> optionIds, List<Long> memberIds, @Param("totalCategory") Long totalCategory);
 
 }

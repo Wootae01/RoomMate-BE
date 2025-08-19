@@ -80,12 +80,12 @@ public class MemberService {
 		return memberRepository.search(memberId, cond, intAges);
 	}
 
-	public List<Member> findEligibleMember(Long myId, List<Long> memberIds, Dormitory dorm, Gender gender,
+	public List<Long> findEligibleMember(Long myId, Dormitory dorm, Gender gender,
 		List<Integer> ages) {
 		if (ages.isEmpty()) {
-			return memberRepository.findEligibleMemberExceptAge(myId, memberIds, dorm, gender);
+			return memberRepository.findEligibleMemberExceptAge(myId, dorm, gender);
 		} else {
-			return memberRepository.findEligibleMember(myId, memberIds, dorm, gender, ages);
+			return memberRepository.findEligibleMember(myId, dorm, gender, ages);
 		}
 
 	}
