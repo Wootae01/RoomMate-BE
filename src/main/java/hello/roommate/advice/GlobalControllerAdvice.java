@@ -86,6 +86,13 @@ public class GlobalControllerAdvice {
 		return new ErrorResult(HttpStatus.BAD_REQUEST.value(), "잘못된 요청 입니다.");
 	}
 
+	@ResponseStatus(value = HttpStatus.CONFLICT)
+	@ExceptionHandler(DuplicatedNicknameException.class)
+	public ErrorResult DuplicatedNicknameException(DuplicatedNicknameException e) {
+		log.info("DuplicatedNicknameException, message={}", e.getMessage());
+		return new ErrorResult(HttpStatus.BAD_REQUEST.value(), "이미 사용중인 닉네임 입니다.");
+	}
+
 	/**
 	 * 기타 정의 되지 않은 모든 에러를 잡아
 	 * Http 500 코드를 담은 ErrorResult 객체를 반환
@@ -99,5 +106,4 @@ public class GlobalControllerAdvice {
 		log.error("UnHandled exception e {}", e);
 		return new ErrorResult(HttpStatus.INTERNAL_SERVER_ERROR.value(), "내부 서버 오류가 발생했습니다.");
 	}
-
 }

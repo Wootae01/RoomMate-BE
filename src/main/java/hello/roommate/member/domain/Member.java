@@ -22,6 +22,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,7 +34,7 @@ import lombok.Setter;
 @Entity
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor
-@Table(name = "member")
+@Table(name = "member", uniqueConstraints = @UniqueConstraint(columnNames = "nickname"))
 public class Member {
 	@Id
 	@Column(name = "member_id")
@@ -54,7 +55,7 @@ public class Member {
 	private Gender gender;
 
 	@OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true)
-	private List<LifeStyle> lifeStyle;
+	private List<LifeStyle> lifeStyle = new ArrayList<>();
 
 	@OneToMany(mappedBy = "member", cascade = CascadeType.REMOVE, orphanRemoval = true)
 	private List<MemberChatRoom> memberChatRooms = new ArrayList<>();

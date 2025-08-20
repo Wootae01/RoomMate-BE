@@ -7,9 +7,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import hello.roommate.auth.domain.RefreshEntity;
-import hello.roommate.auth.jwt.JWTUtil;
-import hello.roommate.mapper.MemberRecommendationMapper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,15 +18,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import hello.roommate.auth.domain.RefreshEntity;
 import hello.roommate.auth.dto.EditMemberDTO;
 import hello.roommate.auth.dto.SignUpDTO;
-import hello.roommate.auth.exception.MissingTokenException;
+import hello.roommate.auth.jwt.JWTUtil;
 import hello.roommate.auth.service.RefreshEntityService;
 import hello.roommate.auth.service.SignUpService;
 import hello.roommate.chat.domain.ChatRoom;
 import hello.roommate.chat.domain.Message;
 import hello.roommate.chat.dto.ChatRoomDTO;
 import hello.roommate.chat.service.MessageService;
+import hello.roommate.mapper.MemberRecommendationMapper;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.domain.MemberChatRoom;
 import hello.roommate.member.service.MemberService;
@@ -66,7 +65,6 @@ public class MemberController {
 
 		//access 토큰
 		String header = request.getHeader("Authorization");
-
 
 		String[] split = header.split(" ");
 		String accessToken = split[1];
@@ -221,13 +219,8 @@ public class MemberController {
 	 */
 	@GetMapping("/validate-nickname")
 	public Boolean validateDuplicatedNickname(@RequestParam String nickname) {
-		Optional<Member> optional = memberService.findByNickname(nickname);
-
-		if (optional.isEmpty()) {
-			return true;
-		} else {
-			return false;
-		}
+		boolean existed = memberService.existByNickname(nickname);
+		return !existed;
 	}
 
 	/**

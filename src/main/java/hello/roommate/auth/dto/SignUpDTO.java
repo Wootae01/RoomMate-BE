@@ -12,6 +12,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -20,6 +21,7 @@ import lombok.ToString;
 @Setter
 @ToString
 @AllArgsConstructor
+@NoArgsConstructor
 public class SignUpDTO {
 	@NotNull(message = "{NotNull.userId}")
 	private Long userId;

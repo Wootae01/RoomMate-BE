@@ -68,8 +68,8 @@ public class MemberService {
 		return chatRooms;
 	}
 
-	public Optional<Member> findByNickname(String nickname) {
-		return memberRepository.findByNickname(nickname);
+	public boolean existByNickname(String nickname) {
+		return memberRepository.existsByNickname(nickname);
 	}
 
 	public void delete(Long id) {

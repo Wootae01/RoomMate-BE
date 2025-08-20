@@ -14,7 +14,7 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberCus
 
 	List<Member> findByDorm(Dormitory dormitory);
 
-	Optional<Member> findByNickname(String nickname);
+	boolean existsByNickname(String nickname);
 
 	Optional<Member> findByUsername(String username);
 
