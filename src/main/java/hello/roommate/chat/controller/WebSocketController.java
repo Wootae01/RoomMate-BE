@@ -17,6 +17,7 @@ import hello.roommate.chat.dto.NotificationPushDTO;
 import hello.roommate.chat.service.MessageService;
 import hello.roommate.chat.service.NotificationService;
 import hello.roommate.chat.service.PushNotificationService;
+import hello.roommate.mapper.MessageMapper;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.repository.MemberChatRoomRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class WebSocketController {
 	private final NotificationService notificationService;
 	private final MemberChatRoomRepository memberChatRoomRepository;
 	private final PushNotificationService pushNotificationService;
+	private final MessageMapper mapper;
 
 	/**
 	 * 웹소켓을 통해 메시지를 받아 처리하고, 저장 후 동일한 메시지를 구독자에게 전송하는 메서드
@@ -44,17 +46,12 @@ public class WebSocketController {
 	public Mono<MessageDTO> sendMessage(MessageReceiveDTO messageReceiveDTO) {
 		log.info("arrive message");
 		log.info("message ={}", messageReceiveDTO);
-		Message message = messageService.convertToEntity(messageReceiveDTO);
+		Message message = mapper.convertToEntity(messageReceiveDTO);
 		Message save = messageService.save(message);
 		String nickname = save.getSender().getNickname();
 
 		//메시지 전송 DTO 생성
-		MessageDTO sendDTO = new MessageDTO();
-		sendDTO.setSendTime(messageReceiveDTO.getSendTime());
-		sendDTO.setNickname(nickname);
-		sendDTO.setContent(messageReceiveDTO.getContent());
-		sendDTO.setMemberId(messageReceiveDTO.getMemberId());
-		sendDTO.setChatRoomId(messageReceiveDTO.getChatRoomId());
+		MessageDTO sendDTO = mapper.convertReceiveToMessageDTO(messageReceiveDTO, nickname);
 
 		//알림 요청
 
@@ -75,6 +72,15 @@ public class WebSocketController {
 			return Mono.just(sendDTO);
 		}
 
+		NotificationPushDTO pushDTO = getNotificationPushDTO(messageReceiveDTO, notification, nickname);
+
+		// push 알림 전송 후 sendDTO 반환
+		return pushNotificationService.sendNotification(pushDTO)
+			.thenReturn(sendDTO);
+	}
+
+	private static NotificationPushDTO getNotificationPushDTO(MessageReceiveDTO messageReceiveDTO,
+		Notification notification, String nickname) {
 		NotificationPushDTO pushDTO = new NotificationPushDTO();
 		pushDTO.setTo(notification.getToken());
 		pushDTO.setBody(messageReceiveDTO.getContent());
@@ -83,10 +89,7 @@ public class WebSocketController {
 		Map<String, String> dataMap = new HashMap<>();
 		dataMap.put("chatRoomId", String.valueOf(messageReceiveDTO.getChatRoomId()));
 		pushDTO.setData(dataMap);
-
-		// push 알림 전송 후 sendDTO 반환
-		return pushNotificationService.sendNotification(pushDTO)
-			.thenReturn(sendDTO);
+		return pushDTO;
 	}
 
 }
