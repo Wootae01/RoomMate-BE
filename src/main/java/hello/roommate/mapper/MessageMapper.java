@@ -26,13 +26,14 @@ public class MessageMapper {
 	/**
 	 * MessageReceiveDTO 를 MessageDTO 로 변환하는 메서드
 	 * @param messageReceiveDTO receiveDTO
-	 * @param nickname 전송자 닉네임
 	 * @return MessageDTO
 	 */
-	public MessageDTO convertReceiveToMessageDTO(MessageReceiveDTO messageReceiveDTO, String nickname) {
+	public MessageDTO convertReceiveToMessageDTO(MessageReceiveDTO messageReceiveDTO) {
+		Member sender = memberService.findById(messageReceiveDTO.getMemberId());
+
 		MessageDTO sendDTO = new MessageDTO();
 		sendDTO.setSendTime(messageReceiveDTO.getSendTime());
-		sendDTO.setNickname(nickname);
+		sendDTO.setNickname(sender.getNickname());
 		sendDTO.setContent(messageReceiveDTO.getContent());
 		sendDTO.setMemberId(messageReceiveDTO.getMemberId());
 		sendDTO.setChatRoomId(messageReceiveDTO.getChatRoomId());

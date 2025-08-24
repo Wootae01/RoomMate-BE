@@ -55,12 +55,15 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 	@Override
 	public void configureMessageBroker(MessageBrokerRegistry registry) {
 		//구독할 때 사용할 메시지 브로커의 prefix /topic 으로 설정
-		registry.enableSimpleBroker("/topic")
+		registry.enableSimpleBroker("/topic", "/queue")
 			.setHeartbeatValue(new long[] {10000, 10000})
 			.setTaskScheduler(taskScheduler());
 
 		//메시지 보낼 때 사용할 prefix /app/chatroom 으로 설정
 		registry.setApplicationDestinationPrefixes("/app/chatroom");
+
+		// 사용자 전용 목적지로 사용할 때 사용하는 접두사
+		registry.setUserDestinationPrefix("/user");
 	}
 
 	/**

@@ -1,10 +1,8 @@
 package hello.roommate.member.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
@@ -25,12 +23,10 @@ import hello.roommate.auth.jwt.JWTUtil;
 import hello.roommate.auth.service.RefreshEntityService;
 import hello.roommate.auth.service.SignUpService;
 import hello.roommate.chat.domain.ChatRoom;
-import hello.roommate.chat.domain.Message;
 import hello.roommate.chat.dto.ChatRoomDTO;
-import hello.roommate.chat.service.MessageService;
+import hello.roommate.mapper.ChatRoomMapper;
 import hello.roommate.mapper.MemberRecommendationMapper;
 import hello.roommate.member.domain.Member;
-import hello.roommate.member.domain.MemberChatRoom;
 import hello.roommate.member.service.MemberService;
 import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.domain.Option;
@@ -47,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MemberController {
 	private final MemberService memberService;
-	private final MessageService messageService;
+	private final ChatRoomMapper chatRoomMapper;
 	private final SignUpService signUpService;
 	private final RefreshEntityService refreshService;
 	private final JWTUtil jwtUtil;
@@ -244,29 +240,9 @@ public class MemberController {
 	@GetMapping("/{memberId}/chatrooms")
 	public List<ChatRoomDTO> findAllChatRooms(@PathVariable Long memberId) {
 		log.info("모든 채팅방 반환 요청 id={}", memberId);
-		List<ChatRoomDTO> result = new ArrayList<>();
-		List<ChatRoom> chatRooms = memberService.findAllChatRooms(memberId);
-		for (ChatRoom chatRoom : chatRooms) {
-			List<MemberChatRoom> memberChatRooms = chatRoom.getMemberChatRooms();
 
-			for (MemberChatRoom memberChatRoom : memberChatRooms) {
-				if (!memberChatRoom.getMember().getId().equals(memberId)) { // 채팅방 중 내가 아닌 상대방 닉네임 찾고
-					Member opponent = memberChatRoom.getMember();
-					String nickname = opponent.getNickname();
-					Optional<Message> optional = messageService.findLatestMessage(chatRoom.getId()); //최근 메시지 찾고
-					if (optional.isEmpty()) {
-						continue;
-					}
-					Message latestMessage = optional.get();
-					ChatRoomDTO dto = new ChatRoomDTO(); //dto로 변환
-					dto.setChatRoomId(chatRoom.getId());
-					dto.setNickname(nickname);
-					dto.setUpdatedTime(latestMessage.getSendTime());
-					dto.setMessage(latestMessage.getContent());
-					result.add(dto);
-				}
-			}
-		}
+		List<ChatRoom> chatRooms = memberService.findAllChatRooms(memberId);
+		List<ChatRoomDTO> result = chatRoomMapper.convertToChatRoomDTO(memberId, chatRooms);
 		log.info("반환 데이터 = {}", result);
 		result.sort(((o1, o2) -> o2.getUpdatedTime().compareTo(o1.getUpdatedTime())));
 		return result;
