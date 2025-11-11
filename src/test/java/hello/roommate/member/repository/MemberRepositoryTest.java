@@ -13,6 +13,7 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.annotation.Transactional;
 
 import hello.roommate.init.OptionInit;
@@ -63,6 +64,7 @@ class MemberRepositoryTest {
 	}
 
 	@Test
+	@DirtiesContext
 	void findByDorm() {
 		Member member1 = createMember(Dormitory.INUI, "abc");
 		Member member2 = createMember(Dormitory.INUI, "abcd");
@@ -107,7 +109,6 @@ class MemberRepositoryTest {
 
 		//내 정보
 		Member member = new Member();
-		member.setId(1111L);
 		member.setDorm(Dormitory.INUI);
 		member.setAge(1999);
 		member.setGender(Gender.MALE);
@@ -124,7 +125,6 @@ class MemberRepositoryTest {
 
 		//상대방1
 		Member member1 = new Member();
-		member1.setId(2222L);
 		member1.setDorm(Dormitory.INUI);
 		member1.setAge(1999);
 		member1.setGender(Gender.MALE);
@@ -138,7 +138,6 @@ class MemberRepositoryTest {
 
 		//상대방2
 		Member member2 = new Member();
-		member2.setId(22222L);
 		member2.setDorm(Dormitory.INUI);
 		member2.setAge(2000);
 		member2.setGender(Gender.MALE);
@@ -152,7 +151,7 @@ class MemberRepositoryTest {
 
 		//상대방3
 		Member member3 = new Member();
-		member3.setId(3333L);
+
 		member3.setDorm(Dormitory.INUI);
 		member3.setAge(1999);
 		member3.setGender(Gender.MALE);
@@ -165,7 +164,6 @@ class MemberRepositoryTest {
 
 		//상대방4
 		Member member4 = new Member();
-		member4.setId(4444L);
 		member4.setDorm(Dormitory.INUI);
 		member4.setAge(1999);
 		member4.setGender(Gender.MALE);
@@ -180,7 +178,6 @@ class MemberRepositoryTest {
 
 		//상대방5
 		Member member5 = new Member();
-		member5.setId(5555L);
 		member5.setDorm(Dormitory.INUI);
 		member5.setAge(1999);
 		member5.setGender(Gender.FEMALE);
