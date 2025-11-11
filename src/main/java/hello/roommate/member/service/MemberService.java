@@ -36,6 +36,13 @@ public class MemberService {
 		return memberRepository.findAllById(ids);
 	}
 
+	public List<Member> findAllByDorm(Long id) {
+		Member member = memberRepository.findById(id)
+			.orElseThrow();
+		Dormitory dorm = member.getDorm();
+		return memberRepository.findAllByDorm(dorm);
+	}
+
 	public List<Member> findAllWithLifeStyle() {
 		return memberRepository.findAllWithLifeStyle();
 	}

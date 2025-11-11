@@ -568,3 +568,46 @@ WHERE t.rn = 1;
 INSERT INTO notification(member_id, token, permission)
 SELECT m.member_id, 'TOKEN', TRUE
 FROM member m
+
+
+-- 0) 멤버 수를 구함
+SELECT COUNT(*) INTO @N FROM member;
+SELECT @N AS member_count; -- 확인용
+
+-- 2) CHAT_ROOM을 멤버 수(@N) 만큼 1..@N 아이디로 생성
+INSERT INTO chat_room
+WITH RECURSIVE seq AS (
+    SELECT 1 AS n
+    UNION ALL
+    SELECT n+1 FROM seq WHERE n < @N
+)
+SELECT NULL FROM seq; -- 또는 SELECT n FROM seq;
+
+-- 3) MemberChatRoom 매핑 삽입
+--    member rn (1..N)에 대해: 첫번째 = rn, 두번째 = (rn % N) + 1
+INSERT INTO member_chat_room (member_id, chat_room_id)
+WITH ordered_members AS (
+    SELECT member_id,
+           ROW_NUMBER() OVER (ORDER BY member_id) AS rn
+    FROM member
+)
+-- 첫번째 방
+SELECT member_id, rn FROM ordered_members
+UNION ALL
+-- 두번째 방
+SELECT member_id, (rn % @N) + 1 FROM ordered_members;
+
+-- 메시지 삽입
+INSERT INTO message (sender_id, chat_room_id, content, send_time)
+WITH RECURSIVE seq AS (
+    SELECT 1 AS n
+    UNION ALL
+    SELECT n+1 FROM seq WHERE n < 100
+)
+SELECT mc.member_id, mc.chat_room_id, 'test message', DATE_ADD(NOW(), INTERVAL s.n SECOND)
+FROM member_chat_room mc
+CROSS JOIN seq s;
+
+
+
+

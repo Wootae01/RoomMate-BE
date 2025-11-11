@@ -1,6 +1,7 @@
 ### 채팅방 생성 요청
 POST {{baseUrl}}/chatroom
 Content-Type: application/json
+Authorization: Bearer {{accessToken}}
 Accept: application/json
 
 {
@@ -11,6 +12,7 @@ Accept: application/json
 ### 메시지 저장 요청
 POST {{baseUrl}}/message
 Content-Type: application/json
+Authorization: Bearer {{accessToken}}
 Accept: application/json
 
 {
@@ -22,6 +24,7 @@ Accept: application/json
 }
 
 ### 해당 채팅방의 모든 메시지 조회
-GET {{baseUrl}}}/chatroom/{chatRoomId}/messages
+GET {{baseUrl}}/chatroom/{{chatRoomId}}/messages
 Content-Type: application/json
+Authorization: Bearer {{accessToken}}
 Accept: application/json

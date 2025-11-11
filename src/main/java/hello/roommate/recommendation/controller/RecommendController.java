@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import hello.roommate.mapper.MemberRecommendationMapper;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import hello.roommate.mapper.MemberRecommendationMapper;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.dto.FilterCond;
 import hello.roommate.member.dto.RecommendMemberDTO;
@@ -121,6 +121,22 @@ public class RecommendController {
 		Instant t2 = Instant.now();
 
 		log.info("fetch={}ms, convert={}ms", Duration.between(t0, t1).toMillis(), Duration.between(t1, t2).toMillis());
+
+		return dtoList;
+	}
+
+	/**
+	 * 나와 같은 기숙사인 모든 사람 찾기
+	 * @param memberId
+	 * @return
+	 */
+	@GetMapping("/{memberId}/all")
+	public List<RecommendMemberDTO> findAllByDorm(@PathVariable Long memberId) {
+		List<Member> members = memberService.findAllByDorm(memberId);
+
+		List<RecommendMemberDTO> dtoList = members.stream()
+			.map(mapper::convertToDTO)
+			.collect(Collectors.toList());
 
 		return dtoList;
 	}

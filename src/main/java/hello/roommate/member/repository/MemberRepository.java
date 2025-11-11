@@ -47,4 +47,7 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberCus
 		+ "LEFT JOIN FETCH m.notification "
 		+ "WHERE m.id in :memberIds")
 	List<Member> findAllByIds(List<Long> memberIds);
+
+	@Query("SELECT m FROM Member m WHERE m.dorm =:dormitory")
+	List<Member> findAllByDorm(Dormitory dormitory);
 }
