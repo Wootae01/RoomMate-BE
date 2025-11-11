@@ -5,9 +5,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import hello.roommate.advice.DuplicatedNicknameException;
 import hello.roommate.auth.dto.EditMemberDTO;
 import hello.roommate.auth.dto.LoginResponseDTO;
 import hello.roommate.auth.dto.SignUpDTO;
@@ -27,7 +29,6 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
 public class SignUpService {
 
 	private final MemberRepository memberRepository;
@@ -52,18 +53,21 @@ public class SignUpService {
 		return dto;
 	}
 
+	@Transactional
 	public Member createNewMember(String username) {
 		Member member = new Member();
 		member.setUsername(username);
 		return memberRepository.save(member);
 	}
 
+	@Transactional
 	public void registerMember(SignUpDTO request) {
 		// 가입되어있는 회원인지 조회
 		Member member = memberRepository.findById(request.getUserId())
 			.orElseThrow(() -> new RuntimeException("회원 정보를 찾을 수 없습니다."));
 
 		// 회원 정보 저장
+		// 존재하는 닉네임이면 에러 발생
 		member.setNickname(request.getNickname());
 		member.setGender(request.getGender());
 		member.setAge(request.getAge());
@@ -71,7 +75,11 @@ public class SignUpService {
 		member.setIntroduce(request.getIntroduce());
 
 		// 4. 업데이트된 Member 저장
-		member = memberRepository.save(member);
+		try {
+			member = memberRepository.save(member);
+		} catch (DataIntegrityViolationException e) {
+			throw new DuplicatedNicknameException("이미 사용중인 닉네임입니다.");
+		}
 
 		// 3. LifeStyle 및 Preference 저장
 		saveLifeStyle(member, request.getLifeStyle());
@@ -80,6 +88,7 @@ public class SignUpService {
 	}
 
 	// Member Profile만 수정할경우: EditMemberDTO를 받음
+	@Transactional
 	public void editMember(EditMemberDTO request, Long memberId) {
 		// 가입되어있는 회원인지 조회
 		Member member = memberRepository.findById(memberId)
@@ -97,6 +106,7 @@ public class SignUpService {
 	}
 
 	// Member LifeStyle만 수정할경우: LifeStyleDTO를 받음
+	@Transactional
 	public void editLifeStyle(LifeStyleDTO request, Long memberId) {
 		// 1. 가입되어있는 회원인지 조회 후 Member_Id = 회원번호 반환
 		Member member = memberRepository.findById(memberId)
@@ -110,6 +120,7 @@ public class SignUpService {
 	}
 
 	// Member Preference만 수정할경우: PreferenceDTO를 받음
+	@Transactional
 	public void editPreference(PreferenceDTO request, Long memberId) {
 		// 1. 가입되어있는 회원인지 조회 후 Member_Id = 회원번호 반환
 		Member member = memberRepository.findById(memberId)
@@ -124,6 +135,7 @@ public class SignUpService {
 	}
 
 	// LifeStyle 저장
+
 	private void saveLifeStyle(Member member, Map<String, List<Long>> lifeStyle) {
 		List<Option> allOptions = new ArrayList<>();
 

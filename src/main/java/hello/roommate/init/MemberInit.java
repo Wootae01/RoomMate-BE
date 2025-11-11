@@ -21,7 +21,7 @@ public class MemberInit {
     public void createMember() {
         if (memberRepository.count() == 0) {
             List<Member> members = new ArrayList<>();
-            for (long i = 1; i <= 400; i++) {
+            for (long i = 1; i <= 2000; i++) {
                 members.add(randomMember(i));
             }
             memberRepository.saveAll(members);
@@ -31,10 +31,10 @@ public class MemberInit {
     //임의로 member 데이터 생성
     private Member randomMember(Long id) {
         Member member = new Member();
-        member.setNickname(String.valueOf(id));
+        member.setNickname("nick" + id);
         member.setDorm(Dormitory.INUI);
         member.setGender(Gender.MALE);
-
+        member.setUsername("kakao@"+id);
         int year = LocalDate.now().getYear();
         year = year - (new Random().nextInt(17) + 17);
         member.setAge(year);

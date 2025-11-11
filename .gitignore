@@ -45,6 +45,9 @@ application-test-local.yml
 roommate-key.*
 roommate-key
 
+#http env
+http-client.env.json
+
 #terraform
 # Local .terraform directories
 **/.terraform/*
@@ -80,3 +83,6 @@ override.tf.json
 # Ignore CLI configuration files
 .terraformrc
 terraform.rc
+
+
+.env

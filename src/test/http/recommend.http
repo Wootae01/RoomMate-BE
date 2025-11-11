@@ -1,0 +1,97 @@
+### 추천 멤버 - 유사도 기반 상위 30%
+GET {{baseUrl}}/recommendations/{{memberId}}/similarity
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### 추천 멤버 - 기본 추천 목록
+GET {{baseUrl}}/recommendations/{{memberId}}/basic
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+### 추천 멤버 - 필터 적용#1
+POST {{baseUrl}}/recommendations/{{memberId}}/filter
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "cond": {
+    "AGE": [
+      2001,
+      2002
+    ],
+    "BED_TIME": [
+      101,
+      102
+    ],
+    "WAKEUP_TIME": [
+      202
+    ]
+  }
+}
+
+### 추천 멤버 - 필터 적용#2
+POST {{baseUrl}}/recommendations/{{memberId}}/filter
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "cond": {}
+}
+
+### 추천 멤버 - 필터 적용#3
+POST {{baseUrl}}/recommendations/{{memberId}}/filter
+Content-Type: application/json
+Accept: application/json
+Authorization: Bearer {{accessToken}}
+
+{
+  "cond": {
+    "AGE": [
+      2005,
+      2004,
+      2003,
+      2002
+    ],
+    "BED_TIME": [
+      101,
+      102,
+      103
+    ],
+    "WAKEUP_TIME": [
+      201,
+      202,
+      203
+    ],
+    "HEATING": [
+      303,
+      304
+    ],
+    "COOLING": [
+      401,
+      402
+    ],
+    "SLEEP_HABIT": [
+      501
+    ],
+    "SMOKING": [
+      602
+    ],
+    "NOISE": [
+      703
+    ],
+    "EATING": [
+      902
+    ],
+    "SCENT": [
+      1103
+    ],
+    "CLEANING": [
+      1201
+    ],
+    "RELATIONSHIP": [
+      1303
+    ]
+  }
+}

@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import hello.roommate.mapper.MemberRecommendationMapper;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.dto.FilterCond;
 import hello.roommate.member.service.MemberService;
@@ -19,14 +20,18 @@ import hello.roommate.recommendation.domain.Option;
 import hello.roommate.recommendation.domain.Preference;
 import hello.roommate.recommendation.domain.enums.Category;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
+@Slf4j
 public class RecommendService {
 	private final MemberService memberService;
 	private final OptionService optionService;
 	private final SimilarityUtils similarityUtils;
+	private final MemberRecommendationMapper mapper;
+	private final LifestyleService lifestyleService;
 
 	/**
 	 * 요청한 사람 A와 요청한 사람과 같은 기숙사 정보를 갖는 B와의 유사도를 계산해서 Map으로 반환(key: id, value: 유사도 값)
@@ -48,7 +53,7 @@ public class RecommendService {
 				continue;
 			}
 			List<LifeStyle> lifeStyle = member.getLifeStyle();
-			Map<String, List<Long>> lifeStyleMap = memberService.convertLifeStyleListToMap(lifeStyle);
+			Map<String, List<Long>> lifeStyleMap = mapper.convertLifeStyleListToMap(lifeStyle);
 			double[] vec = similarityUtils.getVec(lifeStyleMap, opionIdxMap);
 			double sim = similarityUtils.cosSimilarity(reqVec, vec);
 			simMemberMap.put(member.getId(), sim);
@@ -76,13 +81,13 @@ public class RecommendService {
 				continue;
 			}
 			List<LifeStyle> lifeStyles = lifeMember.getLifeStyle();
-			Map<String, List<Long>> map = memberService.convertLifeStyleListToMap(lifeStyles);
+			Map<String, List<Long>> map = mapper.convertLifeStyleListToMap(lifeStyles);
 			lifeMap.put(lifeMember.getId(), map);
 		}
 
 		for (Member preMember : preMembers) {
 			List<Preference> preferences = preMember.getPreference();
-			Map<Category, List<Long>> cond = memberService.convertPreferenceListToMapWithoutNone(preferences);
+			Map<Category, List<Long>> cond = mapper.convertPreferenceListToMapWithoutNone(preferences);
 			List<Long> ageList = cond.remove(Category.AGE);
 			List<Integer> intAges = getIntAges(ageList);
 			for (Member lifeMember : lifeMembers) {
@@ -194,28 +199,37 @@ public class RecommendService {
 
 	public List<Member> searchMembersByPreference(Long myId) {
 		Member member = memberService.findById(myId);
-
 		List<Preference> preferences = member.getPreference();
 
-		//상관 없음 체크한 항목 제외한 옵션 추출
-		List<Option> options = preferences
+		// 상관 없음 항목 제외, 나이 제외
+		List<Long> cond = preferences
 			.stream()
+			.filter(preference -> preference.getOption().getCategory() != Category.AGE)
 			.filter(preference -> preference.getOption().getId() > 100)
-			.map(Preference::getOption)
+			.map(preference -> preference.getOption().getId())
 			.toList();
 
-		Map<Category, List<Long>> cond = options.stream()
-			.collect(
-				Collectors.groupingBy(
-					Option::getCategory,
-					Collectors.mapping(Option::getId, Collectors.toList())
-				));
-
 		//나이 추출
-		List<Long> ages = cond.remove(Category.AGE);
-		List<Integer> intAges = getIntAges(ages);
+		List<Integer> ages = preferences.stream()
+			.filter(preference -> preference.getOption().getCategory() == Category.AGE)
+			.filter(preference -> preference.getOption().getId() > 100)
+			.map(preference -> Integer.parseInt(preference.getOption().getOptionValue()))
+			.toList();
 
-		return memberService.search(myId, cond, intAges);
+		//1. 조건 카테고리 수
+		log.info("cond = {}", cond);
+		log.info("ages = {}", ages);
+		long totalCategory = optionService.getTotalCategory(cond);
+		log.info("totalCategory = {}", totalCategory);
+
+		//2. 기숙사, 나이 고려한 사용자 검색
+		List<Long> memberIds = memberService.findEligibleMember(myId, member.getDorm(), member.getGender(), ages);
+		log.info("memberIds = {}", memberIds);
+		log.info("dorm = {}, gender = {}", member.getDorm(), member.getGender());
+
+		//3. 조건에 맞는 사용자 검색
+		return lifestyleService.findMemberIdsCoverAllCategory(cond, memberIds, totalCategory);
+
 	}
 
 	/**
@@ -229,8 +243,19 @@ public class RecommendService {
 		List<Long> ages = cond.remove(Category.AGE);
 		List<Integer> intAges = getIntAges(ages);
 
-		List<Member> search = memberService.search(myId, cond, intAges);
-		return search;
+		Member member = memberService.findById(myId);
+		List<Long> optionIds = cond.values().stream()
+			.flatMap(List::stream)
+			.toList();
+
+		//1. 조건 카테고리 수
+		long totalCategory = optionService.getTotalCategory(optionIds);
+
+		// 2. 기숙사, 나이 고렿나 사용자 검색
+		List<Long> memberIds = memberService.findEligibleMember(myId, member.getDorm(), member.getGender(), intAges);
+
+		//3. 기숙사, 나이 고려한 사용자 검색
+		return lifestyleService.findMemberIdsCoverAllCategory(optionIds, memberIds, totalCategory);
 	}
 
 	//age Long 값 Integer 로 변경

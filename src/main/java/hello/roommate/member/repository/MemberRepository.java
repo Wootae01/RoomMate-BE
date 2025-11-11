@@ -14,7 +14,7 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberCus
 
 	List<Member> findByDorm(Dormitory dormitory);
 
-	Optional<Member> findByNickname(String nickname);
+	boolean existsByNickname(String nickname);
 
 	Optional<Member> findByUsername(String username);
 
@@ -30,4 +30,24 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberCus
 	@Query("SELECT DISTINCT m FROM Member m JOIN FETCH m.lifeStyle WHERE m.dorm =:dorm and m.gender = :gender")
 	List<Member> findAllWithLifeStyleByDormAndGender(Dormitory dorm, Gender gender);
 
+	@Query("SELECT m.id FROM Member m "
+		+ "WHERE m.age IN :ages "
+		+ "AND m.gender =:gender "
+		+ "AND m.dorm =:dorm "
+		+ "And m.id <> :myId")
+	List<Long> findEligibleMember(Long myId, Dormitory dorm, Gender gender, List<Integer> ages);
+
+	@Query("SELECT m.id FROM Member m "
+		+ "WHERE m.gender =:gender "
+		+ "AND m.dorm =:dorm "
+		+ "And m.id <> :myId")
+	List<Long> findEligibleMemberExceptAge(Long myId, Dormitory dorm, Gender gender);
+
+	@Query("SELECT m FROM Member m "
+		+ "LEFT JOIN FETCH m.notification "
+		+ "WHERE m.id in :memberIds")
+	List<Member> findAllByIds(List<Long> memberIds);
+
+	@Query("SELECT m FROM Member m WHERE m.dorm =:dormitory")
+	List<Member> findAllByDorm(Dormitory dormitory);
 }

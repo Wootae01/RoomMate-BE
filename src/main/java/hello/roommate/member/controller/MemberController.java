@@ -1,10 +1,8 @@
 package hello.roommate.member.controller;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.http.ResponseEntity;
@@ -18,17 +16,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import hello.roommate.auth.domain.RefreshEntity;
 import hello.roommate.auth.dto.EditMemberDTO;
 import hello.roommate.auth.dto.SignUpDTO;
-import hello.roommate.auth.exception.MissingTokenException;
+import hello.roommate.auth.jwt.JWTUtil;
 import hello.roommate.auth.service.RefreshEntityService;
 import hello.roommate.auth.service.SignUpService;
 import hello.roommate.chat.domain.ChatRoom;
-import hello.roommate.chat.domain.Message;
 import hello.roommate.chat.dto.ChatRoomDTO;
-import hello.roommate.chat.service.MessageService;
+import hello.roommate.mapper.ChatRoomMapper;
+import hello.roommate.mapper.MemberRecommendationMapper;
 import hello.roommate.member.domain.Member;
-import hello.roommate.member.domain.MemberChatRoom;
 import hello.roommate.member.service.MemberService;
 import hello.roommate.recommendation.domain.LifeStyle;
 import hello.roommate.recommendation.domain.Option;
@@ -45,9 +43,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class MemberController {
 	private final MemberService memberService;
-	private final MessageService messageService;
+	private final ChatRoomMapper chatRoomMapper;
 	private final SignUpService signUpService;
 	private final RefreshEntityService refreshService;
+	private final JWTUtil jwtUtil;
+	private final MemberRecommendationMapper mapper;
 
 	/**
 	 * 회원 탈퇴 처리
@@ -59,19 +59,16 @@ public class MemberController {
 	public ResponseEntity<Map<String, Object>> reSign(HttpServletRequest request,
 		@Validated @PathVariable Long memberId) {
 
-		//refresh 토큰 검증
+		//access 토큰
 		String header = request.getHeader("Authorization");
-		log.info("header={}", header);
-		if (header == null || !header.startsWith("Bearer ")) {
-			throw new MissingTokenException();
-		}
 
 		String[] split = header.split(" ");
-		String refresh = split[1];
-		refreshService.validateRefresh(refresh);
+		String accessToken = split[1];
+		String username = jwtUtil.getUsername(accessToken);
+		RefreshEntity refresh = refreshService.findByUsername(username);
 
 		memberService.delete(memberId);
-		refreshService.deleteByRefresh(refresh);
+		refreshService.deleteByRefresh(refresh.getRefresh());
 
 		Map<String, Object> response = new HashMap<>();
 		response.put("success", true);
@@ -92,7 +89,7 @@ public class MemberController {
 		Member friend = memberService.findById(friendId);    // profile만 반환
 
 		List<LifeStyle> lifeStyleList = friend.getLifeStyle();
-		Map<String, List<Long>> lifestylemap = memberService.convertLifeStyleListToMap(lifeStyleList);
+		Map<String, List<Long>> lifestylemap = mapper.convertLifeStyleListToMap(lifeStyleList);
 
 		//상관 없음 항목 제외한 preferenceMap
 		Map<String, List<Long>> preferencemap = friend.getPreference().stream()
@@ -138,7 +135,7 @@ public class MemberController {
 		Member member = memberService.findById(memberId);
 
 		Map<String, List<Long>> memberLifeStyleList =
-			memberService.convertLifeStyleListToMap(member.getLifeStyle());
+			mapper.convertLifeStyleListToMap(member.getLifeStyle());
 
 		LifeStyleDTO myLifeStyleDTO = new LifeStyleDTO(memberLifeStyleList);
 
@@ -152,7 +149,7 @@ public class MemberController {
 		Member member = memberService.findById(memberId);
 
 		Map<String, List<Long>> memberPreferenceList =
-			memberService.convertPreferenceListToMap(member.getPreference());
+			mapper.convertPreferenceListToMap(member.getPreference());
 
 		PreferenceDTO myPreferenceDTO = new PreferenceDTO(memberPreferenceList);
 
@@ -218,13 +215,8 @@ public class MemberController {
 	 */
 	@GetMapping("/validate-nickname")
 	public Boolean validateDuplicatedNickname(@RequestParam String nickname) {
-		Optional<Member> optional = memberService.findByNickname(nickname);
-
-		if (optional.isEmpty()) {
-			return true;
-		} else {
-			return false;
-		}
+		boolean existed = memberService.existByNickname(nickname);
+		return !existed;
 	}
 
 	/**
@@ -248,29 +240,9 @@ public class MemberController {
 	@GetMapping("/{memberId}/chatrooms")
 	public List<ChatRoomDTO> findAllChatRooms(@PathVariable Long memberId) {
 		log.info("모든 채팅방 반환 요청 id={}", memberId);
-		List<ChatRoomDTO> result = new ArrayList<>();
-		List<ChatRoom> chatRooms = memberService.findAllChatRooms(memberId);
-		for (ChatRoom chatRoom : chatRooms) {
-			List<MemberChatRoom> memberChatRooms = chatRoom.getMemberChatRooms();
 
-			for (MemberChatRoom memberChatRoom : memberChatRooms) {
-				if (!memberChatRoom.getMember().getId().equals(memberId)) { // 채팅방 중 내가 아닌 상대방 닉네임 찾고
-					Member opponent = memberChatRoom.getMember();
-					String nickname = opponent.getNickname();
-					Optional<Message> optional = messageService.findLatestMessage(chatRoom.getId()); //최근 메시지 찾고
-					if (optional.isEmpty()) {
-						continue;
-					}
-					Message latestMessage = optional.get();
-					ChatRoomDTO dto = new ChatRoomDTO(); //dto로 변환
-					dto.setChatRoomId(chatRoom.getId());
-					dto.setNickname(nickname);
-					dto.setUpdatedTime(latestMessage.getSendTime());
-					dto.setMessage(latestMessage.getContent());
-					result.add(dto);
-				}
-			}
-		}
+		List<ChatRoom> chatRooms = memberService.findAllChatRooms(memberId);
+		List<ChatRoomDTO> result = chatRoomMapper.convertToChatRoomDTO(memberId, chatRooms);
 		log.info("반환 데이터 = {}", result);
 		result.sort(((o1, o2) -> o2.getUpdatedTime().compareTo(o1.getUpdatedTime())));
 		return result;

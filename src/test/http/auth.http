@@ -1,0 +1,24 @@
+### 서버 토큰 요청
+POST {{baseUrl}}/auth/token
+Content-Type: application/json
+Accept: application/json
+
+{
+  "identifier": "{{hashKey}}"
+}
+
+### 로그인 요청
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+Authorization: Bearer {{serverToken}}
+Accept: application/json
+
+{
+  "username": "kakao@1"
+}
+
+### 토큰 재발급 요청
+POST {{baseUrl}}/auth/reissue
+Content-Type: application/json
+Authorization: Bearer {{refreshToken}}
+Accept: application/json

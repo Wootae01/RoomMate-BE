@@ -53,4 +53,13 @@ public class OptionService {
 		}
 		return optionIdx;
 	}
+
+	/**
+	 * optionId 리스트를 입력 받아 해당 리스트의 중복되지 않는 카테고리 개수를 카운트 하여 반환
+	 * @param optionIds
+	 * @return 카테고리 개수
+	 */
+	public long getTotalCategory(List<Long> optionIds) {
+		return optionRepository.countDistinctCategoriesByOptionIds(optionIds);
+	}
 }

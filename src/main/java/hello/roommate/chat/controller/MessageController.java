@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import hello.roommate.chat.domain.Message;
 import hello.roommate.chat.dto.MessageDTO;
 import hello.roommate.chat.service.MessageService;
+import hello.roommate.mapper.MessageMapper;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -19,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 public class MessageController {
 
 	private final MessageService messageService;
+	private final MessageMapper mapper;
 
 	/**
 	 * 메시지를 저장하는 REST 엔드포인트
@@ -27,7 +29,7 @@ public class MessageController {
 	 */
 	@PostMapping("/message")
 	public void save(@RequestBody MessageDTO dto) {
-		Message message = messageService.convertToEntity(dto);
+		Message message = mapper.convertToEntity(dto);
 		messageService.save(message);
 	}
 
@@ -43,7 +45,7 @@ public class MessageController {
 		List<MessageDTO> result = new ArrayList<>();
 
 		for (Message message : messages) {
-			MessageDTO dto = messageService.convertToDTO(message);
+			MessageDTO dto = mapper.convertToDTO(message);
 			result.add(dto);
 		}
 		return result;

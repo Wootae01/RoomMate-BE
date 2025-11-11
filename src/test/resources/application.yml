@@ -2,5 +2,11 @@ spring:
   profiles:
     active: test-dev
 
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+
   messages:
     basename: errors

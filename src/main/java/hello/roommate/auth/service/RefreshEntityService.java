@@ -3,6 +3,7 @@ package hello.roommate.auth.service;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.NoSuchElementException;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,10 @@ public class RefreshEntityService {
 
 	private final RefreshEntityRepository refreshEntityRepository;
 	private final JWTUtil jwtUtil;
+
+	public RefreshEntity findByUsername(String username) {
+		return refreshEntityRepository.findByUsername(username).orElseThrow(() -> new NoSuchElementException("해당 refreshEntity를 찾을 수 없습니다. username=" + username));
+	}
 
 	//refresh 토큰으로 새로운 access 토큰 재생성 메서드
 	public JWTTokenDTO createNewToken(String refresh) {

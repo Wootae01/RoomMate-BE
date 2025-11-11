@@ -1,24 +1,19 @@
 package hello.roommate.chat.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Optional;
-
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 
 import hello.roommate.chat.domain.Message;
-import hello.roommate.chat.domain.Notification;
 import hello.roommate.chat.dto.MessageDTO;
 import hello.roommate.chat.dto.MessageReceiveDTO;
-import hello.roommate.chat.dto.NotificationPushDTO;
+import hello.roommate.chat.service.ChatService;
+import hello.roommate.chat.service.MemberChatRoomService;
 import hello.roommate.chat.service.MessageService;
-import hello.roommate.chat.service.NotificationService;
 import hello.roommate.chat.service.PushNotificationService;
+import hello.roommate.mapper.MessageMapper;
 import hello.roommate.member.domain.Member;
-import hello.roommate.member.repository.MemberChatRoomRepository;
+import hello.roommate.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Mono;
@@ -29,9 +24,11 @@ import reactor.core.publisher.Mono;
 public class WebSocketController {
 
 	private final MessageService messageService;
-	private final NotificationService notificationService;
-	private final MemberChatRoomRepository memberChatRoomRepository;
+	private final MemberChatRoomService memberChatRoomService;
 	private final PushNotificationService pushNotificationService;
+	private final MessageMapper messageMapper;
+	private final MemberService memberService;
+	private final ChatService chatService;
 
 	/**
 	 * 웹소켓을 통해 메시지를 받아 처리하고, 저장 후 동일한 메시지를 구독자에게 전송하는 메서드
@@ -44,48 +41,23 @@ public class WebSocketController {
 	public Mono<MessageDTO> sendMessage(MessageReceiveDTO messageReceiveDTO) {
 		log.info("arrive message");
 		log.info("message ={}", messageReceiveDTO);
-		Message message = messageService.convertToEntity(messageReceiveDTO);
-		Message save = messageService.save(message);
-		String nickname = save.getSender().getNickname();
+		Message message = messageMapper.convertToEntity(messageReceiveDTO);
+		messageService.save(message);
 
-		//메시지 전송 DTO 생성
-		MessageDTO sendDTO = new MessageDTO();
-		sendDTO.setSendTime(messageReceiveDTO.getSendTime());
-		sendDTO.setNickname(nickname);
-		sendDTO.setContent(messageReceiveDTO.getContent());
-		sendDTO.setMemberId(messageReceiveDTO.getMemberId());
-		sendDTO.setChatRoomId(messageReceiveDTO.getChatRoomId());
-
-		//알림 요청
+		Member sender = memberService.findById(messageReceiveDTO.getMemberId());
 
 		//해당 채팅 방의 상대 찾기
-		Member opponent = memberChatRoomRepository.findByMemberExceptMyId(messageReceiveDTO.getChatRoomId(),
-				messageReceiveDTO.getMemberId())
-			.orElseThrow(() -> new NoSuchElementException("채팅 상대를 찾을 수 없습니다."));
+		Member opponent = memberChatRoomService.findByMemberExceptMyId(messageReceiveDTO.getChatRoomId(),
+			messageReceiveDTO.getMemberId());
 
-		Optional<Notification> optionalNotification = notificationService.findByMemberId(opponent.getId());
+		// 채팅방 목록 내용 실시간 업데이트
+		chatService.sendChatListUpdate(sender, opponent, messageReceiveDTO);
 
-		//상대방이 알림 권한 허용을 안했으면 알림 전송 x (토큰 생성 되있지 않으면)
-		if (optionalNotification.isEmpty()) {
-			return Mono.just(sendDTO);
-		}
-		//알림 허용 하지 않았으면 알림 전송 x
-		Notification notification = optionalNotification.get();
-		if (!notification.getPermission()) {
-			return Mono.just(sendDTO);
-		}
+		//메시지 전송 DTO 생성
+		MessageDTO sendDTO = messageMapper.convertReceiveToMessageDTO(messageReceiveDTO);
 
-		NotificationPushDTO pushDTO = new NotificationPushDTO();
-		pushDTO.setTo(notification.getToken());
-		pushDTO.setBody(messageReceiveDTO.getContent());
-		pushDTO.setTitle(nickname);
-		pushDTO.setSound("default");
-		Map<String, String> dataMap = new HashMap<>();
-		dataMap.put("chatRoomId", String.valueOf(messageReceiveDTO.getChatRoomId()));
-		pushDTO.setData(dataMap);
-
-		// push 알림 전송 후 sendDTO 반환
-		return pushNotificationService.sendNotification(pushDTO)
+		//알림 전송 후 메시지 내용 전달
+		return pushNotificationService.sendNotificationIfAllowed(messageReceiveDTO, opponent.getId())
 			.thenReturn(sendDTO);
 	}
 

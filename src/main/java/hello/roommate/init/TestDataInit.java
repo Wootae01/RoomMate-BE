@@ -10,12 +10,13 @@ public class TestDataInit {
     private final MemberInit memberInit;
     private final LifeStyleInit lifeStyleInit;
     private final PreferenceInit preferenceInit;
-
+    private final NotificationInit notificationInit;
     @EventListener(ApplicationReadyEvent.class)
     public void initData() {
         optionInit.createOption();
         memberInit.createMember();
         lifeStyleInit.createLifeStyle();
         preferenceInit.createPreference();
+        notificationInit.createNotification();
     }
 }
