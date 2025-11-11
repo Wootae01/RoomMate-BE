@@ -30,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 @SpringBootTest
 @Transactional
 @Slf4j
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 class MemberRepositoryTest {
 	@Autowired
 	private MemberRepository memberRepository;
@@ -64,7 +65,6 @@ class MemberRepositoryTest {
 	}
 
 	@Test
-	@DirtiesContext
 	void findByDorm() {
 		Member member1 = createMember(Dormitory.INUI, "abc");
 		Member member2 = createMember(Dormitory.INUI, "abcd");
