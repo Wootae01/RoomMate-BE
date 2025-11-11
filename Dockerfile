@@ -1,6 +1,6 @@
 
 # 기반 이미지 지정
-FROM openjdk:21-jdk-slim
+FROM eclipse-temurin:21-jdk-jammy
 
 # 컨테이너 내부에서 작업할 디렉토리 지정
 WORKDIR /app
