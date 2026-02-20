@@ -18,6 +18,7 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import hello.roommate.auth.exception.ExpiredTokenException;
 import hello.roommate.auth.exception.InvalidTokenException;
 import hello.roommate.auth.exception.MissingTokenException;
 import hello.roommate.auth.jwt.JWTUtil;
@@ -99,6 +100,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 					String[] split = authorization.split(" ");
 					String token = split[1];
+					if (jwtUtil.isExpired(token)) {
+						throw new ExpiredTokenException();
+					}
 					Authentication authentication = jwtUtil.getAuthentication(token);
 					accessor.setUser(authentication);
 				}
