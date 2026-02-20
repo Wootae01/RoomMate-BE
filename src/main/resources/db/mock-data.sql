@@ -261,7 +261,7 @@ FROM (
              o.option_id AS option_id,
              ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn,
              -- 각 회원별로 1~3개 랜덤 선택
-                 FLOOR(1 + RAND()*3) AS max_choice
+             FLOOR(1 + RAND()*3) AS max_choice
          FROM member m
                   JOIN options o
                        ON o.category = 'BED_TIME' AND o.option_id > 100
@@ -277,7 +277,7 @@ FROM (
              o.option_id AS option_id,
              ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn,
              -- 각 회원별로 1~3개 랜덤 선택
-                 FLOOR(1 + RAND()*3) AS max_choice
+             FLOOR(1 + RAND()*3) AS max_choice
          FROM member m
                   JOIN options o
                        ON o.category = 'WAKEUP_TIME' AND o.option_id > 100
@@ -293,7 +293,7 @@ FROM (
              o.option_id AS option_id,
              ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn,
              -- 각 회원별로 1~3개 랜덤 선택
-                 FLOOR(1 + RAND()*3) AS max_choice
+             FLOOR(1 + RAND()*3) AS max_choice
          FROM member m
                   JOIN options o
                        ON o.category = 'COOLING' AND o.option_id > 100
@@ -309,7 +309,7 @@ FROM (
              o.option_id AS option_id,
              ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn,
              -- 각 회원별로 1~3개 랜덤 선택
-                 FLOOR(1 + RAND()*3) AS max_choice
+             FLOOR(1 + RAND()*3) AS max_choice
          FROM member m
                   JOIN options o
                        ON o.category = 'HEATING' AND o.option_id > 100
@@ -338,20 +338,20 @@ WHERE @bed_time_no_pref IS NOT NULL AND RAND(1001 + m.member_id) < @prob_none;
 INSERT INTO preference (member_id, option_id)
 SELECT t.member_id AS member_id, t.option_id AS option_id
 FROM (
-    SELECT m.member_id AS member_id,
-           o.option_id AS option_id,
-           ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn,
-           FLOOR (1 + RAND() * 3) AS max_choice,
-           CASE WHEN RAND(member_id + 1001) < @prob_none THEN 1 ELSE 0 END AS choose_none
+         SELECT m.member_id AS member_id,
+                o.option_id AS option_id,
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn,
+             FLOOR (1 + RAND() * 3) AS max_choice,
+                CASE WHEN RAND(member_id + 1001) < @prob_none THEN 1 ELSE 0 END AS choose_none
 
-    FROM member m
-    JOIN options o
-        ON o.category = 'BED_TIME' AND o.option_id > 100
-) t
+         FROM member m
+                  JOIN options o
+                       ON o.category = 'BED_TIME' AND o.option_id > 100
+     ) t
 WHERE t.choose_none = 0 AND t.rn <= t.max_choice;
 
 -- WAKEUP_TIME
-    SET @wakeup_time_no_pref := (
+SET @wakeup_time_no_pref := (
     SELECT option_id
     FROM options
     WHERE category = 'WAKEUP_TIME' AND option_id < 100
@@ -370,18 +370,18 @@ SELECT t.member_id AS member_id, t.option_id AS option_id
 FROM (
          SELECT m.member_id AS member_id,
                 o.option_id AS option_id,
-                 ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn,
-                 FLOOR (1 + RAND() * 3) AS max_choice,
-             CASE WHEN RAND(member_id + 1101) < @prob_none THEN 1 ELSE 0 END AS choose_none
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn,
+             FLOOR (1 + RAND() * 3) AS max_choice,
+                CASE WHEN RAND(member_id + 1101) < @prob_none THEN 1 ELSE 0 END AS choose_none
 
          FROM member m
-             JOIN options o
-         ON o.category = 'WAKEUP_TIME' AND o.option_id > 100
+                  JOIN options o
+                       ON o.category = 'WAKEUP_TIME' AND o.option_id > 100
      ) t
 WHERE t.choose_none = 0 AND t.rn <= t.max_choice;
 
 -- HEATING
-    SET @heating_no_pref := (
+SET @heating_no_pref := (
     SELECT option_id
     FROM options
     WHERE category = 'HEATING' AND option_id < 100
@@ -401,7 +401,7 @@ FROM (
          SELECT m.member_id AS member_id,
                 o.option_id AS option_id,
                 ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn,
-                 FLOOR (1 + RAND() * 3) AS max_choice,
+             FLOOR (1 + RAND() * 3) AS max_choice,
                 CASE WHEN RAND(member_id + 1201) < @prob_none THEN 1 ELSE 0 END AS choose_none
 
          FROM member m
@@ -411,7 +411,7 @@ FROM (
 WHERE t.choose_none = 0 AND t.rn <= t.max_choice;
 
 -- COOLING
-    SET @cooling_no_pref := (
+SET @cooling_no_pref := (
     SELECT option_id
     FROM options
     WHERE category = 'COOLING' AND option_id < 100
@@ -430,13 +430,13 @@ SELECT t.member_id AS member_id, t.option_id AS option_id
 FROM (
          SELECT m.member_id AS member_id,
                 o.option_id AS option_id,
-                 ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn,
-                 FLOOR (1 + RAND() * 3) AS max_choice,
-             CASE WHEN RAND(member_id + 1301) < @prob_none THEN 1 ELSE 0 END AS choose_none
+                ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn,
+             FLOOR (1 + RAND() * 3) AS max_choice,
+                CASE WHEN RAND(member_id + 1301) < @prob_none THEN 1 ELSE 0 END AS choose_none
 
          FROM member m
-             JOIN options o
-         ON o.category = 'COOLING' AND o.option_id > 100
+                  JOIN options o
+                       ON o.category = 'COOLING' AND o.option_id > 100
      ) t
 WHERE t.choose_none = 0 AND t.rn <= t.max_choice;
 
@@ -461,7 +461,7 @@ FROM (
          SELECT m.member_id AS member_id,
                 o.option_id AS option_id,
                 ROW_NUMBER() OVER (PARTITION BY m.member_id ORDER BY RAND()) AS rn,
-                 FLOOR (1 + RAND() * 3) AS max_choice,
+             FLOOR (1 + RAND() * 3) AS max_choice,
                 CASE WHEN RAND(member_id + 1301) < @prob_none THEN 1 ELSE 0 END AS choose_none
 
          FROM member m
@@ -565,14 +565,21 @@ FROM (
      ) t
 WHERE t.rn = 1;
 
+
 INSERT INTO notification(member_id, token, permission)
-SELECT m.member_id, 'TOKEN', TRUE
+SELECT m.member_id,  CONCAT('TEST_TOKEN_', m.member_id), TRUE
 FROM member m
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM notification n
+    WHERE n.member_id = m.member_id
+);
 
 
 -- 0) 멤버 수를 구함
 SELECT COUNT(*) INTO @N FROM member;
 SELECT @N AS member_count; -- 확인용
+SET SESSION cte_max_recursion_depth = 100000;
 
 -- 2) CHAT_ROOM을 멤버 수(@N) 만큼 1..@N 아이디로 생성
 INSERT INTO chat_room
@@ -597,17 +604,23 @@ UNION ALL
 -- 두번째 방
 SELECT member_id, (rn % @N) + 1 FROM ordered_members;
 
--- 메시지 삽입
+-- 메시지 삽입 채팅방 당 100개
 INSERT INTO message (sender_id, chat_room_id, content, send_time)
 WITH RECURSIVE seq AS (
     SELECT 1 AS n
     UNION ALL
-    SELECT n+1 FROM seq WHERE n < 100
+    SELECT n + 1 FROM seq WHERE n < 100
 )
-SELECT mc.member_id, mc.chat_room_id, 'test message', DATE_ADD(NOW(), INTERVAL s.n SECOND)
-FROM member_chat_room mc
-CROSS JOIN seq s;
-
-
-
+SELECT
+    m.member_id,
+    cr.chat_room_id,
+    CONCAT('test message ', s.n),
+    DATE_ADD(NOW(), INTERVAL s.n SECOND)
+FROM chat_room cr
+         JOIN (
+    SELECT chat_room_id, MIN(member_id) AS member_id
+    FROM member_chat_room
+    GROUP BY chat_room_id
+) m ON m.chat_room_id = cr.chat_room_id
+         CROSS JOIN seq s;
 
