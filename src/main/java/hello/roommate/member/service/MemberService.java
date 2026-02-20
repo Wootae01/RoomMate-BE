@@ -1,6 +1,5 @@
 package hello.roommate.member.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -13,7 +12,6 @@ import hello.roommate.chat.domain.ChatRoom;
 import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Gender;
 import hello.roommate.member.domain.Member;
-import hello.roommate.member.domain.MemberChatRoom;
 import hello.roommate.member.repository.MemberRepository;
 import hello.roommate.recommendation.domain.enums.Category;
 import lombok.RequiredArgsConstructor;
@@ -64,15 +62,9 @@ public class MemberService {
 	}
 
 	public List<ChatRoom> findAllChatRooms(Long memberId) {
-		Member member = memberRepository.findById(memberId)
+		memberRepository.findById(memberId)
 			.orElseThrow(() -> new NoSuchElementException("등록되지 않은 사용자 입니다."));
-		List<MemberChatRoom> memberChatRooms = member.getMemberChatRooms();
-		List<ChatRoom> chatRooms = new ArrayList<>();
-		for (MemberChatRoom memberChatRoom : memberChatRooms) {
-			chatRooms.add(memberChatRoom.getChatRoom());
-		}
-
-		return chatRooms;
+		return memberRepository.findAllChatRoomsWithDetails(memberId);
 	}
 
 	public boolean existByNickname(String nickname) {

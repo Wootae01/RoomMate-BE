@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import hello.roommate.chat.domain.ChatRoom;
 import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Gender;
 import hello.roommate.member.domain.Member;
@@ -50,4 +51,13 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberCus
 
 	@Query("SELECT m FROM Member m WHERE m.dorm =:dormitory")
 	List<Member> findAllByDorm(Dormitory dormitory);
+
+	@Query("""
+		SELECT DISTINCT mcr.chatRoom FROM MemberChatRoom mcr
+		JOIN FETCH mcr.chatRoom.memberChatRooms mcr2
+		JOIN FETCH mcr2.member m
+		LEFT JOIN FETCH m.notification
+		WHERE mcr.member.id = :memberId
+		""")
+	List<ChatRoom> findAllChatRoomsWithDetails(Long memberId);
 }
