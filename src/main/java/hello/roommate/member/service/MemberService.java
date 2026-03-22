@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import hello.roommate.auth.jwt.JWTUtil;
 import hello.roommate.chat.domain.ChatRoom;
+import hello.roommate.chat.repository.ChatRoomRepository;
 import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Gender;
 import hello.roommate.member.domain.Member;
@@ -24,6 +25,7 @@ import lombok.RequiredArgsConstructor;
 public class MemberService {
 	private final MemberRepository memberRepository;
 	private final JWTUtil jwtUtil;
+	private final ChatRoomRepository chatRoomRepository;
 
 	public Member save(Member member) {
 		return memberRepository.save(member);
@@ -82,6 +84,9 @@ public class MemberService {
 	}
 
 	public void delete(Long id) {
+		// 해당 멤버의 ChatRoom 먼저 삭제 (Message, MemberChatRoom cascade 삭제)
+		List<ChatRoom> chatRooms = memberRepository.findAllChatRoomsWithDetails(id);
+		chatRoomRepository.deleteAll(chatRooms);
 		memberRepository.deleteById(id);
 	}
 
