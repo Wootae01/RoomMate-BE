@@ -1,6 +1,5 @@
 package hello.roommate;
 
-import hello.roommate.auth.jwt.JWTUtil;
 import hello.roommate.interceptor.AuthInterceptor;
 import hello.roommate.interceptor.LogInterceptor;
 import hello.roommate.member.service.MemberService;
@@ -13,11 +12,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer{
 
-	private final JWTUtil jwtUtil;
 	private final MemberService memberService;
 
-	public WebConfig(JWTUtil jwtUtil, MemberService memberService) {
-		this.jwtUtil = jwtUtil;
+	public WebConfig(MemberService memberService) {
 		this.memberService = memberService;
 	}
 
@@ -41,7 +38,7 @@ public class WebConfig implements WebMvcConfigurer{
 				.addPathPatterns("/**")
 				.excludePathPatterns("/css/**", "/*.ico", "/error");
 
-		registry.addInterceptor(new AuthInterceptor(jwtUtil, memberService))
+		registry.addInterceptor(new AuthInterceptor(memberService))
 				.order(2)
 				.addPathPatterns(
 					"/members/{memberId}/resign",

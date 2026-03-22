@@ -23,4 +23,7 @@ public interface MemberChatRoomRepository extends JpaRepository<MemberChatRoom, 
 	@Query("select m.member from MemberChatRoom m where m.chatRoom.id = :chatRoomId and m.member.id <> :myId")
 	Optional<Member> findByMemberExceptMyId(Long chatRoomId, Long myId);
 
+	// 해당 멤버가 채팅방에 속해있는지 확인
+	boolean existsByMemberIdAndChatRoomId(Long memberId, Long chatRoomId);
+
 }

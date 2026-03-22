@@ -3,6 +3,8 @@ package hello.roommate.chat.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +15,10 @@ import hello.roommate.chat.domain.Message;
 import hello.roommate.chat.dto.MessageDTO;
 import hello.roommate.chat.service.MessageService;
 import hello.roommate.mapper.MessageMapper;
+import hello.roommate.member.domain.Member;
+import hello.roommate.member.repository.MemberChatRoomRepository;
+import hello.roommate.member.service.MemberService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -21,6 +27,9 @@ public class MessageController {
 
 	private final MessageService messageService;
 	private final MessageMapper mapper;
+	private final MemberService memberService;
+	private final MemberChatRoomRepository memberChatRoomRepository;
+
 
 	/**
 	 * 메시지를 저장하는 REST 엔드포인트
@@ -40,7 +49,14 @@ public class MessageController {
 	 * @return
 	 */
 	@GetMapping("/chatroom/{chatRoomId}/messages")
-	public List<MessageDTO> findAllMessage(@PathVariable Long chatRoomId) {
+	public ResponseEntity<List<MessageDTO>> findAllMessage(@PathVariable Long chatRoomId, HttpServletRequest request) {
+
+		// 내가 속한 채팅방인지 확인
+		Member tokenMember = memberService.findByRequest(request);
+		if (!memberChatRoomRepository.existsByMemberIdAndChatRoomId(tokenMember.getId(), chatRoomId)) {
+			return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+		}
+
 		List<Message> messages = messageService.findAllByChatRoomId(chatRoomId);
 		List<MessageDTO> result = new ArrayList<>();
 
@@ -48,7 +64,7 @@ public class MessageController {
 			MessageDTO dto = mapper.convertToDTO(message);
 			result.add(dto);
 		}
-		return result;
+		return ResponseEntity.ok(result);
 	}
 
 }
