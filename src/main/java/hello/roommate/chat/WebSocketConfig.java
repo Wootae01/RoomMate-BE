@@ -81,6 +81,13 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	}
 
+	/**
+	 * WebSocket 인바운드 채널 인터셉터 설정.
+	 * STOMP CONNECT 시점에 JWT 토큰을 검증하고 인증 정보를 설정한다.
+	 * 이후 WebSocketController에서 Principal로 인증된 사용자 정보를 꺼낼 수 있다.
+	 *
+	 * @param registration 채널 등록 객체
+	 */
 	@Override
 	public void configureClientInboundChannel(ChannelRegistration registration) {
 		registration.interceptors(new ChannelInterceptor() {
@@ -90,6 +97,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 				if (StompCommand.CONNECT.equals(accessor.getCommand())) {
 					List<String> authHeaders = accessor.getNativeHeader("Authorization");
 
+					// 토큰 존재 여부 확인
 					if (authHeaders == null || authHeaders.isEmpty()) {
 						throw new MissingTokenException();
 					}
@@ -98,11 +106,14 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 						throw new InvalidTokenException();
 					}
 
+					// 토큰 만료 확인
 					String[] split = authorization.split(" ");
 					String token = split[1];
 					if (jwtUtil.isExpired(token)) {
 						throw new ExpiredTokenException();
 					}
+
+					// 인증 정보를 Principal로 저장 → WebSocketController에서 principal.getName()으로 username 조회 가능
 					Authentication authentication = jwtUtil.getAuthentication(token);
 					accessor.setUser(authentication);
 				}
