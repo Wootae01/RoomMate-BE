@@ -1,5 +1,18 @@
 create database IF NOT EXISTS roommate;
 use roommate;
+  -- 기존 데이터 초기화
+SET FOREIGN_KEY_CHECKS = 0;
+TRUNCATE TABLE message;
+TRUNCATE TABLE member_chat_room;
+TRUNCATE TABLE chat_room;
+TRUNCATE TABLE preference;
+TRUNCATE TABLE lifestyle;
+TRUNCATE TABLE notification;
+TRUNCATE TABLE member;
+TRUNCATE TABLE options;
+SET FOREIGN_KEY_CHECKS = 1;
+
+
 -- 1. 기본 옵션들 삽입
 INSERT INTO options (option_id, category, option_value)
 VALUES
@@ -623,4 +636,8 @@ FROM chat_room cr
     GROUP BY chat_room_id
 ) m ON m.chat_room_id = cr.chat_room_id
          CROSS JOIN seq s;
+
+-- 인덱스 생성
+CREATE INDEX idx_chat_room_send_time ON message(chat_room_id, send_time);
+CREATE INDEX idx_member_id_chat_room_id ON member_chat_room(member_id, chat_room_id);
 
