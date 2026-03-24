@@ -48,6 +48,10 @@ public class ChatRoomService {
 	 */
 	public ChatRoom createChatRoom(CreateChatRoomDTO dto) {
 
+		if (dto.getMember1Id().equals(dto.getMember2Id())) {
+			throw new IllegalArgumentException("자기 자신과 채팅방을 만들 수 없습니다.");
+		}
+
 		///이미 있으면 기존 채팅방 반환
 		Optional<ChatRoom> existChatRoom = memberChatRoomRepository
 			.findExistingChatRoomByMembersId(dto.getMember1Id(), dto.getMember2Id());

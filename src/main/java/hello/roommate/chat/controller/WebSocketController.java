@@ -44,7 +44,7 @@ public class WebSocketController {
         log.info("arrive message");
         log.info("message ={}", messageReceiveDTO);
         Message message = messageMapper.convertToEntity(messageReceiveDTO);
-        messageService.save(message);
+        message = messageService.save(message);
 
         Member sender = memberService.findByUsername(principal.getName())
                 .orElseThrow(() -> new NoSuchElementException("등록되지 않은 사용자입니다."));
@@ -57,7 +57,7 @@ public class WebSocketController {
         chatService.sendChatListUpdate(sender, opponent, messageReceiveDTO);
 
         //메시지 전송 DTO 생성
-        MessageDTO sendDTO = messageMapper.convertReceiveToMessageDTO(messageReceiveDTO);
+        MessageDTO sendDTO = messageMapper.convertToDTO(message);
 
         //알림 전송 후 메시지 내용 전달
         return pushNotificationService.sendNotificationIfAllowed(messageReceiveDTO, opponent.getId())
