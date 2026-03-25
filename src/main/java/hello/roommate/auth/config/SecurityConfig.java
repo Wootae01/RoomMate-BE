@@ -11,14 +11,14 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import hello.roommate.auth.jwt.CustomLogoutFilter;
 import hello.roommate.auth.jwt.JWTFilter;
 import hello.roommate.auth.jwt.JWTUtil;
-import hello.roommate.auth.service.RefreshEntityService;
+import hello.roommate.auth.service.RefreshTokenService;
 import lombok.RequiredArgsConstructor;
 
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
 	private final JWTUtil jwtUtil;
-	private final RefreshEntityService refreshEntityService;
+	private final RefreshTokenService refreshEntityService;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws

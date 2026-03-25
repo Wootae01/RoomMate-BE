@@ -1,10 +1,9 @@
 package hello.roommate.member.controller;
 
-import hello.roommate.auth.domain.RefreshEntity;
 import hello.roommate.auth.dto.EditMemberDTO;
 import hello.roommate.auth.dto.SignUpDTO;
 import hello.roommate.auth.jwt.JWTUtil;
-import hello.roommate.auth.service.RefreshEntityService;
+import hello.roommate.auth.service.RefreshTokenService;
 import hello.roommate.auth.service.SignUpService;
 import hello.roommate.chat.domain.ChatRoom;
 import hello.roommate.chat.dto.ChatRoomDTO;
@@ -37,7 +36,7 @@ public class MemberController {
     private final MemberService memberService;
     private final ChatRoomMapper chatRoomMapper;
     private final SignUpService signUpService;
-    private final RefreshEntityService refreshService;
+    private final RefreshTokenService refreshService;
     private final JWTUtil jwtUtil;
     private final MemberRecommendationMapper mapper;
 
@@ -52,11 +51,11 @@ public class MemberController {
                                                       @Validated @PathVariable Long memberId) {
 
         String header = request.getHeader("Authorization");
-        String username = jwtUtil.getUsername(header.split(" ")[1]);
-        RefreshEntity refresh = refreshService.findByUsername(username);
+        String accessToken = header.split(" ")[1];
+        String username = jwtUtil.getUsername(accessToken);
 
         memberService.delete(memberId);
-        refreshService.deleteByRefresh(refresh.getRefresh());
+        refreshService.deleteByUsername(username);
 
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);

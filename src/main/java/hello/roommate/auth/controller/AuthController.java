@@ -20,7 +20,7 @@ import hello.roommate.auth.dto.ServerTokenRequestDTO;
 import hello.roommate.auth.exception.MissingTokenException;
 import hello.roommate.auth.jwt.JWTConstants;
 import hello.roommate.auth.jwt.JWTUtil;
-import hello.roommate.auth.service.RefreshEntityService;
+import hello.roommate.auth.service.RefreshTokenService;
 import hello.roommate.auth.service.SignUpService;
 import hello.roommate.member.domain.Member;
 import hello.roommate.member.service.MemberService;
@@ -36,7 +36,7 @@ public class AuthController {
 	// 프론트에서 회원가입 폼 작성 후 제출 버튼을 누를시
 	private final SignUpService signUpService;
 	private final MemberService memberService;
-	private final RefreshEntityService refreshEntityService;
+	private final RefreshTokenService refreshEntityService;
 	private final JWTUtil jwtUtil;
 
 	@Value("${android.hashkey}")
