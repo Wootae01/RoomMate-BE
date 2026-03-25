@@ -33,6 +33,8 @@ services:
       - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/roommate?allowPublicKeyRetrieval=true&useSSL=false&rewriteBatchedStatements=true
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
       JAVA_OPTS: "-Xms256m -Xmx512m"  # JVM 힙 메모리 제한
     deploy:
       resources:
@@ -45,6 +47,8 @@ services:
     depends_on:
       db:
         condition: service_healthy  # MySQL의 health check가 성공할 때까지 대기
+      redis:
+        condition: service_started
     networks:
       - monitoring
 
@@ -84,11 +88,40 @@ services:
           memory: 512M
           cpus: '0.5'
 
+  redis:
+    image: redis:7
+    container_name: redis-roommate
+    ports:
+      - "6379:6379"
+    networks:
+      - monitoring
+    volumes:
+      - redis_data:/data
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: '0.5'
+
+  # Redis Exporter
+  redis_exporter:
+    image: oliver006/redis_exporter
+    container_name: redis_exporter
+    ports:
+      - "9121:9121"
+    command:
+      - '--redis.addr=redis://redis:6379'
+    depends_on:
+      - redis
+    networks:
+      - monitoring
+
 # volume 은 Docker 컨테이너의 데이터를 컨테이너 바깥에 안전하게 저장하는 공간
 # 컨테이너는 기본적으로 휘발성. 데이터 유지하기 위해서는 외부에 저장.
 volumes:
   mysql_data:
   grafana_data:
+  redis_data:
 
 networks:
   monitoring:
