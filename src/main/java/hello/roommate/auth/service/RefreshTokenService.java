@@ -62,7 +62,7 @@ public class RefreshTokenService {
         }
     }
 
-    public void saveEntity(String username, String refresh, Long expiration) {
+    public void save(String username, String refresh, Long expiration) {
         redisClient.set(PREFIX + username, refresh, Duration.ofMillis(expiration));
     }
 
