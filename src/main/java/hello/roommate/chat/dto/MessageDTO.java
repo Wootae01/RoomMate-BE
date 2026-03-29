@@ -14,6 +14,7 @@ import lombok.ToString;
 @Setter
 @ToString
 public class MessageDTO {
+	private Long messageId;
 	private Long memberId;
 	private String nickname;
 	private Long chatRoomId;

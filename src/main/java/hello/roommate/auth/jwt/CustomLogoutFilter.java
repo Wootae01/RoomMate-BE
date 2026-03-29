@@ -1,7 +1,7 @@
 package hello.roommate.auth.jwt;
 
 import hello.roommate.auth.exception.JWTErrorCode;
-import hello.roommate.auth.service.RefreshEntityService;
+import hello.roommate.auth.service.RefreshTokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
@@ -21,7 +21,7 @@ import java.io.PrintWriter;
 public class CustomLogoutFilter extends GenericFilterBean {
 
     private final JWTUtil jwtUtil;
-    private final RefreshEntityService refreshEntityService;
+    private final RefreshTokenService refreshEntityService;
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;

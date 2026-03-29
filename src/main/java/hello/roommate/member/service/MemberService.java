@@ -1,6 +1,5 @@
 package hello.roommate.member.service;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -9,13 +8,15 @@ import java.util.Optional;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import hello.roommate.auth.jwt.JWTUtil;
 import hello.roommate.chat.domain.ChatRoom;
+import hello.roommate.chat.repository.ChatRoomRepository;
 import hello.roommate.member.domain.Dormitory;
 import hello.roommate.member.domain.Gender;
 import hello.roommate.member.domain.Member;
-import hello.roommate.member.domain.MemberChatRoom;
 import hello.roommate.member.repository.MemberRepository;
 import hello.roommate.recommendation.domain.enums.Category;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -23,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 @Transactional
 public class MemberService {
 	private final MemberRepository memberRepository;
+	private final JWTUtil jwtUtil;
+	private final ChatRoomRepository chatRoomRepository;
 
 	public Member save(Member member) {
 		return memberRepository.save(member);
@@ -63,16 +66,17 @@ public class MemberService {
 		return memberRepository.findByUsername(username);
 	}
 
-	public List<ChatRoom> findAllChatRooms(Long memberId) {
-		Member member = memberRepository.findById(memberId)
-			.orElseThrow(() -> new NoSuchElementException("등록되지 않은 사용자 입니다."));
-		List<MemberChatRoom> memberChatRooms = member.getMemberChatRooms();
-		List<ChatRoom> chatRooms = new ArrayList<>();
-		for (MemberChatRoom memberChatRoom : memberChatRooms) {
-			chatRooms.add(memberChatRoom.getChatRoom());
-		}
+	// Authorization 헤더에서 JWT를 파싱해 해당 사용자 Member 반환
+	public Member findByRequest(HttpServletRequest request) {
+		String username = jwtUtil.getUsername(request.getHeader("Authorization").split(" ")[1]);
+		return memberRepository.findByUsername(username)
+			.orElseThrow(() -> new NoSuchElementException("등록되지 않은 사용자입니다."));
+	}
 
-		return chatRooms;
+	public List<ChatRoom> findAllChatRooms(Long memberId) {
+		memberRepository.findById(memberId)
+			.orElseThrow(() -> new NoSuchElementException("등록되지 않은 사용자 입니다."));
+		return memberRepository.findAllChatRoomsWithDetails(memberId);
 	}
 
 	public boolean existByNickname(String nickname) {
@@ -80,6 +84,9 @@ public class MemberService {
 	}
 
 	public void delete(Long id) {
+		// 해당 멤버의 ChatRoom 먼저 삭제 (Message, MemberChatRoom cascade 삭제)
+		List<ChatRoom> chatRooms = memberRepository.findAllChatRoomsWithDetails(id);
+		chatRoomRepository.deleteAll(chatRooms);
 		memberRepository.deleteById(id);
 	}
 

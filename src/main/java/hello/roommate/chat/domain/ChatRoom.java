@@ -18,8 +18,11 @@ public class ChatRoom {
     @Column(name = "chat_room_id")
     private Long id;
 
-    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberChatRoom> memberChatRooms = new ArrayList<>();
+
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Message> messages = new ArrayList<>();
 
 
     public void addMemberChatRooms(MemberChatRoom memberChatRoom) {

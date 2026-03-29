@@ -15,8 +15,8 @@ spring:
 
 # JWT 비밀키
 jwt:
-  secret: ${JWT_KEY}
+  secret: ${JWT_SECRET}
 
 # Android 해시키
 android:
-  hashkey: ${ANDROID_HASH_KEY}
+  hashkey: ${ANDROID_HASHKEY}

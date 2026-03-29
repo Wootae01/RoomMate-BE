@@ -86,6 +86,7 @@ public class MessageMapper {
 	 */
 	public MessageDTO convertToDTO(Message message) {
 		MessageDTO dto = new MessageDTO();
+		dto.setMessageId(message.getId());
 		dto.setChatRoomId(message.getChatRoom().getId());
 		Member member = message.getSender();
 		dto.setMemberId(member.getId());
