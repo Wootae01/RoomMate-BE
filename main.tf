@@ -52,7 +52,7 @@ resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
 
   route {
-    cidr_block = "0.0.0.0/0"    #모든 외부 트래픽
+    cidr_block = "0.0.0.0/0" #모든 외부 트래픽
     gateway_id = aws_internet_gateway.main.id
   }
 
@@ -88,25 +88,25 @@ resource "aws_security_group" "ec2" {
   }
   # SSH 접속
   ingress {
-    from_port = 22
-    to_port   = 22
-    protocol  = "tcp"
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Prometheus
   ingress {
-    from_port = 9090
-    to_port   = 9090
-    protocol  = "tcp"
+    from_port   = 9090
+    to_port     = 9090
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Grafana
   ingress {
-    from_port = 3000
-    to_port   = 3000
-    protocol  = "tcp"
+    from_port   = 3000
+    to_port     = 3000
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -177,16 +177,16 @@ resource "aws_iam_instance_profile" "ec2_profile" {
 
 # EC2 인스턴스
 resource "aws_instance" "app" {
-  ami = "ami-0e9bfdb247cc8de84"  # Ubuntu 22.04 LTS AMI
+  ami           = "ami-0e9bfdb247cc8de84" # Ubuntu 22.04 LTS AMI
   instance_type = "t2.micro"
-  subnet_id = aws_subnet.public_1.id
+  subnet_id     = aws_subnet.public_1.id
 
   # 세부 모니터링 활성화
   monitoring = true
 
   vpc_security_group_ids = [aws_security_group.ec2.id]
-  key_name             = "roommate-key"
-  iam_instance_profile = aws_iam_instance_profile.ec2_profile.name
+  key_name               = "roommate-key"
+  iam_instance_profile   = aws_iam_instance_profile.ec2_profile.name
 
   root_block_device {
     volume_size = 30
@@ -224,6 +224,15 @@ resource "aws_instance" "app" {
               # Docker Compose 설치
               sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
               sudo chmod +x /usr/local/bin/docker-compose
+
+              # Redis 컨테이너 실행 (항상 유지)
+              docker rm -f redis || true
+              docker run -d \
+                --name redis \
+                --network monitoring \
+                --restart unless-stopped \
+                redis:7-alpine \
+                redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
 
               # CloudWatch Agent 설치 및 설정
               sudo wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
@@ -342,8 +351,8 @@ output "ecr_repository_url" {
 
 # 키 페어 생성. ec2에서 ssh 접속 하도록 공개키 등록
 resource "aws_key_pair" "roommate" {
-  key_name = "roommate-key"
-  public_key = file("${path.module}/roommate-key.pub")  # 로컬에 있는 public key 파일 경로
+  key_name   = "roommate-key"
+  public_key = file("${path.module}/roommate-key.pub") # 로컬에 있는 public key 파일 경로
 }
 
 # RDS 보안 그룹
@@ -353,9 +362,9 @@ resource "aws_security_group" "rds" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    from_port = 3306
-    to_port   = 3306
-    protocol  = "tcp"
+    from_port   = 3306
+    to_port     = 3306
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
@@ -366,7 +375,7 @@ resource "aws_security_group" "rds" {
 
 # RDS 서브넷 그룹
 resource "aws_db_subnet_group" "rds" {
-  name = "roommate-rds-subnet-group"
+  name       = "roommate-rds-subnet-group"
   subnet_ids = [aws_subnet.public_1.id, aws_subnet.public_2.id]
 
   tags = {
@@ -411,12 +420,12 @@ resource "aws_db_instance" "roommate" {
   password = var.db_password
 
   vpc_security_group_ids = [aws_security_group.rds.id]
-  db_subnet_group_name = aws_db_subnet_group.rds.name
+  db_subnet_group_name   = aws_db_subnet_group.rds.name
 
   skip_final_snapshot = true
   publicly_accessible = true
 
-  monitoring_interval = 60  # 60초마다 지표 수집
+  monitoring_interval = 60 # 60초마다 지표 수집
   monitoring_role_arn = aws_iam_role.rds_enhanced_monitoring.arn
 
   tags = {
