@@ -225,6 +225,9 @@ resource "aws_instance" "app" {
               sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.0/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
               sudo chmod +x /usr/local/bin/docker-compose
 
+              # Docker 네트워크 생성 (없으면 생성)
+              docker network create monitoring || true
+
               # Redis 컨테이너 실행 (항상 유지)
               docker rm -f redis || true
               docker run -d \
