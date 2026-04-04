@@ -16,7 +16,8 @@ public class CacheTemplate {
     private final RedisClient redisClient;
     private final DistributedLockTemplate distributedLockTemplate;
 
-    public <T> T execute(String cacheKey, Duration ttl, TypeReference<T> typeRef, Supplier<T> loader) {
+    // 캐시 조회 + 분산락
+    public <T> T executeWithLock(String cacheKey, Duration ttl, TypeReference<T> typeRef, Supplier<T> loader) {
 
         // 1. 캐시 조회
         Optional<T> optional = redisClient.get(cacheKey, typeRef);
@@ -30,6 +31,19 @@ public class CacheTemplate {
             redisClient.set(cacheKey, t, ttl);
             return t;
         }));
+    }
+
+    public <T> T execute(String cacheKey, Duration ttl, TypeReference<T> typeRef, Supplier<T> loader) {
+        // 캐시 조회
+        Optional<T> optional = redisClient.get(cacheKey, typeRef);
+        if (optional.isPresent()) {
+            return optional.get();
+        }
+
+        // 캐시에 없으면 db에서 조회 후 캐시에 저장
+        T t = loader.get();
+        redisClient.set(cacheKey, t, ttl);
+        return t;
     }
 
     public void evict(String cacheKey) {
