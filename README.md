@@ -53,21 +53,21 @@ Spring Boot 기반 기숙사 룸메이트 매칭 백엔드
 
 ## 화면 구성
 
-| 로그인      | 프로필 설정      |
-|----------|-------------|
-| ![로그인](https://github.com/user-attachments/assets/a599f570-8aac-4f41-811a-52d17b5b08af) | ![프로필 설정](https://github.com/user-attachments/assets/5d490584-6660-4369-984c-e9809114c6df) |
+| 로그인 | 프로필 설정 |
+|------|---------|
+| <img src="https://github.com/user-attachments/assets/a599f570-8aac-4f41-811a-52d17b5b08af" width="200"/> | <img src="https://github.com/user-attachments/assets/5d490584-6660-4369-984c-e9809114c6df" width="200"/> |
 
-| 라이프스타일 설정      | 선호 조건 설정      |
-|----------------|---------------|
-| ![라이프스타일 설정](https://github.com/user-attachments/assets/1b311768-bfc8-47d5-8376-1e9d5051797a) | ![선호 조건 설정](https://github.com/user-attachments/assets/b76e9e86-6671-4cad-907e-6b1778727ab8) |
+| 라이프스타일 설정 | 선호 조건 설정 |
+|------------|-----------|
+| <img src="https://github.com/user-attachments/assets/1b311768-bfc8-47d5-8376-1e9d5051797a" width="200"/> | <img src="https://github.com/user-attachments/assets/b76e9e86-6671-4cad-907e-6b1778727ab8" width="200"/> |
 
-| 룸메이트 추천      | 필터 추천      |
-|--------------|------------|
-| ![룸메이트 추천](https://github.com/user-attachments/assets/7ccf9aad-c227-47a4-8cec-1966e9d5db9a) | ![필터 추천](https://github.com/user-attachments/assets/8de1f953-58e7-489b-888e-85bb370c5a26) |
+| 룸메이트 추천 | 필터 추천 |
+|-----------|--------|
+| <img src="https://github.com/user-attachments/assets/7ccf9aad-c227-47a4-8cec-1966e9d5db9a" width="200"/> | <img src="https://github.com/user-attachments/assets/8de1f953-58e7-489b-888e-85bb370c5a26" width="200"/> |
 
-| 상대 프로필      | 채팅 목록      |
-|-------------|------------|
-| ![상대 프로필](https://github.com/user-attachments/assets/f296c158-2359-43c7-8f50-ae3534912bb6) | ![채팅 목록](https://github.com/user-attachments/assets/136107e1-b717-49d0-82c3-117dcfc5d7fb) |
+| 상대 프로필 | 채팅 목록 |
+|---------|--------|
+| <img src="https://github.com/user-attachments/assets/f296c158-2359-43c7-8f50-ae3534912bb6" width="200"/> | <img src="https://github.com/user-attachments/assets/136107e1-b717-49d0-82c3-117dcfc5d7fb" width="200"/> |
 
 ## 트러블슈팅
 
