@@ -28,7 +28,7 @@ public class RedisClient {
         }
 
         try {
-            return Optional.of(objectMapper.readValue(serialized, typeRef));
+            return Optional.ofNullable(objectMapper.readValue(serialized, typeRef));
         } catch (JsonProcessingException e) {
             log.warn("캐시 역직렬화 실패. cacheKey={}, 캐시 삭제", cacheKey, e);
             redisTemplate.delete(cacheKey);
