@@ -43,7 +43,7 @@ public class MemberService {
 		Member member = memberRepository.findById(id)
 			.orElseThrow();
 		Dormitory dorm = member.getDorm();
-		return memberRepository.findAllByDorm(dorm);
+		return memberRepository.findAllByDorm(dorm, id);
 	}
 
 	public List<Member> findAllWithLifeStyle() {
