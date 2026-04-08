@@ -49,8 +49,8 @@ public interface MemberRepository extends JpaRepository<Member, Long>, MemberCus
 		+ "WHERE m.id in :memberIds")
 	List<Member> findAllByIds(List<Long> memberIds);
 
-	@Query("SELECT m FROM Member m WHERE m.dorm =:dormitory")
-	List<Member> findAllByDorm(Dormitory dormitory);
+	@Query("SELECT m FROM Member m WHERE m.dorm = :dormitory AND m.id != :id")
+	List<Member> findAllByDorm(Dormitory dormitory, Long id);
 
 	@Query("""
 		SELECT DISTINCT mcr.chatRoom FROM MemberChatRoom mcr
