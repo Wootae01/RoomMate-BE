@@ -72,6 +72,48 @@ resource "aws_route_table_association" "public_2" {
   subnet_id      = aws_subnet.public_2.id
 }
 
+# private 서브넷 1
+resource "aws_subnet" "private_1" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.1.0/24"
+  availability_zone = "ap-northeast-2a"
+
+  tags = {
+    Name = "roommate-private-1"
+  }
+}
+
+# private 서브넷 2
+resource "aws_subnet" "private_2" {
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = "10.0.2.0/24"
+  availability_zone = "ap-northeast-2c"
+
+  tags = {
+    Name = "roommate-private-2"
+  }
+}
+
+# private 라우팅 테이블 (인터넷 게이트웨이 없음)
+resource "aws_route_table" "private" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "roommate-private-rt"
+  }
+}
+
+# private 서브넷 라우팅 연결
+resource "aws_route_table_association" "private_1" {
+  route_table_id = aws_route_table.private.id
+  subnet_id      = aws_subnet.private_1.id
+}
+
+resource "aws_route_table_association" "private_2" {
+  route_table_id = aws_route_table.private.id
+  subnet_id      = aws_subnet.private_2.id
+}
+
 # 보안 그룹 EC2
 resource "aws_security_group" "ec2" {
   name        = "roommate-ec2-sg"
@@ -377,7 +419,7 @@ resource "aws_security_group" "elasticache" {
 # ElastiCache 서브넷 그룹
 resource "aws_elasticache_subnet_group" "redis" {
   name       = "roommate-redis-subnet-group"
-  subnet_ids = [aws_subnet.public_1.id, aws_subnet.public_2.id]
+  subnet_ids = [aws_subnet.private_1.id, aws_subnet.private_2.id]
 
   tags = {
     Name = "roommate-redis-subnet-group"
@@ -413,10 +455,10 @@ resource "aws_security_group" "rds" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    from_port   = 3306
-    to_port     = 3306
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port       = 3306
+    to_port         = 3306
+    protocol        = "tcp"
+    security_groups = [aws_security_group.ec2.id]
   }
 
   tags = {
@@ -427,7 +469,7 @@ resource "aws_security_group" "rds" {
 # RDS 서브넷 그룹
 resource "aws_db_subnet_group" "rds" {
   name       = "roommate-rds-subnet-group"
-  subnet_ids = [aws_subnet.public_1.id, aws_subnet.public_2.id]
+  subnet_ids = [aws_subnet.private_1.id, aws_subnet.private_2.id]
 
   tags = {
     Name = "roommate-rds-subnet-group"
@@ -474,7 +516,7 @@ resource "aws_db_instance" "roommate" {
   db_subnet_group_name   = aws_db_subnet_group.rds.name
 
   skip_final_snapshot = true
-  publicly_accessible = true
+  publicly_accessible = false
 
   monitoring_interval = 60 # 60초마다 지표 수집
   monitoring_role_arn = aws_iam_role.rds_enhanced_monitoring.arn
