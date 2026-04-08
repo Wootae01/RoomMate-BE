@@ -178,7 +178,7 @@ resource "aws_iam_instance_profile" "ec2_profile" {
 # EC2 인스턴스
 resource "aws_instance" "app" {
   ami           = "ami-0e9bfdb247cc8de84" # Ubuntu 22.04 LTS AMI
-  instance_type = "t2.micro"
+  instance_type = "t3.micro"
   subnet_id     = aws_subnet.public_1.id
 
   # 세부 모니터링 활성화
@@ -227,15 +227,6 @@ resource "aws_instance" "app" {
 
               # Docker 네트워크 생성 (없으면 생성)
               docker network create monitoring || true
-
-              # Redis 컨테이너 실행 (항상 유지)
-              docker rm -f redis || true
-              docker run -d \
-                --name redis \
-                --network monitoring \
-                --restart unless-stopped \
-                redis:7-alpine \
-                redis-server --maxmemory 128mb --maxmemory-policy allkeys-lru
 
               # CloudWatch Agent 설치 및 설정
               sudo wget https://s3.amazonaws.com/amazoncloudwatch-agent/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
@@ -356,6 +347,63 @@ output "ecr_repository_url" {
 resource "aws_key_pair" "roommate" {
   key_name   = "roommate-key"
   public_key = file("${path.module}/roommate-key.pub") # 로컬에 있는 public key 파일 경로
+}
+
+# ElastiCache 보안 그룹
+resource "aws_security_group" "elasticache" {
+  name        = "roommate-elasticache-sg"
+  description = "Security group for ElastiCache Redis"
+  vpc_id      = aws_vpc.main.id
+
+  ingress {
+    from_port       = 6379
+    to_port         = 6379
+    protocol        = "tcp"
+    security_groups = [aws_security_group.ec2.id]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "roommate-elasticache-sg"
+  }
+}
+
+# ElastiCache 서브넷 그룹
+resource "aws_elasticache_subnet_group" "redis" {
+  name       = "roommate-redis-subnet-group"
+  subnet_ids = [aws_subnet.public_1.id, aws_subnet.public_2.id]
+
+  tags = {
+    Name = "roommate-redis-subnet-group"
+  }
+}
+
+# ElastiCache Redis 클러스터
+resource "aws_elasticache_cluster" "redis" {
+  cluster_id           = "roommate-redis"
+  engine               = "redis"
+  node_type            = "cache.t3.micro"
+  num_cache_nodes      = 1
+  parameter_group_name = "default.redis7"
+  engine_version       = "7.1"
+  port                 = 6379
+  subnet_group_name    = aws_elasticache_subnet_group.redis.name
+  security_group_ids   = [aws_security_group.elasticache.id]
+
+  tags = {
+    Name = "roommate-redis"
+  }
+}
+
+# ElastiCache 엔드포인트 출력
+output "elasticache_endpoint" {
+  value = aws_elasticache_cluster.redis.cache_nodes[0].address
 }
 
 # RDS 보안 그룹
