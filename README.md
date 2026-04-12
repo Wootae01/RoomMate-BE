@@ -11,7 +11,7 @@ Spring Boot 기반 기숙사 룸메이트 매칭 백엔드
 
 ## 아키텍처
 
-<img src="https://github.com/user-attachments/assets/4a16fd01-a09f-4613-a32c-fe639ed04718" width="800" alt="architecture"/>
+<img src="https://github.com/user-attachments/assets/1a29565f-ba36-416d-b5fd-0b556a4ccc53" width="800" alt="architecture"/>
 
 ## 기술 스택
 
@@ -81,23 +81,23 @@ Spring Boot 기반 기숙사 룸메이트 매칭 백엔드
 
 ## 트러블슈팅
 
-### 1. 추천 N+1 쿼리 및 쿼리 실행 순서 최적화
+### 1. 추천 쿼리 실행 순서 변경 및 N+1 최적화
 
-#### N+1 쿼리 제거 (`GET /recommendations/{id}/basic`)
-
-- **문제**: 추천 멤버 조회 시 멤버 수만큼 notification SELECT 추가 발생
-    - `Member.notification`이 `@OneToOne` 비주인 쪽(FK가 상대 테이블)이라 `fetch = LAZY` 설정과 무관하게 Hibernate가 즉시 SELECT → null 여부를 알 수
-      없어 프록시 생성 불가
-- **해결**: 멤버 조회 쿼리에 `LEFT JOIN FETCH notification` 추가 → 단일 쿼리로 일괄 조회
-- **결과**: GET /recommendations/basic **710ms → 90ms**
-
-#### 쿼리 실행 순서 변경 (`GET /recommendations/{id}/basic`)
+#### 쿼리 실행 순서 변경 (`GET /recommendations/{id}/basic`, `POST /recommendations/{id}/filter`)
 
 - **문제**: 같은 기숙사·성별 멤버만 추천 대상임에도, lifestyle 스캔(GROUP BY + HAVING)을 전체 멤버 대상으로 먼저 수행
 - **해결**: 실행 순서 변경
     1. member 테이블에서 같은 기숙사·성별·나이로 먼저 필터링 (단순 컬럼 비교, 저비용)
     2. 좁혀진 member_id 범위 안에서만 lifestyle 스캔 (GROUP BY + HAVING 집계, 고비용)
-- **결과**: **226ms → 51ms** (약 77% 개선)
+- **결과**: **710ms → 89ms** (약 87% 개선)
+
+#### N+1 쿼리 제거 (`POST /recommendations/{id}/filter`)
+
+- **문제**: 룸메이트 필터 검색 시 멤버 수만큼 notification SELECT 추가 발생
+    - `@OneToOne` 관계에서 FK를 갖지 않는 쪽(비주인)은 `fetch = LAZY`로 설정해도 Hibernate가 프록시를 생성하지 못함 → 자신의 테이블에 FK가 없어 연관 객체가 null인지
+      판단할 수 없어 즉시 SELECT 발생
+- **해결**: 멤버 조회 쿼리에 `LEFT JOIN FETCH notification` 추가 → 단일 쿼리로 일괄 조회
+- **결과**: 필터 검색 **1522ms → 75ms** (약 95% 개선)
 
 ### 2. 채팅방 인가 검증 쿼리 인덱스 최적화
 
