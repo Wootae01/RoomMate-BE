@@ -33,7 +33,7 @@ Spring Boot 기반 기숙사 룸메이트 매칭 백엔드
 
 - 소셜 로그인(카카오, 구글)
 - JWT Access / Refresh Token 발급 및 재발급 (Refresh Token Rotation)
-- 로그인 상태 확인, 로그아웃, 회원 탈퇴
+- Redis 기반 Refresh Token 저장 (TTL 만료 처리)
 
 ### 회원가입 및 프로필
 
@@ -102,7 +102,7 @@ Spring Boot 기반 기숙사 룸메이트 매칭 백엔드
 ### 2. 채팅방 인가 검증 쿼리 인덱스 최적화
 
 - **문제**: 메시지 조회 시 요청자가 해당 채팅방 멤버인지 인가 검증하는 쿼리에서, 각 FK 인덱스를 별도 스캔 후 Intersect 수행 → 불필요한 row 탐색
-- **해결**: 회원ID + 채팅방ID 복합 인덱스 추가 → Covering index lookup으로 단일 스캔
+- **해결**: 회원ID + 채팅방ID 복합 인덱스 추가 → Covering index로 단일 스캔
 - **결과**: **0.108ms → 0.027ms** (약 75% 개선)
 
 ### 3. 채팅방 생성 중복 동시성 제어 (`POST /chat-rooms`)
@@ -112,7 +112,7 @@ Spring Boot 기반 기숙사 룸메이트 매칭 백엔드
 
 ### 4. Refresh Token 저장소 DB → Redis 전환
 
-- **문제**: Refresh Token은 단순 조회·삭제와 TTL 기반 만료만 필요한데, RDB에 저장해 reissue 요청마다 불필요한 DB I/O 발생
+- **문제**: Refresh Token은 RDB에 저장하다 보니 TTL 기반 자동 만료가 되지 않아 만료된 토큰이 계속 쌓이는 문제 발생
 - **해결**: Redis로 저장소 전환 (TTL 기반 만료 처리, DB 부하 제거)
 - **결과**: 토큰 재발급 요청 p95 **76.92ms → 17.91ms** (약 77% 감소, 10 VUs 기준)
 
