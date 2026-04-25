@@ -57,7 +57,10 @@ public class RefreshTokenService {
 
 
         if (!existsByRefresh(refresh)) {
-            log.info("해당 refresh 토큰은 존재하지 않습니다.");
+            // 형식은 유효하나 저장된 토큰과 다름 → 이미 rotate된 토큰 재사용, 탈취 의심
+            String username = jwtUtil.getUsername(refresh);
+            log.warn("refresh 토큰 재사용 감지 - 강제 로그아웃 처리: username={}", username);
+            deleteByUsername(username);
             throw new InvalidTokenException(JWTErrorCode.INVALID_TOKEN.getMessage());
         }
     }
